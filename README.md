@@ -1,33 +1,52 @@
-# React + TypeScript + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+# 🏮 Sắc Việt Remix
 
-Currently, two official plugins are available:
+**Mặc truyền thống, sống Gen Z – Đẹp và Đúng**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+[![React](https://img.shields.io/badge/React-18-blue?logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Oxlint](https://img.shields.io/badge/Linter-Oxlint-brightgreen)](https://oxc.rs/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## React Compiler
+<p align="center">
+  Ứng dụng khám phá và phối trang phục truyền thống Việt Nam theo phong cách hiện đại, tích hợp bộ lọc văn hoá <strong>Cultural Guard</strong> và trợ lý thông minh.
+</p>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+[Khám phá Tính năng](#-tính-năng-chính) •
+[Cài đặt & Khởi chạy](#-bắt-đầu-nhanh) •
+[Cấu trúc Dự án](#-cấu-trúc-thư-mục) •
+[Cấu hình Công cụ](#-cấu-hình--tối-ưu)
 
-## Expanding the Oxlint configuration
+</div>
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+---
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+## ✨ Tính năng chính
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+- 👘 **Smart Styling Wizard**: Phối đồ 4 bước theo bối cảnh, sự kiện, tông màu ngũ hành và mức độ remix.
+- 🛡️ **Cultural Guard**: Rule engine tất định kiểm tra tính chuẩn mực văn hoá trước khi gợi ý phối đồ.
+- 🎨 **Neo-Heritage Design**: Giao diện Mobile-first mang bảng màu cung đình và dân gian đặc trưng.
+- ⚡ **Ultra Fast DX**: Khởi động tức thì với Vite, tối ưu kiểm tra mã nguồn bằng Oxlint.
 
+---
+
+## 🚀 Bắt đầu nhanh
+
+### Yêu cầu tiên quyết
+- **Node.js**: Phiên bản `18.x` trở lên
+- Trình quản lý gói: `npm`, `pnpm`, hoặc `yarn`
+
+### Cài đặt
+
+```bash
+# 1. Clone repository
+git clone [https://github.com/](https://github.com/)<your-username>/sac-viet-remix.git
+cd sac-viet-remix
+
+# 2. Cài đặt các gói phụ thuộc
+npm install
+
+# 3. Khởi chạy môi trường phát triển
+npm run dev
