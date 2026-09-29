@@ -1,0 +1,94 @@
+export type ImageKind = 'scene' | 'costume' | 'accessory' | 'look';
+
+export interface ImageManifestItem {
+    slot: string;
+    alt: string;
+    kind: ImageKind;
+    localPath?: string;
+    commons?: {
+        fileTitle: string;
+        author: string;
+        license: string;
+        sourceUrl: string;
+    };
+    aiPrompt?: string;
+    credit: string;
+}
+
+export const imageManifest: ImageManifestItem[] = [
+    // Scenes
+    {
+        slot: 'scene-hanoi',
+        alt: 'Phố cổ Hà Nội tĩnh lặng',
+        kind: 'scene',
+        localPath: '/images/scene-hanoi.webp',
+        aiPrompt: 'Ảnh phong cảnh phong cách tạp chí du lịch, phố cổ Hà Nội buổi sáng, mái ngói rêu, sương mỏng, ánh sáng tự nhiên, nét chân thực',
+        credit: 'Ảnh do AI tạo'
+    },
+    {
+        slot: 'scene-hue',
+        alt: 'Đại nội Huế uy nghiêm',
+        kind: 'scene',
+        localPath: '/images/scene-hue.webp',
+        aiPrompt: 'Ảnh phong cảnh phong cách tạp chí du lịch, Đại Nội Huế, ngọ môn, mái ngói lưu ly, ánh sáng vàng ấm, nét chân thực',
+        credit: 'Ảnh do AI tạo'
+    },
+    {
+        slot: 'scene-nambo',
+        alt: 'Sông nước Nam Bộ thanh bình',
+        kind: 'scene',
+        localPath: '/images/scene-nambo.webp',
+        aiPrompt: 'Ảnh phong cảnh phong cách tạp chí du lịch, chợ nổi Cái Răng miền Tây, ghe xuồng, hàng dừa nước, ánh sáng tự nhiên, nét chân thực',
+        credit: 'Ảnh do AI tạo'
+    },
+    // Events
+    {
+        slot: 'event-cafe',
+        alt: 'Quán cà phê góc phố',
+        kind: 'scene',
+        localPath: '/images/event-cafe.webp',
+        aiPrompt: 'Quán cà phê vỉa hè Hà Nội, ghế nhựa, ánh nắng thu',
+        credit: 'Ảnh do AI tạo'
+    },
+    {
+        slot: 'event-heritage',
+        alt: 'Thăm di tích lịch sử',
+        kind: 'scene',
+        localPath: '/images/event-heritage.webp',
+        aiPrompt: 'Cổng đình làng, sân gạch đỏ cổ kính',
+        credit: 'Ảnh do AI tạo'
+    },
+    {
+        slot: 'event-spring',
+        alt: 'Du xuân',
+        kind: 'scene',
+        localPath: '/images/event-spring.webp',
+        aiPrompt: 'Chợ hoa ngày Tết, hoa đào hoa mai nở rộ',
+        credit: 'Ảnh do AI tạo'
+    },
+    {
+        slot: 'event-temple',
+        alt: 'Đi lễ chùa',
+        kind: 'scene',
+        localPath: '/images/event-temple.webp',
+        aiPrompt: 'Mái chùa cổ kính rêu phong, khói hương mờ ảo',
+        credit: 'Ảnh do AI tạo'
+    },
+    // Costumes
+    { slot: 'costume-aodai', alt: 'Áo dài', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-tuthan', alt: 'Áo tứ thân', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-nguthan', alt: 'Áo ngũ thân', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-nhatbinh', alt: 'Áo nhật bình', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-giaolinh', alt: 'Áo giao lĩnh', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-aotac', alt: 'Áo tấc', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-aothe', alt: 'Áo the nam', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-baba', alt: 'Áo bà ba', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-aocanh', alt: 'Áo cánh', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-yem', alt: 'Yếm váy', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-aochen', alt: 'Áo chẽn', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-mangbao', alt: 'Mạng bào', kind: 'costume', credit: 'Ảnh do AI tạo' },
+];
+
+export const getManifestItem = (slot: string): ImageManifestItem | undefined => {
+    return imageManifest.find(item => item.slot === slot);
+};
