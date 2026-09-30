@@ -18,7 +18,7 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
     const [state, setState] = useState<'review' | 'generating' | 'result'>('review');
     const [resultUrl, setResultUrl] = useState<string | null>(null);
     const [loadingText, setLoadingText] = useState('Đang cắt vải...');
-    
+
     // Cycle loading text
     useEffect(() => {
         if (state === 'generating') {
@@ -44,12 +44,12 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
             alert('Bạn đã hết lượt tạo ảnh trong phiên này!');
             return;
         }
-        
+
         setState('generating');
         onUseAttempt();
-        
+
         const hash = btoa(encodeURIComponent(prompt)).substring(0, 15);
-        
+
         // 1. Check cache
         const cached = localStorage.getItem(`ai_cache_${hash}`);
         if (cached) {
@@ -72,20 +72,20 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
                 }, 1000);
                 return;
             }
-        } catch (e) {}
+        } catch (e) { }
 
         // 3. Fake API Call with timeout and retries
         let attempts = 0;
         const maxAttempts = 2;
-        
+
         while (attempts < maxAttempts) {
             try {
                 // Simulate a 4-second delay for AI generation
                 await new Promise((resolve) => setTimeout(resolve, 4000));
-                
+
                 // Placeholder result
                 const fakeResult = "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&q=80&w=1000";
-                
+
                 localStorage.setItem(`ai_cache_${hash}`, fakeResult);
                 setResultUrl(fakeResult);
                 setState('result');
@@ -94,7 +94,7 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
                 attempts++;
             }
         }
-        
+
         alert('Tạo ảnh thất bại sau 2 lần thử (Timeout 40s). Vui lòng thử lại sau.');
         setState('review');
     };
@@ -112,22 +112,22 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
                         <button onClick={() => { onClose(); setState('review'); }} className="neo-button-secondary py-1 text-sm">ĐÓNG</button>
                     </div>
                 </div>
-                
+
                 <div className="flex-1 flex flex-col md:flex-row relative overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMCwwLDAsMC4wNSkiLz48L3N2Zz4=')]">
-                    
+
                     {/* REVIEW STATE */}
                     {state === 'review' && (
                         <div className="flex-1 p-6 md:p-12 flex flex-col items-center justify-center overflow-y-auto">
                             <h4 className="font-display text-3xl mb-4 text-center">Tuỳ chỉnh Prompt</h4>
                             <p className="text-than/70 mb-8 text-center max-w-xl">Bạn có thể xem trước và chỉnh sửa mô tả (prompt) trước khi gửi cho AI. Thêm chi tiết để có kết quả độc đáo hơn.</p>
-                            
-                            <textarea 
+
+                            <textarea
                                 value={prompt}
                                 onChange={(e) => setPrompt(e.target.value)}
                                 className="w-full max-w-2xl h-48 neo-border border-2 border-than p-4 font-mono text-sm leading-relaxed bg-giay-sang focus:ring-4 focus:ring-nghe/50 outline-none resize-none"
                             />
-                            
-                            <button 
+
+                            <button
                                 onClick={handleGenerate}
                                 disabled={attemptsLeft <= 0}
                                 className={`mt-8 neo-button-primary text-xl px-12 py-4 ${attemptsLeft <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -150,7 +150,7 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
                                     ✂️
                                 </div>
                             </div>
-                            
+
                             <div className="text-center">
                                 <p className="font-display text-3xl animate-pulse text-than mb-4">
                                     {loadingText}
@@ -168,22 +168,22 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
                     {/* RESULT STATE */}
                     {state === 'result' && resultUrl && (
                         <div className="flex-1 flex flex-col h-full relative p-4 md:p-8 gap-6">
-                            
+
                             {/* Main Image Container */}
                             <div className="flex-1 w-full bg-giay-sang neo-border border-[3px] border-than p-2 shadow-[8px_8px_0_rgba(0,0,0,0.15)] relative group overflow-hidden flex items-center justify-center">
                                 <div className="absolute top-4 left-4 z-20 bg-son text-white text-[10px] md:text-xs px-3 py-1 uppercase tracking-widest font-label neo-border border-2">
                                     Ảnh do AI tạo – Có thể sai chi tiết trang phục
                                 </div>
-                                
+
                                 <img src={resultUrl} className="w-full h-full object-contain object-center z-10" alt="AI Generated Fashion" />
-                                
+
                                 {/* 2D vs AI Hover Overlay for comparison */}
                                 <div className="absolute inset-0 z-30 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-sm flex flex-col items-center justify-center text-white pointer-events-none">
                                     <p className="font-display text-2xl mb-2">Bản vẽ 2D gốc</p>
                                     <p className="text-sm">Tương lai có thể nhúng bản 2D đè lên đây bằng slider</p>
                                 </div>
                             </div>
-                            
+
                             {/* Controls */}
                             <div className="flex flex-wrap gap-4 justify-center shrink-0">
                                 <button className="neo-button-secondary bg-transparent hover:bg-giay-sang">BÁO SAI CHI TIẾT</button>
@@ -196,7 +196,7 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
                     )}
                 </div>
             </div>
-            
+
             <style>{`
                 @keyframes progress {
                     0% { width: 0%; }
