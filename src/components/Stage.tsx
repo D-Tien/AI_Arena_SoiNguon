@@ -13,7 +13,7 @@ export const StageBackground = ({ scene = 'hanoi', title = '' }: { scene: string
 
             {/* Giant Title Typography positioned at the VERY TOP so it doesn't get covered */}
             {title && (
-                <div className="absolute top-6 left-1/2 -translate-x-1/2 w-[95%] text-center z-30 drop-shadow-sm flex flex-col items-center justify-center">
+                <div className="absolute top-14 left-1/2 -translate-x-1/2 w-[95%] text-center z-30 drop-shadow-sm flex flex-col items-center justify-center pointer-events-none">
                     <h1 className="font-display text-[40px] md:text-[55px] leading-[0.95] text-than px-2 tracking-tighter mix-blend-multiply" style={{ wordBreak: 'keep-all' }}>
                         {title.toUpperCase()}
                     </h1>
