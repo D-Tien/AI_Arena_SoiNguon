@@ -6,11 +6,19 @@ import { StageBackground } from './components/Stage';
 import { GuardStamp, GuardModal } from './components/CulturalGuard';
 import { CultureCard } from './components/CultureCard';
 import { Lookbook } from './components/Lookbook';
-import { Solution } from './components/Solution';
+import { BookOfOutfits } from './components/BookOfOutfits';
 import { Explore } from './components/Explore';
 import { SmartImage } from './components/SmartImage';
 import { StudioDo } from './components/StudioDo';
 import { AiGenerationModal } from './components/AiGenerationModal';
+import Step1GenderHair from './components/wizard-steps/Step1GenderHair';
+import Step2Place from './components/wizard-steps/Step2Place';
+import Step3Top from './components/wizard-steps/Step3Top';
+import Step4Bottom from './components/wizard-steps/Step4Bottom';
+import Step5Accessories from './components/wizard-steps/Step5Accessories';
+import Step6Mode from './components/wizard-steps/Step6Mode';
+import CulturalGuardAlert from './components/CulturalGuardAlert';
+import type { WardrobeState } from './components/WardrobeWizard';
 
 // --- Shared Components ---
 const Slogan = () => (
@@ -44,7 +52,10 @@ const Marquee = () => (
 
 const Sidebar = ({ activeTab, setActiveTab, onHome }: { activeTab: string, setActiveTab: (t: string) => void, onHome: () => void }) => (
     <div className="hidden lg:flex w-[88px] bg-giay-sang neo-border border-t-0 border-b-0 border-l-0 flex-col items-center py-6 h-screen sticky top-0 z-50">
-        <div className="w-12 h-12 bg-son rounded-full flex items-center justify-center neo-shadow text-giay-sang font-display text-xl mb-12 border-2 border-than transform -rotate-12 cursor-pointer" onClick={onHome}>SN</div>
+        <div className="w-16 h-16 flex items-center justify-center mb-10 mt-2 cursor-pointer hover:scale-105 transition-transform" onClick={onHome}>
+            <img src="/brand/logo-soi-nguon.png" alt="Sợi Nguồn" className="w-full h-full object-contain mix-blend-multiply opacity-90" onError={(e) => { e.currentTarget.style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'block'; }} />
+            <span className="hidden font-display text-2xl text-than font-bold">SN</span>
+        </div>
 
         <div className="flex flex-col gap-8 items-center flex-1 w-full px-2">
             <button onClick={() => setActiveTab('phoi')} className={`flex flex-col items-center gap-1 group transition-colors w-full ${activeTab === 'phoi' ? 'text-son' : 'text-than hover:text-son'}`}><Sparkles size={24} className="group-hover:scale-110 transition-transform" /><span className="font-label text-[10px] text-center leading-tight">PHỐI ĐỒ</span></button>
@@ -78,19 +89,19 @@ const PALETTES = [
 ];
 
 const COSTUMES = [
-    { id: 'ao-tu-than', name: 'TỨ THÂN', diff: 4, slot: 'costume-tuthan' },
-    { id: 'ao-ngu-than', name: 'NGŨ THÂN', diff: 3, slot: 'costume-nguthan' },
-    { id: 'ao-ba-ba', name: 'BÀ BA', diff: 1, slot: 'costume-baba' },
+    { id: 'ao-tu-than', name: 'TỨ THÂN', diff: 4, slot: 'costume-ao-tu-than' },
+    { id: 'ao-ngu-than', name: 'NGŨ THÂN', diff: 3, slot: 'costume-ao-ngu-than' },
+    { id: 'ao-ba-ba', name: 'BÀ BA', diff: 1, slot: 'costume-ao-ba-ba' },
     // Hidden costumes (keep data)
-    // {id: 'ao-dai', name: 'ÁO DÀI', diff: 2, slot: 'costume-aodai'},
-    // {id: 'ao-nhat-binh', name: 'NHẬT BÌNH', diff: 5, slot: 'costume-nhatbinh'},
-    // {id: 'ao-giao-linh', name: 'GIAO LĨNH', diff: 4, slot: 'costume-giaolinh'},
-    // {id: 'ao-tac', name: 'ÁO TẤC', diff: 3, slot: 'costume-aotac'},
-    // {id: 'ao-the', name: 'ÁO THE NAM', diff: 2, slot: 'costume-aothe'},
-    // {id: 'ao-canh', name: 'ÁO CÁNH', diff: 2, slot: 'costume-aocanh'},
+    // {id: 'ao-dai', name: 'ÁO DÀI', diff: 2, slot: 'costume-ao-dai'},
+    // {id: 'ao-nhat-binh', name: 'NHẬT BÌNH', diff: 5, slot: 'costume-ao-nhat-binh'},
+    // {id: 'ao-giao-linh', name: 'GIAO LĨNH', diff: 4, slot: 'costume-ao-giao-linh'},
+    // {id: 'ao-tac', name: 'ÁO TẤC', diff: 3, slot: 'costume-ao-tac'},
+    // {id: 'ao-the', name: 'ÁO THE NAM', diff: 2, slot: 'costume-ao-the'},
+    // {id: 'ao-canh', name: 'ÁO CÁNH', diff: 2, slot: 'costume-ao-canh'},
     // {id: 'yem', name: 'YẾM VÁY', diff: 3, slot: 'costume-yem'},
-    // {id: 'ao-chen', name: 'ÁO CHẼN', diff: 4, slot: 'costume-aochen'},
-    // {id: 'ao-mang-bao', name: 'MẠNG BÀO', diff: 5, slot: 'costume-mangbao'},
+    // {id: 'ao-chen', name: 'ÁO CHẼN', diff: 4, slot: 'costume-ao-chen'},
+    // {id: 'ao-mang-bao', name: 'MẠNG BÀO', diff: 5, slot: 'costume-ao-mang-bao'},
 ];
 
 // --- Wizard Components ---
@@ -428,108 +439,69 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
     const [activeTab, setActiveTab] = useState('phoi');
     const [step, setStep] = useState(initialConfig ? 3 : 1);
 
-    // Character State
-    const [gender, setGender] = useState<'female' | 'male'>(initialConfig?.gender || 'female');
-    const [scene, setScene] = useState(initialConfig?.scene || 'hanoi');
-    const [core, setCore] = useState(initialConfig?.core || 'ao-tu-than');
-    const [paletteIdx, setPaletteIdx] = useState(0);
-    const [style, setStyle] = useState('Streetwear');
-    const [remixLevel, setRemixLevel] = useState(50);
-    const [hairType, setHairType] = useState('dai-thuot-tha');
-    const [headwearType, setHeadwearType] = useState('none');
-    const [bangsType, setBangsType] = useState('mai-thua');
-    const [shoesType, setShoesType] = useState('guoc');
-    const [activeToolbarTab, setActiveToolbarTab] = useState<'toc' | 'mai' | 'phukien' | 'giay' | 'none'>('none');
-    const [styleMode, setStyleMode] = useState<'traditional' | 'modern'>('traditional');
+    // New 6-step state
+    const [guardMessage, setGuardMessage] = useState<string | null>(null);
+    const [wardrobeState, setWardrobeState] = useState<WardrobeState>({
+        gender: initialConfig?.gender || 'female',
+        hair: 'Tóc xõa dài',
+        place: initialConfig?.scene === 'saigon' ? 'Sài Gòn' : (initialConfig?.scene === 'hue' ? 'Huế' : 'Hà Nội'),
+        top: initialConfig?.core || 'ao-tu-than',
+        topColor: 'default',
+        bottom: 'quan-lua',
+        accessories: [],
+        mode: 'traditional'
+    });
+
+    const updateWardrobeState = (updates: Partial<WardrobeState>) => {
+        setWardrobeState(prev => ({ ...prev, ...updates }));
+    };
+
+    const gender = wardrobeState.gender;
+    const styleMode = wardrobeState.mode;
+    const scene = wardrobeState.place === 'Sài Gòn' ? 'nambo' : (wardrobeState.place === 'Huế' ? 'hue' : 'hanoi');
+    const stageTitleVal = wardrobeState.top === 'tu-than' ? 'TỨ THÂN' : wardrobeState.top === 'ao-the' ? 'ÁO THE' : wardrobeState.top === 'ngu-than' ? 'NGŨ THÂN' : 'BÀ BA';
+    
+    // Fallbacks for ResultPoster
+    const core = wardrobeState.top;
+    const style = wardrobeState.mode === 'traditional' ? 'Truyền thống' : 'Cách tân';
+    const hairType = wardrobeState.hair;
+    const paletteIdx = 0;
 
     const [isCultureOpen, setIsCultureOpen] = useState(false);
     const [cultureCore, setCultureCore] = useState('ao-tu-than');
 
-    // On gender change, ensure consistent defaults if needed, but the prompt says "Không làm mất lựa chọn ở các bước đã đi qua"
-    // We only need to set default valid hair if the current is invalid, but let's just use effect.
-    React.useEffect(() => {
-        if (gender === 'male') {
-            if (['dai-thuot-tha', 'van-gon', 'bui-cao'].includes(hairType)) setHairType('ngan-gon');
-            if (['khan-mo-qua', 'bang-do-lua'].includes(headwearType)) setHeadwearType('none');
-        } else {
-            if (['ngan-gon', 're-ngoi', 'mai-bay', 'buoc-thap'].includes(hairType)) setHairType('dai-thuot-tha');
-            if (['khan-xep', 'khan-dong', 'mu-bucket'].includes(headwearType)) setHeadwearType('none');
-        }
-    }, [gender]);
-
-    React.useEffect(() => {
-        if (gender === 'female') {
-            if (remixLevel <= 25) {
-                setHairType('dai-thuot-tha');
-                setHeadwearType('khan-mo-qua');
-                setShoesType('guoc');
-            } else if (remixLevel > 25 && hairType === 'dai-thuot-tha' && headwearType === 'khan-mo-qua') {
-                setHeadwearType('none');
-                setShoesType('sneaker');
-            }
-        } else {
-            if (remixLevel <= 25) {
-                setHairType('ngan-gon');
-                setHeadwearType('khan-xep');
-                setShoesType('guoc');
-            } else if (remixLevel > 25 && headwearType === 'khan-xep') {
-                setHeadwearType('none'); // Or bucket depending on user
-                setShoesType('sneaker');
-            }
-        }
-    }, [remixLevel, gender]);
-
-    React.useEffect(() => {
-        if (headwearType === 'khan-mo-qua') {
-            setBangsType('khong-mai');
-        } else {
-            setBangsType('mai-thua');
-        }
-    }, [headwearType]);
+    // Cleaned up old effects since logic is moved to 6-step wizard
 
     const getLayers = (): DollLayers => {
-        let bottom = 'quan-lua'; // default for others
-        let outer = 'none';
-        let shoes = shoesType;
-        let headwear = headwearType;
-
-        if (core === 'ao-tu-than') {
-            if (gender === 'female') {
-                if (remixLevel <= 25) {
-                    bottom = 'none'; // Uses internal vay den
-                    outer = 'none';
-                } else if (remixLevel <= 60) {
-                    bottom = 'none';
-                    outer = 'none';
-                } else if (remixLevel <= 85) {
-                    bottom = 'jeans';
-                    outer = 'none';
-                } else {
-                    bottom = 'jeans';
-                    outer = 'blazer';
-                }
-            } else {
-                // Male Ao The mapping
-                if (remixLevel <= 25) {
-                    bottom = 'quan-trang';
-                    outer = 'none';
-                } else if (remixLevel <= 60) {
-                    bottom = 'quan-trang';
-                    outer = 'none';
-                } else if (remixLevel <= 85) {
-                    bottom = 'jeans';
-                    outer = 'none';
-                } else {
-                    bottom = 'jeans';
-                    outer = 'blazer';
-                }
-            }
+        const acc = wardrobeState.accessories;
+        let headwear = 'none';
+        if (acc.includes('khan-mo-qua')) headwear = 'khan-mo-qua';
+        if (acc.includes('khan-dong')) headwear = 'khan-dong';
+        if (acc.includes('van-toc')) headwear = 'van-toc';
+        if (acc.includes('khan-ran')) headwear = 'khan-ran';
+        if (acc.includes('non-la')) headwear = 'non-la';
+        if (acc.includes('khan-xep')) headwear = 'khan-xep';
+        if (acc.includes('mu-bucket')) headwear = 'mu-bucket';
+        
+        let shoes = 'none';
+        if (acc.includes('guoc')) shoes = 'guoc';
+        if (acc.includes('sneaker')) shoes = 'sneaker';
+        
+        if (step <= 1) {
+            return {
+                top: 'underwear',
+                bottom: 'none',
+                outer: undefined,
+                shoes: 'none',
+                headwear: 'none',
+            };
         }
-
+        
         return {
-            top: core,
-            bottom: bottom === 'none' ? undefined : bottom,
-            outer: outer === 'none' ? undefined : outer,
+            top: wardrobeState.top,
+            topColor: wardrobeState.topColor,
+            bottom: wardrobeState.bottom,
+            outer: undefined,
             shoes: shoes === 'none' ? undefined : shoes,
             headwear: headwear === 'none' ? undefined : headwear,
         };
@@ -580,19 +552,19 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
             <div className="flex h-screen w-full bg-giay-do relative">
                 <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onHome={onReset} />
                 <div className="flex-1 w-full h-full">
-                    <Solution />
+                    <BookOfOutfits onStartPhoi={() => setActiveTab('phoi')} />
                 </div>
                 <MobilePillNav activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
         );
     }
 
-    if (step === 5) {
+    if (step === 6) {
         return (
             <div className="flex h-screen w-full bg-giay-do relative">
                 <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onHome={onReset} />
                 <div className="flex-1 w-full h-full">
-                    <ResultPoster onBack={() => setStep(4)} scene={scene} core={core} style={style} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} gender={gender} styleMode={styleMode} />
+                    <ResultPoster onBack={() => setStep(5)} scene={scene} core={core} style={style} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} gender={gender} styleMode={styleMode} />
                 </div>
                 <MobilePillNav activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
@@ -601,6 +573,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
 
     return (
         <div className="flex h-screen w-full bg-giay-do relative">
+            <CulturalGuardAlert message={guardMessage} />
             <CultureCard isOpen={isCultureOpen} onClose={() => setIsCultureOpen(false)} outfitName={COSTUMES.find(c => c.id === cultureCore)?.name || 'Việt Phục'} core={cultureCore} />
             <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onHome={onReset} />
 
@@ -612,85 +585,40 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                     
                     {/* Gender Toggle Button */}
                     <div className="absolute top-4 right-4 z-40 bg-giay-sang neo-border rounded-full flex overflow-hidden font-label shadow-lg">
-                        <button onClick={() => setGender('female')} className={`px-4 py-2 transition-colors ${gender === 'female' ? 'bg-son text-giay-sang' : 'hover:bg-giay-do text-than'}`}>Nữ</button>
+                        <button onClick={() => updateWardrobeState({ gender: 'female' })} className={`px-4 py-2 transition-colors ${gender === 'female' ? 'bg-son text-giay-sang' : 'hover:bg-giay-do text-than'}`}>Nữ</button>
                         <div className="w-[1px] bg-than h-auto" />
-                        <button onClick={() => setGender('male')} className={`px-4 py-2 transition-colors ${gender === 'male' ? 'bg-son text-giay-sang' : 'hover:bg-giay-do text-than'}`}>Nam</button>
+                        <button onClick={() => updateWardrobeState({ gender: 'male' })} className={`px-4 py-2 transition-colors ${gender === 'male' ? 'bg-son text-giay-sang' : 'hover:bg-giay-do text-than'}`}>Nam</button>
                     </div>
 
-                    {/* Mode Toggle Button (Vertical on left side) */}
-                    <div className="absolute top-24 left-6 z-40 bg-giay-sang neo-border rounded-xl flex flex-col overflow-hidden font-label shadow-lg">
-                        <button onClick={() => setStyleMode('traditional')} className={`px-3 py-3 transition-colors ${styleMode === 'traditional' ? 'bg-cham text-giay-sang' : 'hover:bg-giay-do text-than'}`} style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>Truyền thống</button>
-                        <div className="h-[1px] bg-than w-full" />
-                        <button onClick={() => setStyleMode('modern')} className={`px-3 py-3 transition-colors ${styleMode === 'modern' ? 'bg-vang text-than' : 'hover:bg-giay-do text-than'}`} style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>Hiện đại</button>
+                    {/* Mode Toggle Button (Horizontal on top) - TẠM ẨN 
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 bg-giay-sang neo-border rounded-full flex overflow-hidden font-label shadow-lg">
+                        <button onClick={() => updateWardrobeState({ mode: 'traditional' })} className={`px-4 py-2 transition-colors min-h-[44px] ${styleMode === 'traditional' ? 'bg-cham text-giay-sang' : 'hover:bg-giay-do text-than'}`}>Truyền thống</button>
+                        <div className="w-[1px] bg-than h-auto" />
+                        <button onClick={() => updateWardrobeState({ mode: 'modern' })} className={`px-4 py-2 transition-colors min-h-[44px] ${styleMode === 'modern' ? 'bg-vang text-than' : 'hover:bg-giay-do text-than'}`}>Hiện đại</button>
                     </div>
+                    */}
                     
                     {/* Guard Warning */}
                     {styleMode === 'traditional' && (getLayers().outer !== undefined || getLayers().bottom === 'jeans' || getLayers().shoes === 'sneaker') && (
                         <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50 bg-vang border border-than p-3 rounded-xl shadow-lg flex items-center gap-3 w-[80%] max-w-[300px]">
                             <span className="text-2xl">⚠️</span>
                             <div className="flex-1">
-                                <p className="text-xs font-bold text-than mb-1">Bạn đang rời khỏi bản truyền thống, chuyển sang Cách tân?</p>
-                                <button onClick={() => setStyleMode('modern')} className="text-[10px] bg-white text-than px-2 py-1 rounded border border-than shadow">Chuyển sang Cách tân</button>
+                            <p className="text-xs font-bold text-than mb-1">Bạn đang rời khỏi bản truyền thống, chuyển sang Cách tân?</p>
+                                <button onClick={() => updateWardrobeState({ mode: 'modern' })} className="text-[10px] bg-white text-than px-2 py-1 rounded border border-than shadow">Chuyển sang Cách tân</button>
                             </div>
                         </div>
                     )}
 
                     {/* Progress Bar */}
                     <div className="absolute top-10 left-6 z-30 flex gap-2 w-[200px]">
-                        {[1, 2, 3, 4].map(i => (
+                        {[1, 2, 3, 4, 5].map(i => (
                             <div key={i} className={`h-2 flex-1 neo-border rounded-full ${step >= i ? 'bg-son' : 'bg-giay-do'}`} />
                         ))}
                     </div>
 
                     {/* Toolbar / Tabs */}
                     <div className="absolute bottom-8 right-6 z-40 flex flex-col items-end gap-2">
-                        {/* Tab Content */}
-                        {activeToolbarTab !== 'none' && (
-                            <div className="bg-giay-do neo-border rounded shadow-lg p-2 w-48 animate-fade-in-up">
-                                {activeToolbarTab === 'toc' && (
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xs font-semibold text-black/50 mb-1 px-1">TÓC</span>
-                                        {gender === 'female' ? (
-                                            [{ id: 'dai-thuot-tha', label: 'Dài thướt tha' }, { id: 'van-gon', label: 'Vấn gọn' }, { id: 'buoc-thap', label: 'Buộc thấp' }, { id: 'bui-cao', label: 'Búi cao' }].map(h => (
-                                                <button key={h.id} onClick={() => setHairType(h.id)} className={`px-3 py-1.5 text-sm rounded text-left transition-colors ${hairType === h.id ? 'bg-black text-giay-sang' : 'hover:bg-black/5 text-black/80'}`}>{h.label}</button>
-                                            ))
-                                        ) : (
-                                            [{ id: 'ngan-gon', label: 'Ngắn gọn' }, { id: 're-ngoi', label: 'Rẽ ngôi lệch' }, { id: 'mai-bay', label: 'Mái bay' }, { id: 'buoc-thap', label: 'Buộc thấp' }].map(h => (
-                                                <button key={h.id} onClick={() => setHairType(h.id)} className={`px-3 py-1.5 text-sm rounded text-left transition-colors ${hairType === h.id ? 'bg-black text-giay-sang' : 'hover:bg-black/5 text-black/80'}`}>{h.label}</button>
-                                            ))
-                                        )}
-                                    </div>
-                                )}
-                                {activeToolbarTab === 'phukien' && (
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xs font-semibold text-black/50 mb-1 px-1">PHỤ KIỆN TÓC</span>
-                                        {gender === 'female' ? (
-                                            [{ id: 'none', label: 'Không phụ kiện' }, { id: 'khan-mo-qua', label: 'Khăn mỏ quạ' }, { id: 'bang-do-lua', label: 'Băng đô lụa' }].map(h => (
-                                                <button key={h.id} onClick={() => setHeadwearType(h.id)} className={`px-3 py-1.5 text-sm rounded text-left transition-colors ${headwearType === h.id ? 'bg-black text-giay-sang' : 'hover:bg-black/5 text-black/80'}`}>{h.label}</button>
-                                            ))
-                                        ) : (
-                                            [{ id: 'none', label: 'Không phụ kiện' }, { id: 'khan-xep', label: 'Khăn xếp' }, { id: 'khan-dong', label: 'Khăn đóng' }, { id: 'mu-bucket', label: 'Mũ bucket' }].map(h => (
-                                                <button key={h.id} onClick={() => setHeadwearType(h.id)} className={`px-3 py-1.5 text-sm rounded text-left transition-colors ${headwearType === h.id ? 'bg-black text-giay-sang' : 'hover:bg-black/5 text-black/80'}`}>{h.label}</button>
-                                            ))
-                                        )}
-                                    </div>
-                                )}
-                                {activeToolbarTab === 'giay' && (
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xs font-semibold text-black/50 mb-1 px-1">GIÀY</span>
-                                        {[{ id: 'guoc', label: 'Guốc mộc' }, { id: 'giay-vai', label: 'Giày vải' }, { id: 'sneaker', label: 'Sneaker' }].map(h => (
-                                            <button key={h.id} onClick={() => setShoesType(h.id)} className={`px-3 py-1.5 text-sm rounded text-left transition-colors ${shoesType === h.id ? 'bg-black text-giay-sang' : 'hover:bg-black/5 text-black/80'}`}>{h.label}</button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                        {/* Tab Buttons */}
-                        <div className="flex bg-giay-do neo-border rounded shadow-md overflow-hidden font-heading text-lg">
-                            <button onClick={() => setActiveToolbarTab(a => a === 'toc' ? 'none' : 'toc')} className={`px-4 py-2 transition-colors ${activeToolbarTab === 'toc' ? 'bg-black text-giay-sang' : 'hover:bg-black/5 text-black'}`}>Tóc</button>
-                            <button onClick={() => setActiveToolbarTab(a => a === 'phukien' ? 'none' : 'phukien')} className={`px-4 py-2 border-l border-black transition-colors ${activeToolbarTab === 'phukien' ? 'bg-black text-giay-sang' : 'hover:bg-black/5 text-black'}`}>Phụ Kiện</button>
-                            <button onClick={() => setActiveToolbarTab(a => a === 'giay' ? 'none' : 'giay')} className={`px-4 py-2 border-l border-black transition-colors ${activeToolbarTab === 'giay' ? 'bg-black text-giay-sang' : 'hover:bg-black/5 text-black'}`}>Giày</button>
-                        </div>
+                        {/* Removed the old toolbar since hair, accessories and shoes are now handled by Steps 1, 4, 5 */}
                     </div>
 
                     {/* Character Podium (Bục giấy hình elip) */}
@@ -706,31 +634,34 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                     >
                         {/* The white border effect (using multi drop-shadow or SVG filter in real app, here CSS drop-shadow hack) */}
                         <div className="w-full h-full pointer-events-auto flex items-end justify-center" style={{ filter: 'drop-shadow(3px 0 0 white) drop-shadow(-3px 0 0 white) drop-shadow(0 3px 0 white) drop-shadow(0 -3px 0 white)' }}>
-                            <Character gender={gender} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} bangs={bangsType} styleMode={styleMode} />
+                            <Character gender={gender} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} bangs="mai-thua" styleMode={styleMode} />
                         </div>
                     </div>
                 </div>
 
                 {/* KHU PHẢI (WIZARD CỘT TRẢI NGHIỆM) */}
-                <div className="flex-1 h-[50vh] lg:h-full bg-giay-do overflow-y-auto hidden-scrollbar flex flex-col relative">
-                    <div className="p-6 lg:p-12 flex-1 flex flex-col min-h-max">
+                <div className="flex-1 h-[50vh] lg:h-full bg-giay-do flex flex-col relative">
+                    <div className="flex-1 overflow-y-auto hidden-scrollbar p-6 lg:p-12 pb-32">
                         <AnimatePresence mode="wait">
-                            <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex-1">
-                                {step === 1 && <WizardStep1 scene={scene} setScene={setScene} />}
-                                {step === 2 && <WizardStep2 core={core} setCore={setCore} gender={gender} onOpenInfo={(cId: string) => { setCultureCore(cId); setIsCultureOpen(true); }} />}
-                                {step === 3 && <WizardStep3 paletteIdx={paletteIdx} setPaletteIdx={setPaletteIdx} style={style} setStyle={setStyle} />}
-                                {step === 4 && <WizardStep4 remixLevel={remixLevel} setRemixLevel={setRemixLevel} styleMode={styleMode} setStyleMode={setStyleMode} />}
+                            <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="min-h-full">
+                                {step === 1 && <Step2Place state={wardrobeState} updateState={updateWardrobeState} />}
+                                {step === 2 && <Step3Top state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />}
+                                {step === 3 && <Step4Bottom state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />}
+                                {step === 4 && <Step5Accessories state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />}
+                                {step === 5 && <Step6Mode state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />}
                             </motion.div>
                         </AnimatePresence>
+                    </div>
 
-                        <div className="mt-8 flex gap-4 w-full pt-4 border-t-2 border-than/10">
+                    <div className="absolute bottom-0 left-0 w-full p-6 lg:px-12 lg:pb-8 lg:pt-16 flex gap-4 bg-gradient-to-t from-giay-do via-giay-do to-transparent pointer-events-none">
+                        <div className="w-full flex gap-4 pointer-events-auto">
                             {step > 1 && (
-                                <button onClick={() => setStep(step - 1)} className="neo-button-secondary aspect-square flex items-center justify-center p-0 w-14">
+                                <button onClick={() => setStep(step - 1)} className="neo-button-secondary aspect-square flex items-center justify-center p-0 w-14 bg-giay-sang shadow-lg">
                                     <ArrowLeft size={24} />
                                 </button>
                             )}
                             <button onClick={() => setStep(step + 1)} className="neo-button-primary flex-1 flex items-center justify-center gap-2 text-lg shadow-xl">
-                                {step === 4 ? "XEM POSTER" : "TIẾP THEO"} <ArrowRight size={24} />
+                                {step === 5 ? "HOÀN TẤT" : "TIẾP THEO"} <ArrowRight size={24} />
                             </button>
                         </div>
                     </div>
@@ -766,6 +697,7 @@ const Petal = ({ delay, startX, endX }: { delay: number, startX: number, endX: n
 const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () => void, onStartConfig: (config: any) => void, onOpenCulture: (core: string) => void }) => {
     const [status, setStatus] = useState<'closed' | 'opening' | 'opened'>('closed');
     const [logoError, setLogoError] = useState(false);
+    const [showAbout, setShowAbout] = useState(false);
 
     useEffect(() => {
         const img = new Image();
@@ -813,23 +745,93 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                         className="absolute inset-0 flex items-center justify-center z-10"
                         exit={{ opacity: 0, transition: { duration: 0.4 } }}
                     >
-                        <div className="relative w-[86vw] md:w-[520px] aspect-[3/2]" style={{ perspective: '1200px' }}>
+                        <div className="relative w-[90vw] md:w-[600px] aspect-[3/2]" style={{ perspective: '1200px' }}>
                             <div className="absolute inset-0 bg-[#D4C3A3] rounded-sm shadow-md z-10" />
                             <div className="absolute inset-0 bg-[#E3D4B6] rounded-sm shadow-sm z-20" style={{ clipPath: 'polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%)' }} />
                             
-                            <motion.div
-                                className="absolute top-0 left-0 w-full h-[60%] bg-[#E3D4B6] rounded-sm z-40 origin-top shadow-sm border-b border-[#1A1410]/5"
-                                style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', rotate: -2 }}
-                                initial={false}
-                                animate={status === 'opening' ? { rotateX: -180, zIndex: 15 } : { rotateX: 0, zIndex: 40 }}
-                                transition={{ duration: 0.7 }}
-                            />
+                            {/* Envelope creaselines (draws lines for the pocket folds) */}
+                            <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 opacity-20 mix-blend-multiply" preserveAspectRatio="none">
+                                <line x1="0" y1="0" x2="50%" y2="45%" stroke="#2B2118" strokeWidth="1" />
+                                <line x1="100%" y1="0" x2="50%" y2="45%" stroke="#2B2118" strokeWidth="1" />
+                            </svg>
+                            
+                            {/* ENVELOPE TEXT (From/To) - Bottom Left */}
+                            <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 z-30 font-display text-[#2B2118]/90 leading-relaxed pointer-events-none">
+                                <div className="flex flex-col gap-2 md:gap-3">
+                                    <div>
+                                        <span className="font-sans font-bold uppercase text-[8px] md:text-[9px] tracking-widest text-[#2B2118]/50 block mb-0.5">From</span>
+                                        <span className="italic text-base md:text-xl drop-shadow-sm">
+                                            Sợi Nguồn
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span className="font-sans font-bold uppercase text-[8px] md:text-[9px] tracking-widest text-[#2B2118]/50 block mb-0.5">To</span>
+                                        <span className="italic text-base md:text-xl drop-shadow-sm">Những người yêu bản sắc<br/>dân tộc nồng nàn</span>
+                                    </div>
+                                </div>
+                            </div>
 
+                            {/* MULTIPLE STAMPS & POSTMARKS - Bottom Right */}
+                            <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-30 flex items-end gap-1 pointer-events-none">
+                                {/* Stamp 1 (Sợi Nguồn Logo) */}
+                                <div className="w-10 h-12 md:w-12 md:h-16 bg-[#FBF5E9] border-[2px] md:border-[3px] border-dotted border-[#D4C3A3] flex flex-col items-center justify-center shadow-sm transform -rotate-3 opacity-95 p-0.5 md:p-1 relative z-10">
+                                    {!logoError ? (
+                                        <img src="/brand/logo-soi-nguon.png" className="w-full h-full object-contain opacity-80 mix-blend-multiply" alt="stamp" />
+                                    ) : (
+                                        <div className="w-full h-full bg-[#B3261E]/20" />
+                                    )}
+                                    <span className="font-sans font-bold text-[5px] md:text-[6px] text-[#B3261E]/80 mt-1 uppercase tracking-widest">VN-50đ</span>
+                                </div>
+                                
+                                {/* Stamp 2 (Hà Nội) */}
+                                <div className="w-9 h-11 md:w-11 md:h-14 bg-[#FBF5E9] border-[2px] md:border-[3px] border-dotted border-[#D4C3A3] flex flex-col items-center justify-center shadow-sm transform rotate-6 opacity-90 p-0.5 relative -ml-2 mb-1 z-20">
+                                    <div className="w-full h-full bg-[#2B2118]/5 flex items-center justify-center border border-[#2B2118]/10">
+                                        <span className="font-display italic text-[#2B2118]/60 text-[8px] md:text-[10px]">Hà Nội</span>
+                                    </div>
+                                    <span className="font-sans font-bold text-[4px] md:text-[5px] text-[#B3261E]/70 mt-1 uppercase tracking-widest">VN-20đ</span>
+                                </div>
+
+                                {/* Stamp 3 (Sài Gòn) */}
+                                <div className="w-12 h-9 md:w-14 md:h-11 bg-[#FBF5E9] border-[2px] md:border-[3px] border-dotted border-[#D4C3A3] flex flex-col items-center justify-center shadow-sm transform -rotate-2 opacity-95 p-0.5 relative -ml-3 mb-2 z-30">
+                                    <div className="w-full h-full bg-[#B3261E]/5 flex items-center justify-center border border-[#B3261E]/10">
+                                        <span className="font-display italic text-[#B3261E]/60 text-[8px] md:text-[10px]">Sài Gòn</span>
+                                    </div>
+                                    <span className="font-sans font-bold text-[4px] md:text-[5px] text-[#B3261E]/80 mt-0.5 uppercase tracking-widest">VN-100đ</span>
+                                </div>
+
+                                {/* Wavy Postmark overlapping the stamps */}
+                                <svg className="absolute -top-8 -left-16 md:-top-12 md:-left-20 w-36 md:w-48 h-16 md:h-20 opacity-40 mix-blend-multiply pointer-events-none transform -rotate-6 z-40" viewBox="0 0 120 50">
+                                    <circle cx="20" cy="25" r="18" fill="none" stroke="#2B2118" strokeWidth="1.5" />
+                                    <circle cx="20" cy="25" r="12" fill="none" stroke="#2B2118" strokeWidth="0.5" />
+                                    <text x="20" y="27" fontSize="5" textAnchor="middle" fill="#2B2118" className="font-sans font-bold uppercase tracking-widest">Bưu Điện</text>
+                                    <path d="M 40,15 Q 50,5 60,15 T 80,15 T 100,15 T 120,15 M 40,25 Q 50,15 60,25 T 80,25 T 100,25 T 120,25 M 40,35 Q 50,25 60,35 T 80,35 T 100,35 T 120,35" fill="none" stroke="#2B2118" strokeWidth="1" />
+                                </svg>
+                            </div>
+
+                            {/* FLAP WRAPPER (with drop shadow so the fold is visible) */}
+                            <motion.div
+                                className="absolute top-0 left-0 w-full h-[60%] z-40 origin-top"
+                                initial={false}
+                                animate={status === 'opening' ? { rotateX: -180, zIndex: 15, rotate: -2 } : { rotateX: 0, zIndex: 40, rotate: -2 }}
+                                transition={{ duration: 0.7 }}
+                                style={{ filter: "drop-shadow(0px 6px 12px rgba(43,33,24,0.25))" }}
+                            >
+                                {/* The clipped flap */}
+                                <div className="w-full h-full bg-[#E3D4B6] rounded-sm" style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)' }} />
+                                {/* Optional: stroke along the flap's V edge for extra sharpness */}
+                                <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30 mix-blend-multiply" preserveAspectRatio="none">
+                                    <line x1="0" y1="0" x2="50%" y2="100%" stroke="#2B2118" strokeWidth="1" />
+                                    <line x1="100%" y1="0" x2="50%" y2="100%" stroke="#2B2118" strokeWidth="1" />
+                                </svg>
+                            </motion.div>
+
+                            {/* WAX SEAL - explicitly positioning X/Y in Framer Motion to prevent overriding */}
                             <motion.button
                                 onClick={handleOpen}
                                 aria-label="Mở thư"
-                                className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 focus:outline-none focus:ring-4 focus:ring-[#B3261E]/30 rounded-full"
-                                animate={{ rotate: -2 }}
+                                className="absolute top-[60%] left-[50%] z-50 focus:outline-none focus:ring-4 focus:ring-[#B3261E]/30 rounded-full"
+                                initial={{ x: "-50%", y: "-50%", rotate: -2 }}
+                                animate={{ x: "-50%", y: "-50%", rotate: -2 }}
                             >
                                 <motion.div 
                                     className="relative w-[100px] h-[100px] md:w-[120px] md:h-[120px]"
@@ -914,9 +916,9 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                 
                                 <button 
                                     onClick={onStart}
-                                    className="group relative inline-flex items-center justify-center px-8 md:px-10 py-3 md:py-4 bg-[#B3261E] text-white rounded-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-[#B3261E]/30"
+                                    className="group relative z-50 inline-flex items-center justify-center px-8 md:px-10 py-3 md:py-4 bg-[#B3261E] text-white rounded-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-[#B3261E]/30 select-none cursor-pointer"
                                 >
-                                    <span className="relative z-10 font-medium tracking-wide text-sm md:text-base">Bắt đầu phối đồ</span>
+                                    <span className="relative z-10 font-medium tracking-wide text-sm md:text-base pointer-events-none">Bắt đầu phối đồ</span>
                                 </button>
                             </div>
 
@@ -999,7 +1001,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                 </button>
                                 
                                 <div className="hidden md:flex gap-8 border-t border-[#2B2118]/10 pt-3 md:pt-4 w-full justify-center max-w-xs">
-                                    <button className="uppercase text-[10px] tracking-widest text-[#2B2118]/60 hover:text-[#B3261E] transition-colors font-bold">Về dự án</button>
+                                    <button onClick={() => setShowAbout(true)} className="uppercase text-[10px] tracking-widest text-[#2B2118]/60 hover:text-[#B3261E] transition-colors font-bold">Về dự án</button>
                                     <button className="uppercase text-[10px] tracking-widest text-[#2B2118]/60 hover:text-[#B3261E] transition-colors font-bold">Bạn có biết?</button>
                                 </div>
                             </div>
@@ -1008,6 +1010,81 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                     )}
                 </motion.div>
             </div>
+
+            <AnimatePresence>
+                {showAbout && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#1A1410]/80 backdrop-blur-sm"
+                        onClick={() => setShowAbout(false)}
+                    >
+                        <motion.div 
+                            initial={{ y: 50, scale: 0.95 }}
+                            animate={{ y: 0, scale: 1 }}
+                            exit={{ y: 20, scale: 0.95 }}
+                            className="bg-[#FBF6EE] w-full max-w-2xl max-h-[85vh] rounded-xl shadow-2xl overflow-y-auto hidden-scrollbar relative p-8 md:p-12 text-[#2B2118]"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button 
+                                onClick={() => setShowAbout(false)}
+                                className="absolute top-6 right-6 p-2 rounded-full hover:bg-[#2B2118]/5 transition-colors"
+                            >
+                                <X size={24} className="text-[#2B2118]/50 hover:text-[#B3261E]" />
+                            </button>
+
+                            <h2 className="font-display text-4xl md:text-5xl mb-8 text-[#B3261E] text-center border-b border-[#2B2118]/10 pb-6">Về Dự Án</h2>
+                            
+                            <div className="space-y-8 font-sans leading-relaxed text-sm md:text-base">
+                                <section>
+                                    <h3 className="font-display text-2xl mb-3 text-[#2B2118]">Khởi nguồn (Mục đích)</h3>
+                                    <p className="text-[#4A3F35]">
+                                        Sợi Nguồn ra đời từ một trăn trở: Làm sao để cổ phục Việt Nam không chỉ nằm yên trong lồng kính bảo tàng hay những dịp lễ hội hiếm hoi? Người trẻ (Gen Z) khát khao thể hiện cá tính qua tà áo truyền thống, nhưng lại thường e ngại ranh giới mong manh giữa "phá cách" và "phản cảm", sợ mặc sai hoặc thiếu tôn trọng lịch sử. Sợi Nguồn được xây dựng để xoá bỏ nỗi sợ đó, biến di sản thành thời trang ứng dụng.
+                                    </p>
+                                </section>
+                                
+                                <section>
+                                    <h3 className="font-display text-2xl mb-3 text-[#2B2118]">Giải pháp (Định hướng)</h3>
+                                    <p className="text-[#4A3F35] mb-3">
+                                        Chúng tôi tiên phong kết hợp Trí tuệ nhân tạo (Google Gemini) cùng hệ thống Lưới lọc Văn hoá (Cultural Guard) để tạo ra một "Cố vấn thời trang đa vũ trụ".
+                                    </p>
+                                    <p className="text-[#4A3F35]">
+                                        Sợi Nguồn không cấm đoán hay gò ép người dùng vào những quy chuẩn cứng nhắc. Trái lại, ứng dụng khuyến khích sự tự do sáng tạo (remix) – từ Áo Tứ Thân phối cùng Streetwear bụi bặm, đến Áo Ngũ Thân diện cùng Sneaker năng động – nhưng luôn được AI giám sát, cảnh báo và tinh chỉnh để đảm bảo mọi sự phá cách đều nằm trong khuôn khổ của sự chuẩn mực và phù hợp với từng ngữ cảnh (đi chùa, cà phê, dạo phố).
+                                    </p>
+                                </section>
+                                
+                                <section>
+                                    <h3 className="font-display text-2xl mb-4 text-[#2B2118]">Giá trị cốt lõi (Hướng tới)</h3>
+                                    <ul className="space-y-4">
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#B3261E] shrink-0" />
+                                            <p className="text-[#4A3F35]"><strong className="text-[#2B2118]">Bảo tồn bằng cách "Sống" cùng di sản:</strong> Di sản chỉ thực sự tồn tại khi nó được sử dụng mỗi ngày. Sợi Nguồn đưa cổ phục hòa vào nhịp sống hiện đại.</p>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#B3261E] shrink-0" />
+                                            <p className="text-[#4A3F35]"><strong className="text-[#2B2118]">Sáng tạo có nền tảng (Hiểu để phối):</strong> Cung cấp kiến thức lịch sử gốc gọn gàng, trực quan ngay trong lúc người dùng đang "chơi" với thời trang, giúp giáo dục văn hoá một cách tự nhiên.</p>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#B3261E] shrink-0" />
+                                            <p className="text-[#4A3F35]"><strong className="text-[#2B2118]">Tôn trọng sự đa dạng:</strong> Kết nối nét đẹp của quá khứ với cá tính độc bản của mỗi cá nhân trong hiện tại và tương lai.</p>
+                                        </li>
+                                    </ul>
+                                </section>
+                            </div>
+                            
+                            <div className="mt-10 flex justify-center">
+                                <button 
+                                    onClick={() => setShowAbout(false)}
+                                    className="px-8 py-3 bg-[#B3261E] text-white rounded-full font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all"
+                                >
+                                    Đã hiểu
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

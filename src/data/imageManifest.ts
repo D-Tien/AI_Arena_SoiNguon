@@ -75,18 +75,18 @@ export const imageManifest: ImageManifestItem[] = [
         credit: 'Ảnh do AI tạo'
     },
     // Costumes
-    { slot: 'costume-aodai', alt: 'Áo dài', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-tuthan', alt: 'Áo tứ thân', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-nguthan', alt: 'Áo ngũ thân', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-nhatbinh', alt: 'Áo nhật bình', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-giaolinh', alt: 'Áo giao lĩnh', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-aotac', alt: 'Áo tấc', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-aothe', alt: 'Áo the nam', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-baba', alt: 'Áo bà ba', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-aocanh', alt: 'Áo cánh', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-dai', alt: 'Áo dài', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-tu-than', alt: 'Áo tứ thân', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-ngu-than', alt: 'Áo ngũ thân', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-nhat-binh', alt: 'Áo nhật bình', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-giao-linh', alt: 'Áo giao lĩnh', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-tac', alt: 'Áo tấc', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-the', alt: 'Áo the nam', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-ba-ba', alt: 'Áo bà ba', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-canh', alt: 'Áo cánh', kind: 'costume', credit: 'Ảnh do AI tạo' },
     { slot: 'costume-yem', alt: 'Yếm váy', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-aochen', alt: 'Áo chẽn', kind: 'costume', credit: 'Ảnh do AI tạo' },
-    { slot: 'costume-mangbao', alt: 'Mạng bào', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-chen', alt: 'Áo chẽn', kind: 'costume', credit: 'Ảnh do AI tạo' },
+    { slot: 'costume-ao-mang-bao', alt: 'Mạng bào', kind: 'costume', credit: 'Ảnh do AI tạo' },
 ];
 
 export const getManifestItem = (slot: string): ImageManifestItem | undefined => {

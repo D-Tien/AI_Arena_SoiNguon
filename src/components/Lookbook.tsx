@@ -5,9 +5,9 @@ import { SmartImage } from './SmartImage';
 
 const DUMMY_LOOKS = [
     { id: 1, name: 'LÃNG KHÁCH', style: 'Ngũ thân × Streetwear', score: 95, color: 'bg-son', rotate: '-rotate-2', slot: 'costume-ao-ngu-than' },
-    { id: 2, name: 'GIAO MÙA', style: 'Áo dài × Blazer', score: 88, color: 'bg-cham', rotate: 'rotate-3', slot: 'costume-aodai' },
-    { id: 3, name: 'MỘC MẠC', style: 'Tứ thân × Denim', score: 92, color: 'bg-luc', rotate: '-rotate-1', slot: 'costume-tuthan' },
-    { id: 4, name: 'CUNG ĐÌNH', style: 'Nhật bình × Gothic', score: 75, color: 'bg-nghe', rotate: 'rotate-2', slot: 'costume-nhatbinh' },
+    { id: 2, name: 'GIAO MÙA', style: 'Áo dài × Blazer', score: 88, color: 'bg-cham', rotate: 'rotate-3', slot: 'costume-ao-dai' },
+    { id: 3, name: 'MỘC MẠC', style: 'Tứ thân × Denim', score: 92, color: 'bg-luc', rotate: '-rotate-1', slot: 'costume-ao-tu-than' },
+    { id: 4, name: 'CUNG ĐÌNH', style: 'Nhật bình × Gothic', score: 75, color: 'bg-nghe', rotate: 'rotate-2', slot: 'costume-ao-nhat-binh' },
 ];
 
 export const Lookbook = () => {

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export interface DollLayers {
     bottom?: string;
     top?: string;
+    topColor?: string;
     outer?: string;
     shoes?: string;
     headwear?: string;
@@ -73,126 +74,28 @@ const Eyes = ({ cx, cy, isFemale, skinTone }: { cx: number, cy: number, isFemale
 
 const BodyBase = ({ skinTone }: { skinTone: string }) => (
     <g id="body-base">
-        {/* Body & Limbs - SINGLE PATH WITH NECK */}
-        <path
-            d="
-            M 185 130
-            L 185 180
-            C 140 180, 120 190, 110 210
-            C 100 240, 105 290, 100 340
-            C 98 360, 95 390, 105 400
-            C 115 410, 125 390, 130 370
-            C 135 350, 135 310, 140 280
-            C 145 290, 150 330, 140 390
-            C 130 460, 120 540, 125 620
-            L 190 620
-            L 190 410
-            L 210 410
-            L 210 620
-            L 275 620
-            C 280 540, 270 460, 260 390
-            C 250 330, 255 290, 260 280
-            C 265 310, 265 350, 270 370
-            C 275 390, 285 410, 295 400
-            C 305 390, 302 360, 300 340
-            C 295 290, 300 240, 290 210
-            C 280 190, 260 180, 215 180
-            L 215 130
-            Z"
-            fill={skinTone} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round"
+        <image 
+            href="/assets/character/base/female.png" 
+            x="-130" 
+            y="-205" 
+            width="660" 
+            height="825" 
+            preserveAspectRatio="xMidYMax meet" 
         />
-
-        {/* Head */}
-        <path
-            d="M 130 60 C 130 -60, 270 -60, 270 60 C 270 130, 230 150, 200 150 C 170 150, 130 130, 130 60 Z"
-            fill={skinTone} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round"
-        />
-
-        <g id="face-features">
-            {/* Lông mày: mảnh 2px, cách mắt 10px */}
-            <path d="M 157 54 Q 174 48 188 56" fill="none" stroke="#3A2A22" strokeWidth="2" strokeLinecap="round" />
-            <path d="M 243 54 Q 226 48 212 56" fill="none" stroke="#3A2A22" strokeWidth="2" strokeLinecap="round" />
-
-            {/* Mắt */}
-            <Eyes cx={174} cy={75} isFemale={true} skinTone={skinTone} />
-            <Eyes cx={226} cy={75} isFemale={true} skinTone={skinTone} />
-
-            {/* Má hồng (dưới mắt 8px, nhẹ nhàng) */}
-            <ellipse cx="155" cy="94" rx="15" ry="8" fill="#FF7F9F" opacity="0.55" />
-            <ellipse cx="245" cy="94" rx="15" ry="8" fill="#FF7F9F" opacity="0.55" />
-
-            {/* Mũi */}
-            <path d="M 200 75 L 200 85 L 205 85" fill="none" stroke="var(--than)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
-
-            {/* Môi */}
-            <g id="lips" transform="translate(0, 105)">
-                <path d="M 188 0 Q 200 7 212 0 Q 200 12 188 0 Z" fill="#E06666" stroke="#A8231A" strokeWidth="1.5" strokeLinejoin="round" />
-                <path d="M 188 0 Q 200 3 212 0" fill="none" stroke="#A8231A" strokeWidth="1.5" />
-                <ellipse cx="205" cy="3" rx="2" ry="1" fill="white" opacity="0.7" />
-            </g>
-        </g>
     </g>
 );
 
 const BodyBaseMale = ({ skinTone }: { skinTone: string }) => (
     <g id="body-base-male">
-        <path
-            d="
-            M 180 130
-            L 180 170
-            C 130 170, 110 180, 95 210
-            C 90 240, 95 290, 90 340
-            C 88 360, 85 390, 95 400
-            C 105 410, 115 390, 120 370
-            C 125 350, 125 310, 130 280
-            C 135 290, 140 330, 130 390
-            C 120 460, 110 540, 115 620
-            L 185 620
-            L 185 410
-            L 215 410
-            L 215 620
-            L 285 620
-            C 290 540, 280 460, 270 390
-            C 260 330, 265 290, 270 280
-            C 275 310, 275 350, 280 370
-            C 285 390, 295 410, 305 400
-            C 315 390, 312 360, 310 340
-            C 305 290, 310 240, 305 210
-            C 290 180, 270 170, 220 170
-            L 220 130
-            Z"
-            fill={skinTone} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round"
+        {/* Dùng model ảnh được cung cấp thay thế cho SVG vẽ tay. Bạn có thể tự chỉnh x, y, width, height để ảnh vừa vặn nhất */}
+        <image 
+            href="/assets/character/base/male.png" 
+            x="-130" 
+            y="-205" 
+            width="660" 
+            height="825" 
+            preserveAspectRatio="xMidYMax meet" 
         />
-        <path
-            d="M 130 60 C 130 -60, 270 -60, 270 60 C 270 130, 230 150, 200 150 C 170 150, 130 130, 130 60 Z"
-            fill={skinTone} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round"
-        />
-        <g id="face-features-male" transform="translate(0, 6)">
-            {/* Lông mày nam: rất rậm, đậm, nam tính */}
-            <path d="M 152 52 Q 170 48 186 51 L 186 57.5 Q 170 54 152 56 Z" fill="var(--than)" />
-            <path d="M 248 52 Q 230 48 214 51 L 214 57.5 Q 230 54 248 56 Z" fill="var(--than)" />
-
-            {/* Mắt nam tính */}
-            <Eyes cx={175} cy={72} skinTone={skinTone} />
-            <Eyes cx={225} cy={72} skinTone={skinTone} />
-
-            {/* Má lúm đồng tiền (thay má hồng) */}
-            <path d="M 183 103 Q 180 106 183 109" fill="none" stroke="#3A2A22" strokeWidth="2" strokeLinecap="round" opacity="0.4" />
-            <path d="M 217 103 Q 220 106 217 109" fill="none" stroke="#3A2A22" strokeWidth="2" strokeLinecap="round" opacity="0.4" />
-
-            {/* Sống mũi cao, nam tính, nghệ thuật */}
-            <path d="M 197 63 Q 200 75 200 84 L 205 86" fill="none" stroke="var(--than)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
-            {/* Bóng đổ nhẹ tạo khối cho sống mũi */}
-            <path d="M 194 65 Q 198 75 198 83" fill="none" stroke="#3A2A22" strokeWidth="2" strokeLinecap="round" opacity="0.15" />
-
-            {/* Miệng cười bình thường */}
-            <g id="male-mouth">
-                {/* Lòng miệng */}
-                <path d="M 187 105 Q 200 105 213 105 Q 200 114 187 105 Z" fill="#8A1C1C" stroke="#A8231A" strokeWidth="2" strokeLinejoin="round" />
-                {/* Hàng răng trên */}
-                <path d="M 188 105.5 Q 200 105.5 212 105.5 Q 200 110 188 105.5 Z" fill="#FFFFFF" />
-            </g>
-        </g>
     </g>
 );
 
@@ -688,6 +591,30 @@ const Sneaker = ({ color }: { color: string }) => (
     </g>
 );
 
+const Underwear = ({ gender }: { gender: 'female' | 'male' }) => (
+    <g id="garment-underwear">
+        {gender === 'female' ? (
+            <>
+                {/* Yếm trắng */}
+                <path d="M 200 185 L 235 220 L 200 310 L 165 220 Z" fill="#FFF" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
+                <path d="M 200 185 Q 190 170 185 160" fill="none" stroke="#FFF" strokeWidth="3" />
+                <path d="M 200 185 Q 210 170 215 160" fill="none" stroke="#FFF" strokeWidth="3" />
+                {/* Quần tơ lụa mỏng */}
+                <path d="M 140 310 L 125 450 L 195 450 L 195 320 L 205 320 L 205 450 L 275 450 L 260 310 Z" fill="#FBF5E9" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
+            </>
+        ) : (
+            <>
+                {/* Áo cộc nam trắng */}
+                <path d="M 125 210 C 130 250, 125 330, 115 380 C 145 390, 185 390, 195 380 L 195 210 Z" fill="#FFF" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
+                <path d="M 275 210 C 270 250, 275 330, 285 380 C 255 390, 215 390, 205 380 L 205 210 Z" fill="#FFF" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
+                <path d="M 175 160 C 185 180, 215 180, 225 160" fill="none" stroke="var(--than)" strokeWidth="3" />
+                {/* Quần đùi trắng */}
+                <path d="M 135 340 L 120 460 L 195 460 L 195 350 L 205 350 L 205 460 L 280 460 L 265 340 Z" fill="#FBF5E9" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
+            </>
+        )}
+    </g>
+);
+
 const Blazer = ({ color }: { color: string }) => (
     <g id="garment-blazer">
         {/* Khoác ngoài */}
@@ -716,97 +643,51 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                     filter: 'drop-shadow(4px 4px 0px var(--than))'
                 }}
             >
-                {/* White Outline behind everything */}
-                <g stroke="white" strokeWidth="12" strokeLinejoin="round" strokeLinecap="round">
-                    {gender === 'female' ? <HairBack type={hair} color="white" /> : <HairBackMale type={hair} color="white" />}
-                    {gender === 'female' ? <BodyBase skinTone="white" /> : <BodyBaseMale skinTone="white" />}
-                    {gender === 'female' ? <HairFront type={hair} color="white" bangs={bangs} /> : <HairFrontMale type={hair} color="white" headwear={layers.headwear} />}
-                    {layers.bottom === 'jeans' && <Jeans color="white" />}
-                    {layers.top === 'ao-tu-than' && gender === 'female' && <AoTuThan primary="white" secondary="white" accent="white" styleMode={styleMode} />}
-                    {layers.top === 'ao-tu-than' && gender === 'male' && <AoThe primary="white" secondary="white" layers={layers} styleMode={styleMode} />}
-                    {layers.top === 'ao-ngu-than' && <AoNguThan primary="white" secondary="white" layers={layers} styleMode={styleMode} />}
-                    {layers.top === 'ao-ba-ba' && <AoBaBa primary="white" secondary="white" layers={layers} styleMode={styleMode} />}
-                    {layers.outer === 'blazer' && <Blazer color="white" />}
-                    {layers.headwear === 'khan-mo-qua' && <KhanMoQua color="white" />}
-                    {layers.headwear === 'bang-do-lua' && <BangDoLua color="white" />}
-                    {layers.headwear === 'khan-xep' && <KhanXep color="white" />}
-                    {layers.headwear === 'khan-dong' && <KhanXep color="white" />}
-                    {layers.shoes === 'giay-vai' && <GiayVai color="white" />}
-                </g>
-
                 {/* Main Render */}
-                {gender === 'female' ? <HairBack type={hair} color="#1A1410" /> : <HairBackMale type={hair} color="#1A1410" />}
-                {gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
-                {gender === 'female' ? <HairFront type={hair} color="#1A1410" bangs={bangs} /> : <HairFrontMale type={hair} color="#1A1410" headwear={layers.headwear} />}
-
+                {gender === 'female' ? <BodyBase skinTone={skinTone} /> : (
+                    // Ẩn BodyBaseMale nếu đang dùng ảnh combo (quần short, jeans, cargo...), giữ lại ở Step 1, 2 (khi bottom === 'none')
+                    (!layers.bottom || layers.bottom === 'none' || layers.bottom === 'quan-lua' || layers.bottom === 'default') && <BodyBaseMale skinTone={skinTone} />
+                )}
+                
+                {/* Layer Quần Áo (PNG) */}
                 <AnimatePresence>
-                    {/* Headwear */}
-                    {layers.headwear === 'khan-mo-qua' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="headwear-moqua">
-                            <KhanMoQua color={secondary} />
-                        </motion.g>
-                    )}
-                    {layers.headwear === 'bang-do-lua' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="headwear-bangdo">
-                            <BangDoLua color={secondary} />
-                        </motion.g>
-                    )}
-                    {(layers.headwear === 'khan-xep' || layers.headwear === 'khan-dong') && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="headwear-khanxep">
-                            <KhanXep color={secondary} />
-                        </motion.g>
-                    )}
-
-                    {/* Bottoms */}
-                    {layers.bottom === 'jeans' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="bottom-jeans">
-                            <Jeans color="#1B2A5C" />
-                        </motion.g>
-                    )}
-
-                    {/* Tops */}
+                    {/* Layer Áo (Nằm trên quần) */}
                     {layers.top === 'ao-tu-than' && gender === 'female' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="top-tuthan">
-                            <AoTuThan primary={primary} secondary={secondary} accent={accent} styleMode={styleMode} />
+                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-tuthan-female-${layers.topColor || 'default'}`}>
+                            <image 
+                                href={`/assets/character/top/ao_tu_than_female${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}.png`}
+                                x="-130" 
+                                y="-205" 
+                                width="660" 
+                                height="825" 
+                                preserveAspectRatio="xMidYMax meet" 
+                            />
                         </motion.g>
                     )}
-                    {layers.top === 'ao-tu-than' && gender === 'male' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="top-aothe">
-                            <AoThe primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />
+                    {layers.top === 'ao-ngu-than' && gender === 'male' && (
+                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="png-top-nguthan-male">
+                            {/* Dùng y hệt kích thước của BodyBaseMale để fit hoàn hảo */}
+                            <image 
+                                href="/assets/character/top/ao_ngu_than_male.png" 
+                                x="-130" 
+                                y="-205" 
+                                width="660" 
+                                height="825" 
+                                preserveAspectRatio="xMidYMax meet" 
+                            />
                         </motion.g>
                     )}
-                    {layers.top === 'ao-ngu-than' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="top-nguthan">
-                            <AoNguThan primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />
-                        </motion.g>
-                    )}
-                    {layers.top === 'ao-ba-ba' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="top-baba">
-                            <AoBaBa primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />
-                        </motion.g>
-                    )}
-
-                    {/* Outer */}
-                    {layers.outer === 'blazer' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="outer-blazer">
-                            <Blazer color={secondary} />
-                        </motion.g>
-                    )}
-
-                    {/* Shoes */}
-                    {(!layers.shoes || layers.shoes === 'guoc') && (
-                        <motion.g initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 10, opacity: 0 }} key="shoes-guoc">
-                            <GuocMoc color="#D4A373" />
-                        </motion.g>
-                    )}
-                    {layers.shoes === 'giay-vai' && (
-                        <motion.g initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 10, opacity: 0 }} key="shoes-giayvai">
-                            <GiayVai color={primary} />
-                        </motion.g>
-                    )}
-                    {layers.shoes === 'sneaker' && (
-                        <motion.g initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 10, opacity: 0 }} key="shoes-sneaker">
-                            <Sneaker color={secondary} />
+                    {(layers.top === 'ao-tu-than' || layers.top === 'ao-the') && gender === 'male' && (
+                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-aothe-male-${layers.topColor || 'default'}-${layers.bottom || 'default'}`}>
+                            <image 
+                                href={`/assets/character/top/ao_the_male${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}${layers.bottom && layers.bottom !== 'quan-lua' ? '_' + layers.bottom.replace('-', '_') : ''}.png`}
+                                /* Căn chỉnh lại size cho ảnh combo vì bị crop mất viền trong suốt */
+                                x={layers.bottom && layers.bottom !== 'quan-lua' ? "-170" : "-130"} 
+                                y={layers.bottom && layers.bottom !== 'quan-lua' ? "-245" : "-205"} 
+                                width={layers.bottom && layers.bottom !== 'quan-lua' ? "740" : "660"} 
+                                height={layers.bottom && layers.bottom !== 'quan-lua' ? "925" : "825"} 
+                                preserveAspectRatio="xMidYMax meet" 
+                            />
                         </motion.g>
                     )}
                 </AnimatePresence>
