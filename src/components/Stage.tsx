@@ -21,7 +21,7 @@ export const StageBackground = ({ scene = 'hanoi', title = '' }: { scene: string
             )}
 
             {/* Vòm Cổng (Arch) containing the scene image */}
-            <div className="relative w-[68%] h-[75%] max-w-[500px] bg-giay-do neo-border border-[2px] border-than neo-shadow overflow-hidden z-20 rounded-t-[1000px]">
+            <div className="relative w-[85%] h-[82%] max-w-[600px] bg-giay-do neo-border border-[2px] border-than neo-shadow overflow-hidden z-20 rounded-t-[1000px]">
                 
                 <AnimatePresence mode="wait">
                     <motion.div
@@ -32,9 +32,12 @@ export const StageBackground = ({ scene = 'hanoi', title = '' }: { scene: string
                         transition={{ duration: 0.5, ease: "circOut" }}
                         className="absolute inset-0 w-full h-full"
                     >
-                        {/* Halftone & filter effects on SmartImage */}
+                        {/* Halftone & filter effects on image */}
                         <div className="w-full h-full" style={{ filter: 'saturate(0.88) contrast(1.05)' }}>
-                            <SmartImage slot={`scene-${scene}`} className="w-full h-full object-cover" />
+                            <img src={`/images/places/${scene}.jpg`} alt={scene} className="w-full h-full object-cover" onError={(e) => {
+                                // Fallback nếu chưa tải ảnh
+                                e.currentTarget.style.display = 'none';
+                            }} />
                         </div>
                         
                         {/* Vignette & Halftone overlay */}
@@ -43,11 +46,6 @@ export const StageBackground = ({ scene = 'hanoi', title = '' }: { scene: string
                     </motion.div>
                 </AnimatePresence>
 
-                {/* Optional small sticker props on the edge of the arch */}
-                <div className="absolute top-1/3 -right-3 w-10 h-10 bg-giay-sang neo-border rotate-12 flex items-center justify-center p-1 shadow-sm opacity-80 z-30">
-                    <SmartImage slot="prop-sticker-1" className="w-full h-full mix-blend-multiply" />
-                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-4 h-2 bg-son/40 rotate-[-15deg]" />
-                </div>
             </div>
         </div>
     );

@@ -153,8 +153,8 @@ const WizardStep2 = ({ core, setCore, gender, onOpenInfo }: any) => (
                             </div>
                             <span className="bg-giay-sang text-[9px] px-1.5 py-0.5 rounded-full font-label text-than border-[1px] border-than shadow-sm">{c.diff <= 2 ? 'Dễ phối' : 'Cần chú ý'}</span>
                         </div>
-                        <div 
-                            onClick={(e) => { e.stopPropagation(); onOpenInfo && onOpenInfo(c.id); }} 
+                        <div
+                            onClick={(e) => { e.stopPropagation(); onOpenInfo && onOpenInfo(c.id); }}
                             className="absolute top-2 right-2 z-30 w-6 h-6 bg-giay-sang rounded-full neo-border shadow-sm flex items-center justify-center text-than hover:text-son hover:bg-giay-do transition-colors cursor-pointer font-bold text-sm"
                             title="Tìm hiểu thêm"
                         >
@@ -247,7 +247,7 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
     let guardLevel: 'green' | 'yellow' | 'red' = 'green';
     if (layers.shoes === 'sneaker' || layers.outer === 'blazer') guardLevel = 'yellow';
     if (layers.bottom === 'jeans' && layers.top === 'ao-tu-than') guardLevel = 'red';
-    
+
     // Check Guard logic for Ao The male
     if (gender === 'male' && core === 'ao-tu-than' && layers.outer === 'blazer' && layers.bottom === 'jeans') {
         // Just keeping it yellow/red as an example, actual logic requires only a warning
@@ -279,7 +279,7 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
             'ao-tac': 'ống tay thụng rộng, cổ đứng, tà dài rộng',
             'ao-nhat-binh': 'cổ hình chữ nhật xẻ giữa, hoa văn viền cổ tay',
         };
-        
+
         if (gender === 'male' && core === 'ao-tu-than') {
             descMap['ao-tu-than'] = 'áo the dài cổ đứng có viền mảnh, cài khuy chéo bên phải, tay dài rộng, tà xẻ hai bên hông';
         }
@@ -296,7 +296,7 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
         if (layers.bottom === 'jeans' || layers.bottom === 'cargo') extraDesc.push('quần jeans/cargo ống rộng');
         if (layers.outer === 'blazer' || layers.outer === 'bomber') extraDesc.push('khoác ngoài hiện đại');
         if (layers.shoes === 'sneaker') extraDesc.push('giày sneaker đế dày');
-        
+
         const characterDesc = gender === 'male' ? 'một nam thanh niên Việt Nam trẻ' : 'một người mẫu Việt Nam trẻ';
         const stylePrefix = styleMode === 'traditional' ? 'phong cách truyền thống nguyên bản' : 'phong cách cách tân hiện đại';
 
@@ -323,237 +323,160 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
                 <path d="M -50 450 Q 200 400 280 430" fill="none" stroke="var(--son)" strokeWidth="2" strokeDasharray="4 4" />
             </svg>
 
-            <button onClick={onBack} className="absolute top-4 left-4 z-40 w-10 h-10 border border-than/20 flex items-center justify-center rounded-full hover:bg-than/5 transition-colors bg-white/50 backdrop-blur-sm"><ArrowLeft size={20} /></button>
+            <button onClick={onBack} className="absolute top-4 left-4 z-40 w-10 h-10 neo-card flex items-center justify-center rounded-full"><ArrowLeft size={20} /></button>
 
-            <div className="w-full h-full flex flex-col lg:flex-row">
-                {/* Left Side: Character Stage (Fixed on Desktop) */}
-                <div className="w-full lg:w-[45%] h-[60vh] lg:h-full relative flex flex-col items-center justify-end overflow-hidden bg-giay-sang border-b lg:border-b-0 lg:border-r border-than/10 shrink-0">
-                    {/* Scene Background - Faded, Blurred & Elegant */}
-                    <div className="absolute inset-0 z-0 opacity-30 mix-blend-multiply blur-[2px] transition-all duration-1000" style={{ backgroundImage: `url(/images/places/${scene}.jpg)`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'grayscale(40%) sepia(30%)' }}></div>
-                    
-                    {/* Beautiful Fade Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-giay-sang via-giay-sang/40 to-transparent z-0"></div>
-                    
-                    {/* Center Glow to highlight model */}
-                    <div className="absolute inset-0 z-0 flex justify-center items-center pointer-events-none">
-                        <div className="w-[300px] h-[500px] bg-white/40 blur-[50px] rounded-full"></div>
-                    </div>
-                    
-                    {/* Arch Frame (Subtle Red Thread Frame) */}
-                    <div className="absolute inset-4 lg:inset-8 border border-son/20 rounded-t-[120px] pointer-events-none z-10">
-                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-12 h-[1px] bg-son"></div>
-                    </div>
+            {/* Character Stage (Matching Main Stage A6) */}
+            <div className="w-full h-[60vh] lg:h-[75vh] relative flex flex-col items-center justify-start overflow-hidden bg-giay-sang neo-border border-l-0 border-r-0 border-t-0 p-0">
+                {/* StageBackground automatically draws the arch and title */}
+                <StageBackground scene={scene} title={`${coreName}\n${title}`} />
 
-                    {/* Character Wrapper - Anchored to bottom */}
-                    <div className="relative w-full max-w-[400px] h-[85%] lg:h-[90%] flex items-end justify-center z-30 pb-4 lg:pb-8">
-                        {/* Elegant Podium shadow */}
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[280px] h-[12px] bg-than/20 rounded-[100%] blur-[4px] z-0" />
-                        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[180px] h-[6px] bg-than/30 rounded-[100%] blur-[2px] z-0" />
-                        
-                        <div className="w-full h-full relative z-10 transition-transform duration-700 hover:scale-[1.03]" style={{ filter: 'drop-shadow(8px 12px 20px rgba(0,0,0,0.12))' }}>
-                            <Character 
-                                gender={gender}
-                                hair={hair}
-                                palette={palette}
-                                layers={layers}
-                                styleMode={styleMode}
-                            />
-                        </div>
-                    </div>
+                <GuardStamp level={guardLevel} onClick={() => setIsGuardOpen(true)} />
 
-                    <GuardStamp level={guardLevel} onClick={() => setIsGuardOpen(true)} className="absolute top-4 right-4 z-40 scale-75 lg:scale-90 opacity-90 hover:opacity-100 transition-opacity" />
+                {/* Score Stamps */}
+                <div className="absolute top-4 right-4 md:top-8 md:right-8 z-30 w-16 h-16 md:w-24 md:h-24 bg-giay-do rounded-full neo-border border-[3px] border-luc flex flex-col items-center justify-center shadow-lg rotate-12 hover:scale-105 transition-transform cursor-pointer" onClick={() => setIsCultureOpen(true)}>
+                    <span className="font-display text-xl md:text-3xl text-luc">95</span>
+                    <span className="font-label text-[6px] md:text-[8px] text-luc text-center leading-tight">TÔN TRỌNG<br />VĂN HOÁ</span>
+                </div>
+                <div className="absolute top-24 right-6 md:top-36 md:right-12 z-30 w-14 h-14 md:w-20 md:h-20 bg-giay-do rounded-full neo-border border-[3px] border-nghe flex flex-col items-center justify-center shadow-lg -rotate-12 cursor-pointer hover:scale-105 transition-transform" onClick={() => setIsCultureOpen(true)}>
+                    <span className="font-display text-lg md:text-2xl text-nghe">90</span>
+                    <span className="font-label text-[5px] md:text-[7px] text-nghe text-center leading-tight">HÀI HOÀ<br />MÀU SẮC</span>
                 </div>
 
-                {/* Right Side: Typography & Information (Scrollable on Desktop) */}
-                <div className="w-full lg:w-[55%] flex flex-col overflow-y-auto hidden-scrollbar bg-giay-do relative">
-                    {/* Subtle Watermark or Texture could go here */}
-                    <div className="absolute inset-0 pointer-events-none opacity-[0.02]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
+                {/* Character Podium (Bục giấy hình elip) */}
+                <div className="absolute top-[86%] left-1/2 -translate-x-1/2 w-[220px] h-[30px] bg-giay-sang rounded-[100%] neo-border shadow-[0_6px_12px_rgba(0,0,0,0.25)] z-10" />
 
-                    <div className="px-6 py-12 lg:px-16 lg:py-20 flex flex-col gap-14 w-full max-w-3xl mx-auto relative z-10">
-                        
-                        {/* Header & Seals Row */}
-                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-8 relative">
-                            {/* Title Area */}
-                            <div className="flex-1 relative">
-                                <div className="absolute -left-6 lg:-left-16 top-4 w-4 lg:w-8 h-[2px] bg-son"></div>
-                                <div className="flex flex-col gap-3">
-                                    <p className="font-label text-son uppercase tracking-[0.25em] text-[10px] font-bold flex items-center gap-2">
-                                        <span>{coreName}</span>
-                                        <span className="text-than/30">×</span>
-                                        <span className="text-than/60">{style}</span>
-                                    </p>
-                                    <h2 className="font-display text-6xl md:text-7xl text-than m-0 leading-[0.95] tracking-tight drop-shadow-sm">{title}</h2>
-                                    {styleMode === 'modern' && (
-                                        <span className="inline-block mt-2 text-son font-label text-[9px] tracking-[0.2em] uppercase border border-son/40 bg-son/5 px-4 py-1.5 rounded-sm w-max">
-                                            Bản Phối Cách Tân
+                {/* Character Wrapper */}
+                <div
+                    className="absolute bottom-[10%] left-1/2 -translate-x-1/2 w-full max-w-sm h-[78%] flex items-end justify-center pointer-events-none z-30"
+                    style={{ filter: 'drop-shadow(4px 4px 0px var(--than)) drop-shadow(0 0 0px white) drop-shadow(0 0 2px white)' }}
+                >
+                    <div className="w-full h-full pointer-events-auto" style={{ filter: 'drop-shadow(3px 0 0 white) drop-shadow(-3px 0 0 white) drop-shadow(0 3px 0 white) drop-shadow(0 -3px 0 white)' }}>
+                        <SmartImage slot={`costume-${core}`} className="w-full h-full object-contain object-bottom" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Info Cards */}
+            <div className="p-6 lg:p-12 space-y-8 bg-giay-do">
+                <div className="flex items-center gap-4 mb-2">
+                    <h2 className="font-display text-5xl text-than m-0">{title}</h2>
+                    {styleMode === 'modern' && (
+                        <span className="bg-vang text-than font-label text-xs px-3 py-1 rounded-full neo-border shadow-sm transform -rotate-3">
+                            ⭐ CÁCH TÂN
+                        </span>
+                    )}
+                </div>
+                <p className="font-label text-son uppercase tracking-widest text-sm">{coreName} × {style}</p>
+
+                {/* TRANG PHỤC DỮ LIỆU */}
+                <div className="border-t border-than/10 pt-10 mt-2">
+                    <h3 className="font-label text-than/40 text-[10px] tracking-[0.25em] uppercase mb-6 flex items-center gap-3">
+                        Thành Phần Trang Phục
+                        <div className="h-[1px] flex-1 bg-than/5"></div>
+                    </h3>
+
+                    {(() => {
+                        const ITEM_NAMES: Record<string, string> = {
+                            'quan-lua': 'Quần Lụa',
+                            'vay-luy': 'Váy Lĩnh',
+                            'vay-dinh': 'Váy Đình',
+                            'jeans': 'Quần Jeans',
+                            'cargo': 'Quần Túi Hộp',
+                            'khoac-the': 'Áo Khoác The',
+                            'jacket': 'Áo Khoác Jacket',
+                            'khan-mo-qua': 'Khăn Mỏ Quạ',
+                            'khan-dong': 'Khăn Đóng',
+                            'van-toc': 'Vấn Tóc',
+                            'khan-ran': 'Khăn Rằn',
+                            'non-la': 'Nón Lá',
+                            'khan-xep': 'Khăn Xếp',
+                            'mu-bucket': 'Mũ Bucket',
+                            'kinh-ram': 'Kính Râm',
+                            'guoc': 'Guốc Mộc',
+                            'sneaker': 'Giày Sneaker',
+                            'combat-boot': 'Giày Combat'
+                        };
+                        const getName = (id: string) => ITEM_NAMES[id] || id;
+
+                        return (
+                            <div className="grid grid-cols-2 gap-3 md:gap-4">
+                                {/* Top */}
+                                <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
+                                    <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Áo / Top</span>
+                                    <span className="font-display text-lg text-than truncate relative z-10">{coreName}</span>
+                                    <span className={`text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 relative z-10 ${styleMode === 'traditional' ? 'bg-luc/10 text-luc' : 'bg-vang/10 text-vang'}`}>
+                                        {styleMode === 'traditional' ? 'Nguyên bản' : 'Biến tấu'}
+                                    </span>
+                                </div>
+
+                                {/* Bottom */}
+                                {layers.bottom && (
+                                    <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
+                                        <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Quần / Bottom</span>
+                                        <span className="font-display text-lg text-than truncate relative z-10">{getName(layers.bottom)}</span>
+                                        <span className={`text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 relative z-10 ${['jeans', 'cargo'].includes(layers.bottom) ? 'bg-vang/10 text-vang' : 'bg-luc/10 text-luc'}`}>
+                                            {['jeans', 'cargo'].includes(layers.bottom) ? 'Sáng tạo' : 'Nguyên bản'}
                                         </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Traditional Seals */}
-                            <div className="flex gap-5 items-start shrink-0">
-                                <div 
-                                    className="w-16 h-16 bg-white/50 backdrop-blur-sm rounded-sm border-[1.5px] border-son flex flex-col items-center justify-center rotate-3 hover:rotate-0 transition-transform cursor-pointer relative shadow-sm" 
-                                    onClick={() => setIsCultureOpen(true)}
-                                >
-                                    <div className="absolute inset-[3px] border border-son/30 rounded-sm pointer-events-none"></div>
-                                    <span className="font-display text-2xl text-son leading-none">95</span>
-                                    <span className="font-label text-[7px] text-son text-center mt-1 leading-[1.2] tracking-widest font-bold">VĂN<br />HÓA</span>
-                                </div>
-                                <div 
-                                    className="w-14 h-14 bg-white/50 backdrop-blur-sm rounded-full border-[1.5px] border-cham flex flex-col items-center justify-center -rotate-6 hover:rotate-0 transition-transform cursor-pointer relative shadow-sm" 
-                                    onClick={() => setIsCultureOpen(true)}
-                                >
-                                    <div className="absolute inset-[3px] border border-cham/30 rounded-full pointer-events-none border-dashed"></div>
-                                    <span className="font-display text-xl text-cham leading-none">90</span>
-                                    <span className="font-label text-[6px] text-cham text-center mt-1 leading-[1.2] tracking-wider font-bold">HÀI HÒA</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Outfit Components */}
-                        <div className="border-t border-than/10 pt-10 mt-2">
-                            <h3 className="font-label text-than/40 text-[10px] tracking-[0.25em] uppercase mb-6 flex items-center gap-3">
-                                Thành Phần Trang Phục
-                                <div className="h-[1px] flex-1 bg-than/5"></div>
-                            </h3>
-                            
-                            {(() => {
-                                const ITEM_NAMES: Record<string, string> = {
-                                    'quan-lua': 'Quần Lụa',
-                                    'vay-luy': 'Váy Lĩnh',
-                                    'vay-dinh': 'Váy Đình',
-                                    'jeans': 'Quần Jeans',
-                                    'cargo': 'Quần Túi Hộp',
-                                    'khoac-the': 'Áo Khoác The',
-                                    'jacket': 'Áo Khoác Jacket',
-                                    'khan-mo-qua': 'Khăn Mỏ Quạ',
-                                    'khan-dong': 'Khăn Đóng',
-                                    'van-toc': 'Vấn Tóc',
-                                    'khan-ran': 'Khăn Rằn',
-                                    'non-la': 'Nón Lá',
-                                    'khan-xep': 'Khăn Xếp',
-                                    'mu-bucket': 'Mũ Bucket',
-                                    'kinh-ram': 'Kính Râm',
-                                    'guoc': 'Guốc Mộc',
-                                    'sneaker': 'Giày Sneaker',
-                                    'combat-boot': 'Giày Combat'
-                                };
-                                const getName = (id: string) => ITEM_NAMES[id] || id;
-
-                                return (
-                                    <div className="grid grid-cols-2 gap-3 md:gap-4">
-                                        {/* Top */}
-                                        <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
-                                            <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Áo / Top</span>
-                                            <span className="font-display text-lg text-than truncate relative z-10">{coreName}</span>
-                                            <span className={`text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 relative z-10 ${styleMode === 'traditional' ? 'bg-luc/10 text-luc' : 'bg-vang/10 text-vang'}`}>
-                                                {styleMode === 'traditional' ? 'Nguyên bản' : 'Biến tấu'}
-                                            </span>
-                                        </div>
-                                        
-                                        {/* Bottom */}
-                                        {layers.bottom && (
-                                            <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
-                                                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
-                                                <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Quần / Bottom</span>
-                                                <span className="font-display text-lg text-than truncate relative z-10">{getName(layers.bottom)}</span>
-                                                <span className={`text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 relative z-10 ${['jeans', 'cargo'].includes(layers.bottom) ? 'bg-vang/10 text-vang' : 'bg-luc/10 text-luc'}`}>
-                                                    {['jeans', 'cargo'].includes(layers.bottom) ? 'Sáng tạo' : 'Nguyên bản'}
-                                                </span>
-                                            </div>
-                                        )}
-                                        
-                                        {/* Outer */}
-                                        {layers.outer && (
-                                            <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
-                                                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
-                                                <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Khoác / Outer</span>
-                                                <span className="font-display text-lg text-than truncate relative z-10">{getName(layers.outer)}</span>
-                                                <span className="text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 bg-vang/10 text-vang relative z-10">Sáng tạo</span>
-                                            </div>
-                                        )}
-                                        
-                                        {/* Headwear */}
-                                        {layers.headwear && (
-                                            <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
-                                                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
-                                                <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Phụ kiện đầu</span>
-                                                <span className="font-display text-lg text-than truncate relative z-10">{getName(layers.headwear)}</span>
-                                                <span className={`text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 relative z-10 ${['mu-bucket', 'kinh-ram'].includes(layers.headwear) ? 'bg-vang/10 text-vang' : 'bg-luc/10 text-luc'}`}>
-                                                    {['mu-bucket', 'kinh-ram'].includes(layers.headwear) ? 'Sáng tạo' : 'Nguyên bản'}
-                                                </span>
-                                            </div>
-                                        )}
-                                        
-                                        {/* Shoes */}
-                                        {layers.shoes && (
-                                            <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
-                                                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
-                                                <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Giày / Shoes</span>
-                                                <span className="font-display text-lg text-than truncate relative z-10">{getName(layers.shoes)}</span>
-                                                <span className={`text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 relative z-10 ${['sneaker', 'combat-boot'].includes(layers.shoes) ? 'bg-vang/10 text-vang' : 'bg-luc/10 text-luc'}`}>
-                                                    {['sneaker', 'combat-boot'].includes(layers.shoes) ? 'Sáng tạo' : 'Nguyên bản'}
-                                                </span>
-                                            </div>
-                                        )}
                                     </div>
-                                );
-                            })()}
-                        </div>
+                                )}
 
-                        {/* Styling Tip - Premium Glassmorphism Card */}
-                        <div className="backdrop-blur-md bg-white/40 p-6 lg:p-8 border-l-[3px] border-cham shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-r-lg relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-cham/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-                            <h3 className="font-label text-cham text-[10px] tracking-[0.25em] uppercase mb-3 flex items-center gap-2">
-                                <Sparkles size={12} className="text-cham" />
-                                Góc Nhìn Trẻ (Styling Tip)
-                            </h3>
-                            <p className="text-than/80 font-medium leading-[1.8] text-sm lg:text-base relative z-10">
-                                Kết hợp cùng phụ kiện tối giản, ưu tiên các tone màu nền nã để làm nổi bật tinh thần trang phục. Chú ý tỷ lệ độ dài của tà áo và quần để tạo hiệu ứng thanh thoát cho dáng người.
-                            </p>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex flex-col gap-4 mt-2">
-                            <button 
-                                onClick={() => setIsCultureOpen(true)} 
-                                className="w-full text-left p-6 border border-than/10 hover:border-son/40 transition-all duration-300 group relative overflow-hidden bg-white/60 hover:bg-white/90 rounded-sm shadow-sm hover:shadow-md"
-                            >
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-son/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-[3] transition-transform duration-700 z-0"></div>
-                                <div className="relative z-10 flex items-center justify-between">
-                                    <div>
-                                        <h3 className="font-label text-son text-[9px] tracking-[0.25em] uppercase mb-1.5 opacity-80 group-hover:opacity-100 transition-opacity">Mảnh ghép văn hóa</h3>
-                                        <p className="font-display text-xl text-than">Tìm hiểu nguồn gốc bộ trang phục</p>
+                                {/* Outer */}
+                                {layers.outer && (
+                                    <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
+                                        <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Khoác / Outer</span>
+                                        <span className="font-display text-lg text-than truncate relative z-10">{getName(layers.outer)}</span>
+                                        <span className="text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 bg-vang/10 text-vang relative z-10">Sáng tạo</span>
                                     </div>
-                                    <div className="w-10 h-10 rounded-full bg-giay-sang flex items-center justify-center text-than group-hover:bg-son group-hover:text-white transition-all shadow-sm">
-                                        <ArrowRight size={16} />
-                                    </div>
-                                </div>
-                            </button>
+                                )}
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <button 
-                                    onClick={() => setIsAiModalOpen(true)} 
-                                    className="bg-gradient-to-r from-son to-[#8b231a] shadow-lg shadow-son/20 text-white py-4 px-6 font-label uppercase tracking-[0.2em] text-xs hover:shadow-son/40 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 rounded-sm"
-                                >
-                                    <Camera size={14} />
-                                    Tạo Ảnh Thực Tế (AI)
-                                </button>
-                                
-                                <div className="flex gap-4">
-                                    <button onClick={onSave} className="flex-[3] bg-white border border-than/10 text-than py-4 font-label uppercase tracking-[0.2em] text-xs hover:border-than/30 hover:bg-giay-sang transition-all rounded-sm shadow-sm">
-                                        Lưu Lookbook
-                                    </button>
-                                    <button className="flex-[1] bg-white border border-than/10 text-than flex items-center justify-center hover:border-than/30 hover:bg-giay-sang transition-all rounded-sm shadow-sm text-than/70 hover:text-son">
-                                        <Share2 size={16} />
-                                    </button>
-                                </div>
+                                {/* Headwear */}
+                                {layers.headwear && (
+                                    <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
+                                        <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Phụ kiện đầu</span>
+                                        <span className="font-display text-lg text-than truncate relative z-10">{getName(layers.headwear)}</span>
+                                        <span className={`text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 relative z-10 ${['mu-bucket', 'kinh-ram'].includes(layers.headwear) ? 'bg-vang/10 text-vang' : 'bg-luc/10 text-luc'}`}>
+                                            {['mu-bucket', 'kinh-ram'].includes(layers.headwear) ? 'Sáng tạo' : 'Nguyên bản'}
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* Shoes */}
+                                {layers.shoes && (
+                                    <div className="bg-giay-do/50 neo-border p-3.5 flex flex-col gap-1 border border-than/20 shadow-sm relative group overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
+                                        <span className="text-[8px] uppercase tracking-widest text-than/50 font-bold mb-1 relative z-10">Giày / Shoes</span>
+                                        <span className="font-display text-lg text-than truncate relative z-10">{getName(layers.shoes)}</span>
+                                        <span className={`text-[8px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm w-fit mt-1 relative z-10 ${['sneaker', 'combat-boot'].includes(layers.shoes) ? 'bg-vang/10 text-vang' : 'bg-luc/10 text-luc'}`}>
+                                            {['sneaker', 'combat-boot'].includes(layers.shoes) ? 'Sáng tạo' : 'Nguyên bản'}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                        </div>
+                        );
+                    })()}
+                </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <button onClick={() => setIsCultureOpen(true)} className="neo-card p-6 border-son relative overflow-hidden group text-left cursor-pointer hover:bg-giay-sang">
+                        <div className="absolute -right-4 -top-4 w-12 h-12 bg-son/10 rounded-full group-hover:scale-[10] transition-transform duration-500 z-0" />
+                        <h3 className="font-label text-son relative z-10 mb-2">Mảnh ghép văn hoá</h3>
+                        <p className="text-sm relative z-10 text-than">Bấm để lật trang tìm hiểu chi tiết nguồn gốc và ý nghĩa trang phục.</p>
+                    </button>
+                    <div className="neo-card p-6 border-cham relative overflow-hidden group">
+                        <div className="absolute -right-4 -top-4 w-12 h-12 bg-cham/10 rounded-full group-hover:scale-[10] transition-transform duration-500 z-0" />
+                        <h3 className="font-label text-cham relative z-10 mb-2">Mẹo phối</h3>
+                        <p className="text-sm relative z-10">Kết hợp cùng Chunky Sneaker và quần Jeans ống rộng rách nhẹ để tăng tính năng động.</p>
+                    </div>
+                    <div className="neo-card p-6 border-luc relative overflow-hidden group flex flex-col justify-center gap-3">
+                        <button onClick={() => setIsAiModalOpen(true)} className="w-full neo-button-primary border-son bg-son text-white hover:bg-son/90">✨ TẠO ẢNH THẬT BẰNG AI</button>
+                        <div className="flex gap-2">
+                            <button className="flex-1 neo-button-primary border-luc bg-luc hover:bg-luc/90">LƯU LOOKBOOK</button>
+                            <button className="flex-[0.5] neo-button-secondary">CHIA SẺ</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -602,7 +525,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
     };
     const scene = placeMap[wardrobeState.place] || 'ha-noi';
     const stageTitleVal = wardrobeState.top === 'tu-than' ? 'TỨ THÂN' : wardrobeState.top === 'ao-the' ? 'ÁO THE' : wardrobeState.top === 'ngu-than' ? 'NGŨ THÂN' : 'BÀ BA';
-    
+
     // Fallbacks for ResultPoster
     const core = wardrobeState.top;
     const style = wardrobeState.mode === 'traditional' ? 'Truyền thống' : 'Cách tân';
@@ -615,6 +538,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
     // Cleaned up old effects since logic is moved to 6-step wizard
 
     const getLayers = (): DollLayers => {
+        if (step < 3) return {};
         const acc = wardrobeState.accessories;
         let headwear = 'none';
         if (acc.includes('khan-mo-qua')) headwear = 'khan-mo-qua';
@@ -624,11 +548,11 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
         if (acc.includes('non-la')) headwear = 'non-la';
         if (acc.includes('khan-xep')) headwear = 'khan-xep';
         if (acc.includes('mu-bucket')) headwear = 'mu-bucket';
-        
+
         let shoes = 'none';
         if (acc.includes('guoc')) shoes = 'guoc';
         if (acc.includes('sneaker')) shoes = 'sneaker';
-        
+
         if (step <= 2) {
             return {
                 top: 'underwear',
@@ -638,7 +562,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                 headwear: 'none',
             };
         }
-        
+
         return {
             top: wardrobeState.top,
             topColor: wardrobeState.topColor,
@@ -650,6 +574,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
     };
 
     const getStageTitle = () => {
+        if (step < 3) return '';
         if (step < 3) return '';
         if (core === 'ao-tu-than') {
             if (gender === 'female') {
@@ -779,7 +704,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                 <div className="flex-[1.2] h-[50vh] lg:h-full border-b-2 lg:border-b-0 lg:border-r-2 border-than relative flex items-center justify-center p-0 lg:p-0 overflow-hidden bg-giay-sang">
                     {/* Background and Arch */}
                     <StageBackground scene={scene} title={stageTitle} />
-                    
+
                     {/* Gender Toggle Button */}
                     <div className="absolute top-4 right-4 z-40 bg-giay-sang neo-border rounded-full flex overflow-hidden font-label shadow-lg">
                         <button onClick={() => updateWardrobeState({ gender: 'female' })} className={`px-4 py-2 transition-colors ${gender === 'female' ? 'bg-son text-giay-sang' : 'hover:bg-giay-do text-than'}`}>Nữ</button>
@@ -794,13 +719,13 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                         <button onClick={() => updateWardrobeState({ mode: 'modern' })} className={`px-4 py-2 transition-colors min-h-[44px] ${styleMode === 'modern' ? 'bg-vang text-than' : 'hover:bg-giay-do text-than'}`}>Hiện đại</button>
                     </div>
                     */}
-                    
+
                     {/* Guard Warning */}
                     {styleMode === 'traditional' && (getLayers().outer !== undefined || getLayers().bottom === 'jeans' || getLayers().shoes === 'sneaker') && (
                         <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50 bg-vang border border-than p-3 rounded-xl shadow-lg flex items-center gap-3 w-[80%] max-w-[300px]">
                             <span className="text-2xl">⚠️</span>
                             <div className="flex-1">
-                            <p className="text-xs font-bold text-than mb-1">Bạn đang rời khỏi bản truyền thống, chuyển sang Cách tân?</p>
+                                <p className="text-xs font-bold text-than mb-1">Bạn đang rời khỏi bản truyền thống, chuyển sang Cách tân?</p>
                                 <button onClick={() => updateWardrobeState({ mode: 'modern' })} className="text-[10px] bg-white text-than px-2 py-1 rounded border border-than shadow">Chuyển sang Cách tân</button>
                             </div>
                         </div>
@@ -831,7 +756,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                     >
                         {/* The white border effect (using multi drop-shadow or SVG filter in real app, here CSS drop-shadow hack) */}
                         <div className="w-full h-full pointer-events-auto flex items-end justify-center" style={{ filter: 'drop-shadow(3px 0 0 white) drop-shadow(-3px 0 0 white) drop-shadow(0 3px 0 white) drop-shadow(0 -3px 0 white)' }}>
-                            <Character gender={gender} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} bangs="mai-thua" styleMode={styleMode} />
+                            <Character gender={gender} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} bangs="mai-thua" styleMode={styleMode} hideBase={step >= 3} />
                         </div>
                     </div>
                 </div>
@@ -931,27 +856,27 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
 
     return (
         <div className={`h-[100dvh] relative flex flex-col items-center justify-center w-full overflow-hidden transition-colors duration-1000 ${status === 'opened' ? 'bg-[#EAE0D3]' : 'bg-[#EADFC8]'} text-[#1A1410] font-sans selection:bg-[#B3261E] selection:text-white`}>
-            
+
             {/* Texture */}
             <div className="absolute inset-0 w-full h-full pointer-events-none mix-blend-multiply opacity-[0.06]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")' }} />
-            
+
             {/* ENVELOPE */}
             <AnimatePresence>
                 {status !== 'opened' && (
-                    <motion.div 
+                    <motion.div
                         className="absolute inset-0 flex items-center justify-center z-10"
                         exit={{ opacity: 0, transition: { duration: 0.4 } }}
                     >
                         <div className="relative w-[90vw] md:w-[600px] aspect-[3/2]" style={{ perspective: '1200px' }}>
                             <div className="absolute inset-0 bg-[#D4C3A3] rounded-sm shadow-md z-10" />
                             <div className="absolute inset-0 bg-[#E3D4B6] rounded-sm shadow-sm z-20" style={{ clipPath: 'polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%)' }} />
-                            
+
                             {/* Envelope creaselines (draws lines for the pocket folds) */}
                             <svg className="absolute inset-0 w-full h-full pointer-events-none z-20 opacity-20 mix-blend-multiply" preserveAspectRatio="none">
                                 <line x1="0" y1="0" x2="50%" y2="45%" stroke="#2B2118" strokeWidth="1" />
                                 <line x1="100%" y1="0" x2="50%" y2="45%" stroke="#2B2118" strokeWidth="1" />
                             </svg>
-                            
+
                             {/* ENVELOPE TEXT (From/To) - Bottom Left */}
                             <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 z-30 font-display text-[#2B2118]/90 leading-relaxed pointer-events-none">
                                 <div className="flex flex-col gap-2 md:gap-3">
@@ -963,7 +888,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                     </div>
                                     <div>
                                         <span className="font-sans font-bold uppercase text-[8px] md:text-[9px] tracking-widest text-[#2B2118]/50 block mb-0.5">To</span>
-                                        <span className="italic text-base md:text-xl drop-shadow-sm">Những người yêu bản sắc<br/>dân tộc nồng nàn</span>
+                                        <span className="italic text-base md:text-xl drop-shadow-sm">Những người yêu bản sắc<br />dân tộc nồng nàn</span>
                                     </div>
                                 </div>
                             </div>
@@ -979,7 +904,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                     )}
                                     <span className="font-sans font-bold text-[5px] md:text-[6px] text-[#B3261E]/80 mt-1 uppercase tracking-widest">VN-50đ</span>
                                 </div>
-                                
+
                                 {/* Stamp 2 (Hà Nội) */}
                                 <div className="w-9 h-11 md:w-11 md:h-14 bg-[#FBF5E9] border-[2px] md:border-[3px] border-dotted border-[#D4C3A3] flex flex-col items-center justify-center shadow-sm transform rotate-6 opacity-90 p-0.5 relative -ml-2 mb-1 z-20">
                                     <div className="w-full h-full bg-[#2B2118]/5 flex items-center justify-center border border-[#2B2118]/10">
@@ -1030,7 +955,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                 initial={{ x: "-50%", y: "-50%", rotate: -2 }}
                                 animate={{ x: "-50%", y: "-50%", rotate: -2 }}
                             >
-                                <motion.div 
+                                <motion.div
                                     className="relative w-[100px] h-[100px] md:w-[120px] md:h-[120px]"
                                     animate={status === 'opening' ? { scale: 1.2, opacity: 0 } : { scale: 1, opacity: 1 }}
                                     transition={{ duration: 0.5 }}
@@ -1056,14 +981,14 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                     initial={{ y: 0, opacity: 0, scale: 0.8, height: '300px', width: '500px' }}
                     animate={
                         status === 'closed' ? { opacity: 0, scale: 0.8, y: 0, height: '300px', width: '500px' } :
-                        status === 'opening' ? { opacity: [0, 1, 1], scale: [0.8, 1, 1], y: [0, -100, 0], width: ['500px', '500px', '100%'], height: ['300px', '300px', '100%'] } :
-                        { opacity: 1, scale: 1, y: 0, width: '100%', height: 'auto', minHeight: '580px' }
+                            status === 'opening' ? { opacity: [0, 1, 1], scale: [0.8, 1, 1], y: [0, -100, 0], width: ['500px', '500px', '100%'], height: ['300px', '300px', '100%'] } :
+                                { opacity: 1, scale: 1, y: 0, width: '100%', height: 'auto', minHeight: '580px' }
                     }
                     transition={status === 'opening' ? { duration: 1.6, times: [0, 0.4, 1], ease: [0.22, 1, 0.36, 1], delay: 0.4 } : { duration: 0 }}
                 >
                     {status === 'opened' && (
                         <div className="w-full h-full px-6 py-8 md:p-12 lg:p-16 relative flex flex-col md:flex-row gap-8 lg:gap-12 items-center min-h-[580px]">
-                            
+
                             {/* Watermark Logo */}
                             <div className="absolute -bottom-12 -left-12 w-[300px] h-[300px] md:w-[350px] md:h-[350px] opacity-[0.03] pointer-events-none transform -rotate-12 mix-blend-multiply">
                                 <div className="w-full h-full bg-[#2B2118]" style={{ maskImage: "url('/brand/logo-soi-nguon.png')", maskSize: "contain", maskPosition: "center", maskRepeat: "no-repeat", WebkitMaskImage: "url('/brand/logo-soi-nguon.png')", WebkitMaskSize: "contain", WebkitMaskPosition: "center", WebkitMaskRepeat: "no-repeat" }} />
@@ -1086,10 +1011,10 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                     {/* Curved Red Thread SVG */}
                                     <div className="mx-1 md:mx-3 flex items-center justify-center w-12 h-6 md:w-16 md:h-8 overflow-visible mt-2">
                                         <svg viewBox="0 0 50 20" className="w-full h-full overflow-visible">
-                                            <motion.path 
-                                                d="M 0,10 C 15,0 35,20 50,10" 
-                                                fill="none" 
-                                                stroke="#B3261E" 
+                                            <motion.path
+                                                d="M 0,10 C 15,0 35,20 50,10"
+                                                fill="none"
+                                                stroke="#B3261E"
                                                 strokeWidth="2.5"
                                                 strokeLinecap="round"
                                                 initial={{ pathLength: 0 }}
@@ -1100,7 +1025,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                     </div>
                                     <span className="text-[#B3261E] italic pr-2 font-bold drop-shadow-sm">Nguồn</span>
                                 </h1>
-                                
+
                                 <div className="font-display text-base md:text-lg text-[#4A3F35] leading-loose mb-8 max-w-lg">
                                     <p className="mb-3 md:mb-4 italic text-[#2B2118]/80">Bạn thân mến,</p>
                                     <p className="mb-3 md:mb-4 font-sans not-italic text-sm md:text-base">
@@ -1110,8 +1035,8 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                         Hãy lật mở những trang bưu thiếp đính kèm và chọn cho mình một tà áo xưa.
                                     </p>
                                 </div>
-                                
-                                <button 
+
+                                <button
                                     onClick={onStart}
                                     className="group relative z-50 inline-flex items-center justify-center px-8 md:px-10 py-3 md:py-4 bg-[#B3261E] text-white rounded-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-[#B3261E]/30 select-none cursor-pointer"
                                 >
@@ -1121,14 +1046,14 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
 
                             {/* RIGHT COLUMN: Polaroids & Background Thread */}
                             <div className="w-full md:w-1/2 relative min-h-[400px] md:min-h-[450px] flex items-center justify-center z-10 mt-8 md:mt-0">
-                                
+
                                 {/* Background Red Thread connecting the Polaroids - SMOOTH S-CURVE */}
                                 <div className="absolute inset-0 pointer-events-none z-0 opacity-70">
                                     <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible" preserveAspectRatio="none">
-                                        <motion.path 
-                                            d="M 5,10 C 60,-20 110,40 50,55 C -10,70 50,120 95,90" 
-                                            fill="none" 
-                                            stroke="#B3261E" 
+                                        <motion.path
+                                            d="M 5,10 C 60,-20 110,40 50,55 C -10,70 50,120 95,90"
+                                            fill="none"
+                                            stroke="#B3261E"
                                             strokeWidth="1.2"
                                             strokeLinecap="round"
                                             initial={{ pathLength: 0 }}
@@ -1137,17 +1062,17 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                         />
                                     </svg>
                                 </div>
-                                
+
                                 {/* Polaroid 1 (Hanoi) */}
-                                <div 
+                                <div
                                     className="absolute top-0 right-4 md:right-8 w-[150px] md:w-[180px] bg-white p-2 pb-8 md:p-3 md:pb-10 shadow-xl shadow-[#2B2118]/15 -rotate-6 hover:rotate-0 z-10 hover:z-40 transition-all duration-300 cursor-pointer"
                                     onClick={() => onStartConfig({ scene: 'hanoi', core: 'ao-tu-than', gender: 'female' })}
                                 >
                                     <div className="absolute -top-3 left-1/3 -translate-x-1/2 w-8 h-4 bg-white/50 backdrop-blur-sm border border-black/5 rotate-3 shadow-sm" />
-                                    
-                                    <img 
-                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTU9PG7oZtL6qVrZi_vpe2YPIBk7LtNffiozhvu9tYXeNe8zUdAl21ZRxo&s=10" 
-                                        alt="Hanoi Old Quarter" 
+
+                                    <img
+                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTU9PG7oZtL6qVrZi_vpe2YPIBk7LtNffiozhvu9tYXeNe8zUdAl21ZRxo&s=10"
+                                        alt="Hanoi Old Quarter"
                                         className="w-full aspect-[4/5] object-cover bg-[#EAE0D3]"
                                     />
                                     <div className="absolute bottom-2 left-0 w-full text-center">
@@ -1156,15 +1081,15 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                 </div>
 
                                 {/* Polaroid 2 (Hue) */}
-                                <div 
+                                <div
                                     className="absolute top-16 md:top-20 left-2 md:left-6 w-[160px] md:w-[190px] bg-white p-2 pb-8 md:p-3 md:pb-10 shadow-2xl shadow-[#2B2118]/20 rotate-3 z-20 hover:rotate-0 hover:z-40 transition-all duration-300 cursor-pointer"
                                     onClick={() => onStartConfig({ scene: 'hue', core: 'ao-ngu-than', gender: 'female' })}
                                 >
                                     <div className="absolute -top-3 right-1/4 w-8 h-5 bg-white/50 backdrop-blur-sm border border-black/5 -rotate-3 shadow-sm" />
-                                    
-                                    <img 
-                                        src="https://file.huengaynay.vn/data2/image/fckeditor/upload/2020/20200326/images/ao-dai.jpg" 
-                                        alt="Hue" 
+
+                                    <img
+                                        src="https://file.huengaynay.vn/data2/image/fckeditor/upload/2020/20200326/images/ao-dai.jpg"
+                                        alt="Hue"
                                         className="w-full aspect-square object-cover bg-[#EAE0D3]"
                                     />
                                     <div className="absolute bottom-2 left-0 w-full text-center">
@@ -1173,15 +1098,15 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                 </div>
 
                                 {/* Polaroid 3 (Saigon) */}
-                                <div 
+                                <div
                                     className="absolute top-36 md:top-48 right-0 md:right-4 w-[170px] md:w-[200px] bg-white p-2 pb-8 md:p-3 md:pb-10 shadow-2xl shadow-[#2B2118]/25 -rotate-2 z-30 hover:rotate-0 hover:z-40 transition-all duration-300 cursor-pointer"
                                     onClick={() => onStartConfig({ scene: 'saigon', core: 'ao-ba-ba', gender: 'female' })}
                                 >
                                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-5 bg-white/50 backdrop-blur-sm border border-black/5 -rotate-1 shadow-sm" />
-                                    
-                                    <img 
-                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_PMqQvm5Z2gI3Ht_pGzaUGJGllHc4HCN9h2nmdus5dRipAShAoTXRnmv_&s=10" 
-                                        alt="Saigon" 
+
+                                    <img
+                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_PMqQvm5Z2gI3Ht_pGzaUGJGllHc4HCN9h2nmdus5dRipAShAoTXRnmv_&s=10"
+                                        alt="Saigon"
                                         className="w-full aspect-[4/5] object-cover bg-[#EAE0D3]"
                                     />
                                     <div className="absolute bottom-2 left-0 w-full text-center">
@@ -1196,7 +1121,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                 <button onClick={() => setStatus('closed')} className="text-xs text-[#2B2118]/40 hover:text-[#B3261E] underline underline-offset-4 italic transition-colors">
                                     Gấp thư lại
                                 </button>
-                                
+
                                 <div className="hidden md:flex gap-8 border-t border-[#2B2118]/10 pt-3 md:pt-4 w-full justify-center max-w-xs">
                                     <button onClick={() => setShowAbout(true)} className="uppercase text-[10px] tracking-widest text-[#2B2118]/60 hover:text-[#B3261E] transition-colors font-bold">Về dự án</button>
                                     <button className="uppercase text-[10px] tracking-widest text-[#2B2118]/60 hover:text-[#B3261E] transition-colors font-bold">Bạn có biết?</button>
@@ -1210,21 +1135,21 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
 
             <AnimatePresence>
                 {showAbout && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#1A1410]/80 backdrop-blur-sm"
                         onClick={() => setShowAbout(false)}
                     >
-                        <motion.div 
+                        <motion.div
                             initial={{ y: 50, scale: 0.95 }}
                             animate={{ y: 0, scale: 1 }}
                             exit={{ y: 20, scale: 0.95 }}
                             className="bg-[#FBF6EE] w-full max-w-2xl max-h-[85vh] rounded-xl shadow-2xl overflow-y-auto hidden-scrollbar relative p-8 md:p-12 text-[#2B2118]"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <button 
+                            <button
                                 onClick={() => setShowAbout(false)}
                                 className="absolute top-6 right-6 p-2 rounded-full hover:bg-[#2B2118]/5 transition-colors"
                             >
@@ -1232,7 +1157,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                             </button>
 
                             <h2 className="font-display text-4xl md:text-5xl mb-8 text-[#B3261E] text-center border-b border-[#2B2118]/10 pb-6">Về Dự Án</h2>
-                            
+
                             <div className="space-y-8 font-sans leading-relaxed text-sm md:text-base">
                                 <section>
                                     <h3 className="font-display text-2xl mb-3 text-[#2B2118]">Khởi nguồn (Mục đích)</h3>
@@ -1240,7 +1165,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                         Sợi Nguồn ra đời từ một trăn trở: Làm sao để cổ phục Việt Nam không chỉ nằm yên trong lồng kính bảo tàng hay những dịp lễ hội hiếm hoi? Người trẻ (Gen Z) khát khao thể hiện cá tính qua tà áo truyền thống, nhưng lại thường e ngại ranh giới mong manh giữa "phá cách" và "phản cảm", sợ mặc sai hoặc thiếu tôn trọng lịch sử. Sợi Nguồn được xây dựng để xoá bỏ nỗi sợ đó, biến di sản thành thời trang ứng dụng.
                                     </p>
                                 </section>
-                                
+
                                 <section>
                                     <h3 className="font-display text-2xl mb-3 text-[#2B2118]">Giải pháp (Định hướng)</h3>
                                     <p className="text-[#4A3F35] mb-3">
@@ -1250,7 +1175,7 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                         Sợi Nguồn không cấm đoán hay gò ép người dùng vào những quy chuẩn cứng nhắc. Trái lại, ứng dụng khuyến khích sự tự do sáng tạo (remix) – từ Áo Tứ Thân phối cùng Streetwear bụi bặm, đến Áo Ngũ Thân diện cùng Sneaker năng động – nhưng luôn được AI giám sát, cảnh báo và tinh chỉnh để đảm bảo mọi sự phá cách đều nằm trong khuôn khổ của sự chuẩn mực và phù hợp với từng ngữ cảnh (đi chùa, cà phê, dạo phố).
                                     </p>
                                 </section>
-                                
+
                                 <section>
                                     <h3 className="font-display text-2xl mb-4 text-[#2B2118]">Giá trị cốt lõi (Hướng tới)</h3>
                                     <ul className="space-y-4">
@@ -1269,9 +1194,9 @@ const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () 
                                     </ul>
                                 </section>
                             </div>
-                            
+
                             <div className="mt-10 flex justify-center">
-                                <button 
+                                <button
                                     onClick={() => setShowAbout(false)}
                                     className="px-8 py-3 bg-[#B3261E] text-white rounded-full font-medium hover:shadow-lg hover:-translate-y-0.5 transition-all"
                                 >
@@ -1301,7 +1226,7 @@ export default function App() {
     const [initialConfig, setInitialConfig] = useState<any>(null);
     const [isCultureOpen, setIsCultureOpen] = useState(false);
     const [cultureCore, setCultureCore] = useState('ao-tu-than');
-    
+
     return (
         <div className="w-full h-screen font-sans text-than overflow-hidden">
             {window.location.pathname === '/studio-do' ? (

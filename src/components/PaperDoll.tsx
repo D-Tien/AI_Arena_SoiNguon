@@ -19,6 +19,7 @@ export interface CharacterProps {
     palette?: string[]; // [primary, secondary, accent]
     layers: DollLayers;
     styleMode?: 'traditional' | 'modern';
+    hideBase?: boolean;
 }
 
 // --- SVG Definitions for Garments ---
@@ -629,7 +630,7 @@ const Blazer = ({ color }: { color: string }) => (
     </g>
 );
 
-export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun", bangs = "mai-thua", palette = ["#A8231A", "#1B2A5C", "#E3A72F"], layers, styleMode = 'traditional' }: CharacterProps) => {
+export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun", bangs = "mai-thua", palette = ["#A8231A", "#1B2A5C", "#E3A72F"], layers, styleMode = 'traditional', hideBase = false }: CharacterProps) => {
     const primary = palette[0] || "#A8231A";
     const secondary = palette[1] || "#1B2A5C";
     const accent = palette[2] || "#E3A72F";
@@ -644,9 +645,11 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                 }}
             >
                 {/* Main Render */}
-                {gender === 'female' ? <BodyBase skinTone={skinTone} /> : (
-                    // Ẩn BodyBaseMale nếu đang dùng ảnh combo (quần short, jeans, cargo...), giữ lại ở Step 1, 2 (khi bottom === 'none')
-                    (!layers.bottom || layers.bottom === 'none' || layers.bottom === 'quan-lua' || layers.bottom === 'default') && <BodyBaseMale skinTone={skinTone} />
+                {!hideBase && (layers.top === 'underwear' || !layers.top) && (
+                    gender === 'female' ? <BodyBase skinTone={skinTone} /> : (
+                        // Ẩn BodyBaseMale nếu đang dùng ảnh combo (quần short, jeans, cargo...), giữ lại ở Step 1, 2 (khi bottom === 'none')
+                        (!layers.bottom || layers.bottom === 'none' || layers.bottom === 'quan-lua' || layers.bottom === 'default') && <BodyBaseMale skinTone={skinTone} />
+                    )
                 )}
                 
                 {/* Layer Quần Áo (PNG) */}
@@ -655,7 +658,7 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                     {layers.top === 'ao-tu-than' && gender === 'female' && (
                         <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-tuthan-female-${layers.topColor || 'default'}`}>
                             <image 
-                                href={`/assets/character/top/ao_tu_than_female${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}.png`}
+                                href={`/assets/character/top/ao_tu_than_female${(!layers.topColor || layers.topColor === 'default') ? '' : (layers.topColor === 'brown' ? '_1' : '_2')}.png?v=${Date.now()}`}
                                 x="-130" 
                                 y="-205" 
                                 width="660" 
@@ -664,11 +667,22 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                             />
                         </motion.g>
                     )}
-                    {layers.top === 'ao-ngu-than' && gender === 'male' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key="png-top-nguthan-male">
-                            {/* Dùng y hệt kích thước của BodyBaseMale để fit hoàn hảo */}
+                    {layers.top === 'ao-ngu-than' && (
+                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-nguthan-${gender}-${layers.topColor || 'default'}`}>
                             <image 
-                                href="/assets/character/top/ao_ngu_than_male.png" 
+                                href={`/assets/character/top/ao_ngu_than_${gender}${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}.png?v=${Date.now()}`} 
+                                x="-130" 
+                                y="-205" 
+                                width="660" 
+                                height="825" 
+                                preserveAspectRatio="xMidYMax meet" 
+                            />
+                        </motion.g>
+                    )}
+                    {layers.top === 'ao-ba-ba' && (
+                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-baba-${gender}-${layers.topColor || 'default'}`}>
+                            <image 
+                                href={`/assets/character/top/ao_ba_ba_${gender}${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}.png?v=${Date.now()}`} 
                                 x="-130" 
                                 y="-205" 
                                 width="660" 

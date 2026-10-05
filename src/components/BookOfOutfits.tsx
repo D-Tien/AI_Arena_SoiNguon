@@ -9,7 +9,7 @@ export const BookOfOutfits = ({ onStartPhoi }: { onStartPhoi: () => void }) => {
     const [currentPage, setCurrentPage] = useState(0); // 0 to 7 on desktop, 0 to 15 on mobile
     const [direction, setDirection] = useState(0);
 
-    const totalSpreads = 8;
+    const totalSpreads = coreCostumes.length + 3; // Cover + costumes + lookbook + end page
     const totalPages = isMobile ? totalSpreads * 2 : totalSpreads;
 
     useEffect(() => {
@@ -69,6 +69,32 @@ export const BookOfOutfits = ({ onStartPhoi }: { onStartPhoi: () => void }) => {
         if (spreadIndex === 0) return renderCover();
         if (spreadIndex === totalSpreads - 1) return <div className="w-full h-full bg-giay-sang"></div>; // Blank left for end page
 
+        if (spreadIndex === totalSpreads - 2) {
+            // Lookbook AI (Truyền Thống)
+            return (
+                <div className="w-full h-full p-6 md:p-10 flex flex-col bg-giay-sang overflow-hidden relative">
+                    <h2 className="font-display text-4xl text-than mb-2 border-b-2 border-son pb-1 inline-block">Lookbook AI</h2>
+                    <h3 className="font-label text-xs text-son mb-4 uppercase">Cảm hứng truyền thống</h3>
+                    <div className="flex-1 grid grid-cols-2 gap-4">
+                        <div className="flex flex-col relative group h-[90%] border-4 border-white shadow-md">
+                            <img src="/images/lookbook/trad_1.jpg" alt="Ao Ngu Than" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display='none'} />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
+                                <p className="text-white text-xs text-center mb-3">Áo Ngũ Thân - Huế</p>
+                                <button onClick={onStartPhoi} className="bg-son text-white px-3 py-1.5 text-xs font-bold neo-border hover:scale-105">THỬ NGAY</button>
+                            </div>
+                        </div>
+                        <div className="flex flex-col relative group h-[90%] border-4 border-white shadow-md mt-6">
+                            <img src="/images/lookbook/trad_2.jpg" alt="Ao The" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display='none'} />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
+                                <p className="text-white text-xs text-center mb-3">Áo The - Hà Nội</p>
+                                <button onClick={onStartPhoi} className="bg-son text-white px-3 py-1.5 text-xs font-bold neo-border hover:scale-105">THỬ NGAY</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
         const costume = coreCostumes[spreadIndex - 1];
         if (!costume) return null;
 
@@ -106,6 +132,32 @@ export const BookOfOutfits = ({ onStartPhoi }: { onStartPhoi: () => void }) => {
     const renderRightPage = (spreadIndex: number) => {
         if (spreadIndex === 0) return <div className="w-full h-full bg-giay-sang flex items-center justify-center italic text-than/40">Trang trống</div>;
         if (spreadIndex === totalSpreads - 1) return renderEndPage();
+
+        if (spreadIndex === totalSpreads - 2) {
+            // Lookbook AI (Cách Tân)
+            return (
+                <div className="w-full h-full p-6 md:p-10 flex flex-col bg-giay-sang overflow-hidden relative">
+                    <h2 className="font-display text-4xl text-transparent mb-2 border-b-2 border-transparent pb-1 inline-block select-none">-</h2>
+                    <h3 className="font-label text-xs text-luc mb-4 uppercase">Góc phố cách tân</h3>
+                    <div className="flex-1 grid grid-cols-2 gap-4">
+                        <div className="flex flex-col relative group h-[90%] border-4 border-white shadow-md">
+                            <img src="/images/lookbook/mod_1.jpg" alt="Tu Than Streetwear" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display='none'} />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
+                                <p className="text-white text-xs text-center mb-3">Tứ Thân Cyberpunk</p>
+                                <button onClick={onStartPhoi} className="bg-luc text-white px-3 py-1.5 text-xs font-bold neo-border hover:scale-105">BÓC TÁCH OUTFIT</button>
+                            </div>
+                        </div>
+                        <div className="flex flex-col relative group h-[90%] border-4 border-white shadow-md mt-6">
+                            <img src="/images/lookbook/mod_2.jpg" alt="Ba Ba Streetwear" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display='none'} />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
+                                <p className="text-white text-xs text-center mb-3">Jacket Áo Bà Ba</p>
+                                <button onClick={onStartPhoi} className="bg-luc text-white px-3 py-1.5 text-xs font-bold neo-border hover:scale-105">BÓC TÁCH OUTFIT</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
         const costume = coreCostumes[spreadIndex - 1];
         if (!costume) return null;

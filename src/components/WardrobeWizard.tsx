@@ -9,13 +9,14 @@ import Step6Mode from './wizard-steps/Step6Mode';
 import CulturalGuardAlert from './CulturalGuardAlert';
 
 export type Gender = 'female' | 'male';
-export type Place = 'Hà Nội' | 'Huế' | 'Sài Gòn' | 'Tuyên Quang' | 'Quảng Ninh' | 'Đà Nẵng' | 'Hội An' | 'Cà Mau' | 'Đà Lạt';
+export type Place = 'Hà Nội' | 'Huế' | 'Sài Gòn' | 'Ninh Bình' | 'Bắc Ninh' | 'Hà Giang' | 'Tuyên Quang' | 'Quảng Ninh' | 'Đà Nẵng' | 'Hội An' | 'Cà Mau' | 'Đà Lạt';
 export type Mode = 'traditional' | 'modern';
 
 export interface WardrobeState {
     gender: Gender;
     hair: string;
     place: Place;
+    event?: string;
     top: string;
     topColor?: string;
     bottom: string;
@@ -85,9 +86,9 @@ export default function WardrobeWizard({ onClose, initialConfig }: WardrobeWizar
             </div>
 
             {/* RIGHT: Options & Flow */}
-            <div className="w-1/2 h-full flex flex-col relative bg-[#F5EFE6]">
+            <div className="w-1/2 h-full flex flex-col bg-[#F5EFE6]">
                 {/* Progress Header */}
-                <div className="px-12 pt-16 pb-8">
+                <div className="px-12 pt-16 pb-8 shrink-0">
                     <div className="text-[10px] font-bold tracking-widest text-[#2B2118]/40 uppercase mb-4 flex items-center gap-2">
                         <span>BƯỚC {currentStep} / 6</span>
                         <div className="h-[1px] bg-[#2B2118]/10 flex-1"></div>
@@ -98,7 +99,7 @@ export default function WardrobeWizard({ onClose, initialConfig }: WardrobeWizar
                 </div>
 
                 {/* Content Area (Scrollable) */}
-                <div className="flex-1 overflow-y-auto px-12 pb-32">
+                <div className="flex-1 overflow-y-auto px-12 pb-12">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentStep}
@@ -120,8 +121,8 @@ export default function WardrobeWizard({ onClose, initialConfig }: WardrobeWizar
                     </AnimatePresence>
                 </div>
 
-                {/* Sticky Footer */}
-                <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-[#F5EFE6] via-[#F5EFE6] to-[#F5EFE6]/0">
+                {/* Normal Footer */}
+                <div className="w-full p-8 bg-[#F5EFE6] border-t border-[#2B2118]/10 shrink-0">
                     <div className="flex justify-between items-center w-full px-4">
                         <button 
                             onClick={handleBack}

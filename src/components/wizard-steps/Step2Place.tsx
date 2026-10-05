@@ -7,21 +7,24 @@ interface Props {
 }
 
 const placesData = [
-    { id: 'Hà Nội', name: 'hà nội', desc: 'thanh lịch, truyền thống' },
-    { id: 'Huế', name: 'huế', desc: 'thơ mộng, cổ kính' },
-    { id: 'Sài Gòn', name: 'sài gòn', desc: 'phóng khoáng, tự do' },
-    { id: 'Tuyên Quang', name: 'tuyên quang', desc: 'lễ hội, rực rỡ' },
-    { id: 'Quảng Ninh', name: 'quảng ninh', desc: 'vịnh xanh, kỳ vĩ' },
-    { id: 'Đà Nẵng', name: 'đà nẵng', desc: 'năng động, biển xanh' },
-    { id: 'Hội An', name: 'hội an', desc: 'hoài cổ, bình yên' },
-    { id: 'Cà Mau', name: 'cà mau', desc: 'đất mũi, sông nước' },
-    { id: 'Đà Lạt', name: 'đà lạt', desc: 'mộng mơ, sương mù' },
+    { id: 'Hà Nội', name: 'hà nội', desc: 'thanh lịch, truyền thống', image: 'ha-noi.jpg' },
+    { id: 'Huế', name: 'huế', desc: 'thơ mộng, cổ kính', image: 'hue.jpg' },
+    { id: 'Sài Gòn', name: 'sài gòn', desc: 'phóng khoáng, tự do', image: 'sai-gon.jpg' },
+    { id: 'Ninh Bình', name: 'ninh bình', desc: 'cố đô, non nước', image: 'ninh-binh.jpg' },
+    { id: 'Bắc Ninh', name: 'bắc ninh', desc: 'quan họ, mộc mạc', image: 'bac-ninh.jpg' },
+    { id: 'Hà Giang', name: 'hà giang', desc: 'hùng vĩ, sương mây', image: 'ha-giang.jpg' },
+    { id: 'Tuyên Quang', name: 'tuyên quang', desc: 'lễ hội, rực rỡ', image: 'tuyen-quang.jpg' },
+    { id: 'Quảng Ninh', name: 'quảng ninh', desc: 'vịnh xanh, kỳ vĩ', image: 'quang-ninh.jpg' },
+    { id: 'Đà Nẵng', name: 'đà nẵng', desc: 'năng động, biển xanh', image: 'da-nang.jpg' },
+    { id: 'Hội An', name: 'hội an', desc: 'hoài cổ, bình yên', image: 'hoi-an.jpg' },
+    { id: 'Cà Mau', name: 'cà mau', desc: 'đất mũi, sông nước', image: 'ca-mau.jpg' },
+    { id: 'Đà Lạt', name: 'đà lạt', desc: 'mộng mơ, sương mù', image: 'da-lat.jpg' },
 ];
 
 export default function Step2Place({ state, updateState }: Props) {
     const handleSelect = (place: Place) => {
         let suggestedTop = state.top;
-        if (['Hà Nội', 'Tuyên Quang', 'Quảng Ninh'].includes(place)) {
+        if (['Hà Nội', 'Tuyên Quang', 'Quảng Ninh', 'Ninh Bình', 'Bắc Ninh', 'Hà Giang'].includes(place)) {
             suggestedTop = state.gender === 'male' ? 'ao-the' : 'tu-than';
         } else if (['Huế', 'Đà Nẵng', 'Hội An', 'Đà Lạt'].includes(place)) {
             suggestedTop = 'ngu-than';
@@ -40,7 +43,7 @@ export default function Step2Place({ state, updateState }: Props) {
                 {storyText}
             </p>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 gap-8">
                 {placesData.map((place, index) => {
                     const isSelected = state.place === place.id;
                     const rotation = index % 2 === 0 ? 'rotate-1' : '-rotate-1';
@@ -70,18 +73,29 @@ export default function Step2Place({ state, updateState }: Props) {
                                 </motion.div>
                             )}
 
-                            {/* Hộp nền cho hình ảnh (trống vì là địa danh) */}
-                            <div className="w-full aspect-[4/5] mb-3 bg-[#EFE8D8] flex flex-col items-center justify-center p-2 relative overflow-hidden">
-                                <div className="w-full h-full flex flex-col items-center justify-center text-[10px] text-than/50 font-bold text-center tracking-widest uppercase opacity-80 mix-blend-multiply">
+                            {/* Hộp nền cho hình ảnh địa danh */}
+                            <div className="w-full aspect-square mb-4 bg-[#EFE8D8] flex flex-col items-center justify-center p-0 relative overflow-hidden">
+                                {/* Fallback text phía sau */}
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-[10px] text-than/50 font-bold text-center tracking-widest uppercase opacity-80 mix-blend-multiply p-2">
                                     [PLACE-<br/>{place.id.toUpperCase()}]<br/><br/>
                                 </div>
+                                {/* Ảnh */}
+                                <img 
+                                    src={`/images/places/${place.image}`} 
+                                    alt={place.name} 
+                                    className="w-full h-full object-cover relative z-10" 
+                                    onError={(e) => {
+                                        // Ẩn ảnh nếu không tải được để hiện text fallback
+                                        e.currentTarget.style.display = 'none';
+                                    }}
+                                />
                             </div>
 
-                            <div className="flex flex-col items-center justify-center mt-auto w-full px-1">
-                                <h3 className={`text-base leading-tight font-bold tracking-wide ${isSelected ? 'text-[#B3261E]' : 'text-than'}`}>
+                            <div className="flex flex-col items-center justify-center mt-auto w-full px-1 pb-1">
+                                <h3 className={`text-lg leading-tight font-bold tracking-wide uppercase ${isSelected ? 'text-[#B3261E]' : 'text-than'}`}>
                                     {place.name}
                                 </h3>
-                                <p className="text-[10.5px] text-than/70 mt-1 line-clamp-2 leading-tight tracking-wide">
+                                <p className="text-xs text-than/70 mt-1 line-clamp-2 leading-relaxed tracking-wide">
                                     {place.desc}
                                 </p>
                             </div>

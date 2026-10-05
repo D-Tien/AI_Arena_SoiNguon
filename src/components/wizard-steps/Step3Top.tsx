@@ -8,26 +8,30 @@ interface Props {
     setGuardMessage: (msg: string | null) => void;
 }
 
+const MIEN_BAC = ['Hà Nội', 'Ninh Bình', 'Bắc Ninh', 'Hà Giang', 'Tuyên Quang', 'Quảng Ninh'];
+const MIEN_TRUNG = ['Huế', 'Đà Nẵng', 'Hội An', 'Đà Lạt'];
+const MIEN_NAM = ['Sài Gòn', 'Cà Mau'];
+
 const tops = [
-    { id: 'ao-tu-than', name: 'áo tứ thân', region: 'Hà Nội', gender: 'female', desc: 'gọn gàng, nữ tính' },
-    { id: 'ao-the', name: 'áo the', region: 'Hà Nội', gender: 'male', desc: 'nho nhã, nam tính' },
-    { id: 'ao-ngu-than', name: 'áo ngũ thân', region: 'Huế', gender: 'all', desc: 'chữ thập, quyền quý' },
-    { id: 'ao-ba-ba', name: 'áo bà ba', region: 'Sài Gòn', gender: 'all', desc: 'mộc mạc, gần gũi' },
+    { id: 'ao-tu-than', name: 'áo tứ thân', regions: MIEN_BAC, primaryRegionName: 'miền Bắc', gender: 'female', desc: 'gọn gàng, nữ tính' },
+    { id: 'ao-the', name: 'áo the', regions: MIEN_BAC, primaryRegionName: 'miền Bắc', gender: 'male', desc: 'nho nhã, nam tính' },
+    { id: 'ao-ngu-than', name: 'áo ngũ thân', regions: MIEN_TRUNG, primaryRegionName: 'miền Trung', gender: 'all', desc: 'chữ thập, quyền quý' },
+    { id: 'ao-ba-ba', name: 'áo bà ba', regions: [...MIEN_NAM, ...MIEN_TRUNG], primaryRegionName: 'miền Nam & miền Trung', gender: 'all', desc: 'mộc mạc, gần gũi' },
 ];
 
 export default function Step3Top({ state, updateState, setGuardMessage }: Props) {
     const sortedTops = tops
         .filter(top => top.gender === 'all' || top.gender === state.gender)
         .sort((a, b) => {
-            if (a.region === state.place) return -1;
-            if (b.region === state.place) return 1;
+            if (a.regions.includes(state.place)) return -1;
+            if (b.regions.includes(state.place)) return 1;
             return 0;
         });
 
-    const handleSelect = (topId: string, topRegion: string, topGender: string) => {
-        updateState({ top: topId });
-        if (topRegion !== state.place) {
-            setGuardMessage(`áo này thường phổ biến ở ${topRegion}. bạn có muốn phá cách ở ${state.place}?`);
+    const handleSelect = (topId: string, topRegions: string[], primaryRegionName: string, topGender: string) => {
+        updateState({ top: topId, topColor: undefined });
+        if (!topRegions.includes(state.place)) {
+            setGuardMessage(`áo này thường phổ biến ở ${primaryRegionName}. bạn có muốn phá cách ở ${state.place}?`);
             setTimeout(() => setGuardMessage(null), 4000);
         } else if (topGender !== 'all' && topGender !== state.gender) {
              setGuardMessage(`áo này mang thiết kế đặc trưng cho giới tính khác theo truyền thống.`);
@@ -46,13 +50,25 @@ export default function Step3Top({ state, updateState, setGuardMessage }: Props)
     ];
 
     const tuThanColors = [
-        { id: 'default', color: '#0F5B4A', name: 'lục ngọc' },
-        { id: '1', color: '#A8231A', name: 'đỏ son' },
-        { id: '2', color: '#E3A72F', name: 'vàng nghệ' },
+        { id: 'default', color: '#2D5A4C', name: 'xanh lục' },
+        { id: 'brown', color: '#A37B65', name: 'nâu nhẹ' },
+        { id: '1', color: '#C8828B', name: 'hồng nhẹ' },
+    ];
+
+    const nguThanColors = [
+        { id: 'default', color: '#1A2A40', name: 'xanh đen' },
+        { id: 'teal', color: '#165057', name: 'xanh ngọc' },
+        { id: 'purple', color: '#5D2A82', name: 'tím' },
+    ];
+
+    const baBaColors = [
+        { id: 'default', color: '#FDFDFD', name: 'trắng' },
+        { id: 'brown', color: '#6B4423', name: 'nâu đất' },
+        { id: 'burgundy', color: '#722F37', name: 'đỏ mận' },
     ];
 
     const currentTop = tops.find(t => t.id === state.top);
-    const storyText = currentTop ? `${currentTop.name}: món của ${currentTop.gender === 'male' ? 'nam' : currentTop.gender === 'female' ? 'nữ' : 'người'} ${currentTop.region}.` : "hãy chọn một chiếc áo.";
+    const storyText = currentTop ? `${currentTop.name}: món của ${currentTop.gender === 'male' ? 'nam' : currentTop.gender === 'female' ? 'nữ' : 'người'} ${currentTop.primaryRegionName}.` : "hãy chọn một chiếc áo.";
 
     return (
         <div className="flex flex-col gap-6 font-label lowercase">
@@ -68,7 +84,7 @@ export default function Step3Top({ state, updateState, setGuardMessage }: Props)
                     return (
                         <button
                             key={top.id}
-                            onClick={() => handleSelect(top.id, top.region, top.gender)}
+                            onClick={() => handleSelect(top.id, top.regions, top.primaryRegionName, top.gender)}
                             className={`relative p-2.5 text-center bg-[#FBF5E9] flex flex-col items-center min-h-[44px] group transition-all duration-300 transform ${!isSelected ? rotation : 'rotate-0'} hover:rotate-0 hover:-translate-y-1 hover:shadow-[6px_8px_0_var(--than)] border-2 ${
                                 isSelected 
                                 ? 'border-[#B3261E] shadow-[4px_4px_0_var(--than)] z-10' 
@@ -91,15 +107,15 @@ export default function Step3Top({ state, updateState, setGuardMessage }: Props)
                             )}
 
                             {/* Tem gợi ý (giống trong ảnh: dán băng dính chéo góc trên trái) */}
-                            {top.region === state.place && (
+                            {top.regions.includes(state.place) && (
                                 <div className="absolute -top-2 -left-2 bg-[#F3E9D6] border border-than text-than text-[9px] px-2 py-0.5 z-20 shadow-sm -rotate-[8deg] font-bold tracking-wide" style={{ borderRadius: '2px' }}>
                                     hợp nơi bạn đi
                                 </div>
                             )}
 
                             {/* Hộp nền cho hình ảnh */}
-                            <div className="w-full aspect-[4/5] mb-3 bg-[#EFE8D8] flex flex-col items-center justify-center p-2 relative overflow-hidden">
-                                <SmartImage slot={`costume-${top.id}`} className="absolute bottom-0 w-full h-[120%] object-contain object-bottom scale-110 origin-bottom mix-blend-multiply opacity-80 pointer-events-none" />
+                            <div className="w-full aspect-[3/4] mb-3 bg-[#EFE8D8] flex flex-col items-center justify-center p-0 relative overflow-hidden">
+                                <SmartImage slot={`costume-${top.id}`} className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply opacity-90 pointer-events-none" />
                             </div>
 
                             <div className="flex flex-col items-center justify-center mt-auto w-full px-1">
@@ -115,11 +131,11 @@ export default function Step3Top({ state, updateState, setGuardMessage }: Props)
                 })}
             </div>
 
-            {(state.top === 'ao-the' || state.top === 'ao-tu-than') && (
+            {(state.top === 'ao-the' || state.top === 'ao-tu-than' || state.top === 'ao-ngu-than' || state.top === 'ao-ba-ba') && (
                 <div className="pt-4 border-t border-[#2B2118]/10 mt-2">
                     <p className="text-than/80 text-sm mb-3">màu sắc trang phục</p>
                     <div className="flex flex-wrap gap-3">
-                        {(state.top === 'ao-the' ? colors : tuThanColors).map(c => (
+                        {(state.top === 'ao-the' ? colors : (state.top === 'ao-tu-than' ? tuThanColors : (state.top === 'ao-ngu-than' ? nguThanColors : baBaColors))).map(c => (
                             <button
                                 key={c.id}
                                 onClick={() => updateState({ topColor: c.id })}
