@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SmartImage } from './SmartImage';
 
 export const StageBackground = ({ scene = 'hanoi', title = '' }: { scene: string, title?: string }) => {
+    const [imgError, setImgError] = useState(false);
+
+    useEffect(() => {
+        setImgError(false);
+    }, [scene]);
     return (
         <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0 bg-[#E8E1D5] flex flex-col items-center justify-end pb-12">
             {/* Giấy Dó Texture outside the arch */}
@@ -33,11 +38,14 @@ export const StageBackground = ({ scene = 'hanoi', title = '' }: { scene: string
                         className="absolute inset-0 w-full h-full"
                     >
                         {/* Halftone & filter effects on image */}
-                        <div className="w-full h-full" style={{ filter: 'saturate(0.88) contrast(1.05)' }}>
-                            <img src={`/images/places/${scene}.jpg`} alt={scene} className="w-full h-full object-cover" onError={(e) => {
-                                // Fallback nếu chưa tải ảnh
-                                e.currentTarget.style.display = 'none';
-                            }} />
+                        <div className="w-full h-full bg-[#D6C5B3]" style={{ filter: 'saturate(0.88) contrast(1.05)' }}>
+                            {!imgError ? (
+                                <img src={`/images/places/${scene}.jpg`} alt={scene} className="w-full h-full object-cover mix-blend-multiply" onError={() => setImgError(true)} />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center mix-blend-multiply opacity-50 relative overflow-hidden">
+                                    <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(var(--than) 2px, transparent 2px)', backgroundSize: '12px 12px' }} />
+                                </div>
+                            )}
                         </div>
                         
                         {/* Vignette & Halftone overlay */}

@@ -48,5 +48,13 @@ cd sac-viet-remix
 # 2. Cài đặt các gói phụ thuộc
 npm install
 
-# 3. Khởi chạy môi trường phát triển
+# 3. Tạo file .env.local và thêm API key (không cần tiền tố VITE_)
+echo GEMINI_API_KEY=your_api_key_here > .env.local
+
+# 4. Khởi chạy môi trường phát triển
 npm run dev
+```
+
+### ⚠️ Lưu ý khi Deploy Production
+Hiện tại dự án đang sử dụng Vite Proxy để gọi Gemini API trong môi trường dev nhằm bảo mật API key. 
+Khi deploy lên production (Vercel, Netlify...), bạn **BẮT BUỘC** phải thay thế Proxy bằng một hàm Serverless (ví dụ: Vercel Functions hoặc Cloudflare Workers) để ẩn API key, vì Vite Proxy sẽ không hoạt động ở build production.

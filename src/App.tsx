@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Compass, Camera, BookOpen, Sun, Moon, ArrowRight, ArrowLeft, X, Calendar, Share2 } from 'lucide-react';
+import { Sparkles, Compass, Camera, BookOpen, Sun, Moon, ArrowRight, ArrowLeft, X, Calendar, Share2, MapPin } from 'lucide-react';
 import { Character, type DollLayers } from './components/PaperDoll';
 import { StageBackground } from './components/Stage';
 import { GuardStamp, GuardModal } from './components/CulturalGuard';
@@ -12,6 +12,8 @@ import { SmartImage } from './components/SmartImage';
 import { StudioDo } from './components/StudioDo';
 import { AiGenerationModal } from './components/AiGenerationModal';
 import CalendarTab from './components/CalendarTab';
+import * as htmlToImage from 'html-to-image';
+import { ShareCard } from './components/ShareCard';
 import Step1GenderHair from './components/wizard-steps/Step1GenderHair';
 import Step2Place from './components/wizard-steps/Step2Place';
 import Step2bEvent from './components/wizard-steps/Step2bEvent';
@@ -20,7 +22,9 @@ import Step5Accessories from './components/wizard-steps/Step5Accessories';
 import Step6Mode from './components/wizard-steps/Step6Mode';
 import CulturalGuardAlert from './components/CulturalGuardAlert';
 import type { WardrobeState } from './components/WardrobeWizard';
-
+import { StylistInput } from './components/StylistInput';
+import type { StylistResponse } from './services/stylistService';
+import TroVeCoiNguon from './components/TroVeCoiNguon';
 // --- Shared Components ---
 const Slogan = () => (
     <div className="mt-6 flex flex-col gap-1">
@@ -64,6 +68,7 @@ const Sidebar = ({ activeTab, setActiveTab, onHome }: { activeTab: string, setAc
             <button onClick={() => setActiveTab('look')} className={`flex flex-col items-center gap-1 group transition-colors w-full ${activeTab === 'look' ? 'text-son' : 'text-than hover:text-son'}`}><Camera size={24} className="group-hover:scale-110 transition-transform" /><span className="font-label text-[10px] text-center leading-tight">LOOKBOOK</span></button>
             <button onClick={() => setActiveTab('lich')} className={`flex flex-col items-center gap-1 group transition-colors w-full ${activeTab === 'lich' ? 'text-son' : 'text-than hover:text-son'}`}><Calendar size={24} className="group-hover:scale-110 transition-transform" /><span className="font-label text-[10px] text-center leading-tight">LỊCH TRÌNH</span></button>
             <button onClick={() => setActiveTab('hoc')} className={`flex flex-col items-center gap-1 group transition-colors w-full ${activeTab === 'hoc' ? 'text-son' : 'text-than hover:text-son'}`}><BookOpen size={24} className="group-hover:scale-110 transition-transform" /><span className="font-label text-[10px] text-center leading-tight">HỌC &<br />GIẢI PHÁP</span></button>
+            <button onClick={() => setActiveTab('hanhtrinh')} className={`flex flex-col items-center gap-1 group transition-colors w-full ${activeTab === 'hanhtrinh' ? 'text-son' : 'text-than hover:text-son'}`}><MapPin size={24} className="group-hover:scale-110 transition-transform" /><span className="font-label text-[10px] text-center leading-tight">HÀNH TRÌNH<br />ĐẠI SỨ</span></button>
         </div>
         <button className="text-than hover:text-son mb-4 transition-colors"><Moon size={24} /></button>
     </div>
@@ -79,6 +84,7 @@ const MobilePillNav = ({ activeTab, setActiveTab }: { activeTab: string, setActi
         <button onClick={() => setActiveTab('look')} className={`flex flex-col items-center ${activeTab === 'look' ? 'text-son' : 'text-giay-sang/60 hover:text-giay-sang'}`}><Camera size={20} /></button>
         <button onClick={() => setActiveTab('lich')} className={`flex flex-col items-center ${activeTab === 'lich' ? 'text-son' : 'text-giay-sang/60 hover:text-giay-sang'}`}><Calendar size={20} /></button>
         <button onClick={() => setActiveTab('hoc')} className={`flex flex-col items-center ${activeTab === 'hoc' ? 'text-son' : 'text-giay-sang/60 hover:text-giay-sang'}`}><BookOpen size={20} /></button>
+        <button onClick={() => setActiveTab('hanhtrinh')} className={`flex flex-col items-center ${activeTab === 'hanhtrinh' ? 'text-son' : 'text-giay-sang/60 hover:text-giay-sang'}`}><MapPin size={20} /></button>
     </div>
 );
 
@@ -237,11 +243,26 @@ const WizardStep4 = ({ remixLevel, setRemixLevel, styleMode, setStyleMode }: any
 
 
 // --- Result Poster ---
-const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gender, styleMode, hair }: any) => {
+const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gender, styleMode, hair, cultureNote }: any) => {
     const [isGuardOpen, setIsGuardOpen] = useState(false);
     const [isCultureOpen, setIsCultureOpen] = useState(false);
     const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [attemptsLeft, setAttemptsLeft] = useState(5);
+    const shareRef = useRef<HTMLDivElement>(null);
+
+    const handleShare = async () => {
+        if (shareRef.current) {
+            try {
+                const dataUrl = await htmlToImage.toJpeg(shareRef.current, { quality: 0.95 });
+                const link = document.createElement('a');
+                link.download = `soinguon-${core.toLowerCase()}-${Date.now()}.jpg`;
+                link.href = dataUrl;
+                link.click();
+            } catch (err) {
+                console.error('Lỗi khi xuất ảnh', err);
+            }
+        }
+    };
 
     // Dynamic guard level based on remix level
     let guardLevel: 'green' | 'yellow' | 'red' = 'green';
@@ -298,7 +319,7 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
         if (layers.shoes === 'sneaker') extraDesc.push('giày sneaker đế dày');
         
         const characterDesc = gender === 'male' ? 'một nam thanh niên Việt Nam trẻ' : 'một người mẫu Việt Nam trẻ';
-        const stylePrefix = styleMode === 'traditional' ? 'phong cách truyền thống nguyên bản' : 'phong cách cách tân hiện đại';
+        const stylePrefix = styleMode === 'traditional' ? 'phong cách Truyền thống' : 'phong cách Cách tân';
 
         return `Ảnh chụp thời trang chân thực phong cách tạp chí, ${characterDesc}, toàn thân, đứng ở ${sceneDesc}, mặc ${coreName} màu ${c1}, ${desc}, ${extraDesc.length > 0 ? 'kết hợp cùng ' + extraDesc.join(', ') : ''}. ${stylePrefix}, Vibe ${style}. Ánh sáng tự nhiên, nét ảnh sắc, độ sâu trường ảnh nhẹ. Không chữ, không logo, không thương hiệu, không giống người nổi tiếng, không phải kimono/hanbok/hanfu/sườn xám.`;
     };
@@ -383,11 +404,9 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
                                         <span className="text-than/60">{style}</span>
                                     </p>
                                     <h2 className="font-display text-6xl md:text-7xl text-than m-0 leading-[0.95] tracking-tight drop-shadow-sm">{title}</h2>
-                                    {styleMode === 'modern' && (
-                                        <span className="inline-block mt-2 text-son font-label text-[9px] tracking-[0.2em] uppercase border border-son/40 bg-son/5 px-4 py-1.5 rounded-sm w-max">
-                                            Bản Phối Cách Tân
-                                        </span>
-                                    )}
+                                    <span className={`inline-block mt-2 font-label text-[9px] tracking-[0.2em] uppercase border px-4 py-1.5 rounded-sm w-max ${styleMode === 'traditional' ? 'border-luc/40 bg-luc/5 text-luc' : 'border-son/40 bg-son/5 text-son'}`}>
+                                        {styleMode === 'traditional' ? 'Truyền thống' : 'Cách tân'}
+                                    </span>
                                 </div>
                             </div>
 
@@ -505,19 +524,21 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
                         </div>
 
                         {/* Styling Tip - Premium Glassmorphism Card */}
-                        <div className="backdrop-blur-md bg-white/40 p-6 lg:p-8 border-l-[3px] border-cham shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-r-lg relative overflow-hidden">
+                        <div className="backdrop-blur-md bg-white/40 p-6 lg:p-8 border-l-[3px] border-cham shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-r-lg relative overflow-hidden mb-6">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-cham/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
                             <h3 className="font-label text-cham text-[10px] tracking-[0.25em] uppercase mb-3 flex items-center gap-2">
                                 <Sparkles size={12} className="text-cham" />
                                 Góc Nhìn Trẻ (Styling Tip)
                             </h3>
                             <p className="text-than/80 font-medium leading-[1.8] text-sm lg:text-base relative z-10">
-                                Kết hợp cùng phụ kiện tối giản, ưu tiên các tone màu nền nã để làm nổi bật tinh thần trang phục. Chú ý tỷ lệ độ dài của tà áo và quần để tạo hiệu ứng thanh thoát cho dáng người.
+                                {cultureNote}
                             </p>
                         </div>
+                    </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex flex-col gap-4 mt-2">
+                    {/* Action Buttons - Sticky at the bottom */}
+                    <div className="sticky bottom-0 bg-gradient-to-t from-giay-do via-giay-do to-transparent pt-12 pb-6 px-6 lg:px-16 w-full z-50">
+                        <div className="max-w-3xl mx-auto flex flex-col gap-4">
                             <button 
                                 onClick={() => setIsCultureOpen(true)} 
                                 className="w-full text-left p-6 border border-than/10 hover:border-son/40 transition-all duration-300 group relative overflow-hidden bg-white/60 hover:bg-white/90 rounded-sm shadow-sm hover:shadow-md"
@@ -547,14 +568,26 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
                                     <button onClick={onSave} className="flex-[3] bg-white border border-than/10 text-than py-4 font-label uppercase tracking-[0.2em] text-xs hover:border-than/30 hover:bg-giay-sang transition-all rounded-sm shadow-sm">
                                         Lưu Lookbook
                                     </button>
-                                    <button className="flex-[1] bg-white border border-than/10 text-than flex items-center justify-center hover:border-than/30 hover:bg-giay-sang transition-all rounded-sm shadow-sm text-than/70 hover:text-son">
+                                    <button onClick={handleShare} className="flex-[1] bg-white border border-than/10 text-than flex items-center justify-center hover:border-than/30 hover:bg-giay-sang transition-all rounded-sm shadow-sm text-than/70 hover:text-son">
                                         <Share2 size={16} />
                                     </button>
                                 </div>
                             </div>
                         </div>
-
                     </div>
+                    
+                    <ShareCard 
+                        ref={shareRef}
+                        gender={gender}
+                        layers={layers}
+                        palette={palette}
+                        styleMode={styleMode}
+                        coreName={coreName}
+                        style={style}
+                        title={title}
+                        cultureNote={cultureNote}
+                        isAI={styleMode === 'modern'}
+                    />
                 </div>
             </div>
         </div>
@@ -567,8 +600,10 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
     const [myLooks, setMyLooks] = useState<any[]>([]);
     const [step, setStep] = useState(initialConfig ? 3 : 1);
 
-    // New 6-step state
     const [guardMessage, setGuardMessage] = useState<string | null>(null);
+    const [aiReasoning, setAiReasoning] = useState<string | null>(null);
+    const [aiPrompt, setAiPrompt] = useState<string | null>(null);
+    const [wizardInitialPrompt, setWizardInitialPrompt] = useState<string | null>(null);
     const [wardrobeState, setWardrobeState] = useState<WardrobeState>({
         gender: initialConfig?.gender || 'female',
         hair: 'Tóc xõa dài',
@@ -579,6 +614,22 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
         accessories: [],
         mode: 'traditional'
     });
+
+    const handleStylistApply = (res: StylistResponse, promptUsed: string) => {
+        updateWardrobeState({
+            gender: res.gender as any,
+            place: res.region === 'bac' ? 'Hà Nội' : (res.region === 'hue' ? 'Huế' : 'Sài Gòn'),
+            top: res.top,
+            bottom: res.bottom,
+            accessories: [...res.accessories, res.shoes].filter(Boolean),
+            mode: res.mode,
+            topColor: 'default' // Tạm thời dùng màu mặc định vì file ảnh là đuôi chữ (purple, teal...) chứ không phải HEX
+        });
+        setAiReasoning(res.reasoning);
+        setAiPrompt(promptUsed);
+        setWizardInitialPrompt(null);
+        setStep(3);
+    };
 
     const updateWardrobeState = (updates: Partial<WardrobeState>) => {
         setWardrobeState(prev => ({ ...prev, ...updates }));
@@ -682,6 +733,12 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
         setActiveTab('phoi'); // Switch to phoi do tab
     };
 
+    const handleSuggestOutfit = (prompt: string) => {
+        setWizardInitialPrompt(prompt);
+        setStep(1);
+        setActiveTab('phoi');
+    };
+
     const handleSaveLookbook = () => {
         const newLook = {
             id: Date.now(),
@@ -725,7 +782,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
             <div className="flex h-screen w-full bg-giay-do relative">
                 <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onHome={onReset} />
                 <div className="flex-1 w-full h-full">
-                    <CalendarTab />
+                    <CalendarTab onSuggestOutfit={handleSuggestOutfit} />
                 </div>
                 <MobilePillNav activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
@@ -756,12 +813,36 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
         );
     }
 
+    if (activeTab === 'hanhtrinh') {
+        return (
+            <div className="flex h-screen w-full bg-giay-do relative">
+                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onHome={onReset} />
+                <div className="flex-1 w-full h-full overflow-y-auto">
+                    <TroVeCoiNguon />
+                </div>
+                <MobilePillNav activeTab={activeTab} setActiveTab={setActiveTab} />
+            </div>
+        );
+    }
+
     if (step === 6) {
         return (
             <div className="flex h-screen w-full bg-giay-do relative">
                 <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onHome={onReset} />
                 <div className="flex-1 w-full h-full">
-                    <ResultPoster onBack={() => setStep(5)} onSave={handleSaveLookbook} scene={scene} core={core} style={style} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} gender={gender} styleMode={styleMode} />
+                    <ResultPoster 
+                        onBack={() => setStep(5)} 
+                        onSave={handleSaveLookbook} 
+                        scene={scene} 
+                        core={core} 
+                        style={style} 
+                        layers={getLayers()} 
+                        palette={PALETTES[paletteIdx]} 
+                        hair={hairType} 
+                        gender={gender} 
+                        styleMode={styleMode} 
+                        cultureNote={aiReasoning || "Trang phục truyền thống được thiết kế tỉ mỉ, gìn giữ nét văn hóa dân tộc."}
+                    />
                 </div>
                 <MobilePillNav activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
@@ -841,11 +922,53 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                     <div className="flex-1 overflow-y-auto hidden-scrollbar p-6 lg:p-12 pb-12">
                         <AnimatePresence mode="wait">
                             <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="min-h-full">
-                                {step === 1 && <Step2Place state={wardrobeState} updateState={updateWardrobeState} />}
-                                {step === 2 && <Step2bEvent state={wardrobeState} updateState={updateWardrobeState} />}
-                                {step === 3 && <Step3Top state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />}
-                                {step === 4 && <Step5Accessories state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />}
-                                {step === 5 && <Step6Mode state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />}
+                                {step === 1 && (
+                                    <>
+                                        <div className="mb-6">
+                                            <StylistInput 
+                                                key={`stylist-step-1`}
+                                                gender={wardrobeState.gender as any} 
+                                                onApply={handleStylistApply} 
+                                                initialPrompt={wizardInitialPrompt || aiPrompt || undefined}
+                                                autoSubmit={!!wizardInitialPrompt}
+                                            />
+                                        </div>
+                                        <Step2Place state={wardrobeState} updateState={updateWardrobeState} />
+                                    </>
+                                )}
+                                {step === 2 && (
+                                    <>
+                                        <div className="mb-6"><StylistInput gender={wardrobeState.gender as any} compact compactLabel={aiPrompt || undefined} onApply={handleStylistApply} /></div>
+                                        <Step2bEvent state={wardrobeState} updateState={updateWardrobeState} />
+                                    </>
+                                )}
+                                {step === 3 && (
+                                    <>
+                                        {aiReasoning && (
+                                            <div className="mb-6 bg-son/10 border-l-4 border-son p-4 flex flex-col gap-2">
+                                                <div className="flex items-start gap-2">
+                                                    <Sparkles size={16} className="text-son mt-0.5 shrink-0" />
+                                                    <p className="text-sm text-than italic leading-relaxed">{aiReasoning}</p>
+                                                </div>
+                                                <button onClick={() => setAiReasoning(null)} className="text-[10px] uppercase font-label tracking-widest bg-white border border-than/20 px-4 py-2 self-start hover:border-son text-than shadow-sm hover:shadow-md transition-all">Chỉnh từng món</button>
+                                            </div>
+                                        )}
+                                        {!aiReasoning && <div className="mb-6"><StylistInput gender={wardrobeState.gender as any} compact compactLabel={aiPrompt || undefined} onApply={handleStylistApply} /></div>}
+                                        <Step3Top state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />
+                                    </>
+                                )}
+                                {step === 4 && (
+                                    <>
+                                        <div className="mb-6"><StylistInput gender={wardrobeState.gender as any} compact compactLabel={aiPrompt || undefined} onApply={handleStylistApply} /></div>
+                                        <Step5Accessories state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />
+                                    </>
+                                )}
+                                {step === 5 && (
+                                    <>
+                                        <div className="mb-6"><StylistInput gender={wardrobeState.gender as any} compact compactLabel={aiPrompt || undefined} onApply={handleStylistApply} /></div>
+                                        <Step6Mode state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />
+                                    </>
+                                )}
                             </motion.div>
                         </AnimatePresence>
                     </div>

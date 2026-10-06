@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Bell, Plus, X, Edit3, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Bell, Plus, X, Edit3, Trash2, Sparkles } from 'lucide-react';
 
 const CURRENT_YEAR = 2026;
 const DEFAULT_MONTH = 9; // 0-indexed (October)
@@ -36,9 +36,20 @@ const LotusIcon = ({ className }: { className?: string }) => (
     </svg>
 );
 
-const CalendarTab = () => {
+interface CalendarTabProps {
+    onSuggestOutfit?: (prompt: string) => void;
+}
+
+const CalendarTab: React.FC<CalendarTabProps> = ({ onSuggestOutfit }) => {
     const [currentMonth, setCurrentMonth] = useState(DEFAULT_MONTH);
-    const [notes, setNotes] = useState<Record<string, string>>(INITIAL_NOTES);
+    const [notes, setNotes] = useState<Record<string, string>>(() => {
+        const saved = localStorage.getItem('soinguon_calendar_notes');
+        return saved ? JSON.parse(saved) : INITIAL_NOTES;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('soinguon_calendar_notes', JSON.stringify(notes));
+    }, [notes]);
     const [selectedDateStr, setSelectedDateStr] = useState<string | null>(null);
     const [noteDraft, setNoteDraft] = useState('');
     const [isEditing, setIsEditing] = useState(false);
@@ -250,8 +261,16 @@ const CalendarTab = () => {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div className="bg-white border-l-4 border-son p-4 min-h-[128px] shadow-sm">
-                                                    <p className="text-than text-sm whitespace-pre-wrap leading-relaxed font-medium">{notes[selectedDateStr]}</p>
+                                                <div className="flex flex-col gap-4">
+                                                    <div className="bg-white border-l-4 border-son p-4 min-h-[128px] shadow-sm">
+                                                        <p className="text-than text-sm whitespace-pre-wrap leading-relaxed font-medium">{notes[selectedDateStr]}</p>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => onSuggestOutfit && onSuggestOutfit(notes[selectedDateStr])}
+                                                        className="w-full bg-son text-white py-3 text-sm font-bold neo-border hover:bg-son/90 flex items-center justify-center gap-2 transition-colors"
+                                                    >
+                                                        <Sparkles size={18} /> Gợi ý outfit cho sự kiện này
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>

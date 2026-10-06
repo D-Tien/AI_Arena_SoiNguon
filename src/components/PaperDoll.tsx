@@ -22,6 +22,32 @@ export interface CharacterProps {
     hideBase?: boolean;
 }
 
+const SafeSvgImage = ({ href, fallback, fallbackBase, ...props }: any) => {
+    const [error, setError] = React.useState(false);
+    const maskId = React.useId().replace(/:/g, '');
+    React.useEffect(() => { setError(false); }, [href]);
+
+    if (error && fallback) {
+        return (
+            <g>
+                <defs>
+                    <mask id={`mask-${maskId}`}>
+                        {React.isValidElement(fallback) 
+                            ? React.cloneElement(fallback as React.ReactElement, { fill: 'white' }) 
+                            : <rect width="100%" height="100%" fill="white" />}
+                    </mask>
+                </defs>
+                {fallbackBase}
+                {fallback}
+                {/* Overlay hoạ tiết chấm mờ nhẹ lên fallback */}
+                <rect x="-200" y="-200" width="800" height="1000" fill="url(#fallback-pattern)" mask={`url(#mask-${maskId})`} opacity="0.4" pointerEvents="none" style={{ mixBlendMode: 'multiply' }} />
+            </g>
+        );
+    }
+    return <image href={href} onError={() => setError(true)} {...props} />;
+};
+
+
 // --- SVG Definitions for Garments ---
 const Eyes = ({ cx, cy, isFemale, skinTone }: { cx: number, cy: number, isFemale?: boolean, skinTone?: string }) => {
     const isRight = cx > 200;
@@ -644,6 +670,12 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                     filter: 'drop-shadow(4px 4px 0px var(--than))'
                 }}
             >
+                <defs>
+                    <pattern id="fallback-pattern" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                        <circle cx="2" cy="2" r="1.5" fill="var(--than)" />
+                    </pattern>
+                </defs>
+
                 {/* Main Render */}
                 {!hideBase && (layers.top === 'underwear' || !layers.top) && (
                     gender === 'female' ? <BodyBase skinTone={skinTone} /> : (
@@ -657,50 +689,45 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                     {/* Layer Áo (Nằm trên quần) */}
                     {layers.top === 'ao-tu-than' && gender === 'female' && (
                         <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-tuthan-female-${layers.topColor || 'default'}`}>
-                            <image 
+                            <SafeSvgImage 
                                 href={`/assets/character/top/ao_tu_than_female${(!layers.topColor || layers.topColor === 'default') ? '' : (layers.topColor === 'brown' ? '_1' : '_2')}.png?v=${Date.now()}`}
-                                x="-130" 
-                                y="-205" 
-                                width="660" 
-                                height="825" 
-                                preserveAspectRatio="xMidYMax meet" 
+                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
+                                fallback={<AoTuThan primary={primary} secondary={secondary} accent={accent} styleMode={styleMode} />}
+                                fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
                             />
                         </motion.g>
                     )}
                     {layers.top === 'ao-ngu-than' && (
                         <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-nguthan-${gender}-${layers.topColor || 'default'}`}>
-                            <image 
+                            <SafeSvgImage 
                                 href={`/assets/character/top/ao_ngu_than_${gender}${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}.png?v=${Date.now()}`} 
-                                x="-130" 
-                                y="-205" 
-                                width="660" 
-                                height="825" 
-                                preserveAspectRatio="xMidYMax meet" 
+                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
+                                fallback={<AoNguThan primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />}
+                                fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
                             />
                         </motion.g>
                     )}
                     {layers.top === 'ao-ba-ba' && (
                         <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-baba-${gender}-${layers.topColor || 'default'}`}>
-                            <image 
+                            <SafeSvgImage 
                                 href={`/assets/character/top/ao_ba_ba_${gender}${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}.png?v=${Date.now()}`} 
-                                x="-130" 
-                                y="-205" 
-                                width="660" 
-                                height="825" 
-                                preserveAspectRatio="xMidYMax meet" 
+                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
+                                fallback={<AoBaBa primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />}
+                                fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
                             />
                         </motion.g>
                     )}
                     {(layers.top === 'ao-tu-than' || layers.top === 'ao-the') && gender === 'male' && (
                         <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-aothe-male-${layers.topColor || 'default'}-${layers.bottom || 'default'}`}>
-                            <image 
+                            <SafeSvgImage 
                                 href={`/assets/character/top/ao_the_male${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}${layers.bottom && layers.bottom !== 'quan-lua' ? '_' + layers.bottom.replace('-', '_') : ''}.png`}
-                                /* Căn chỉnh lại size cho ảnh combo vì bị crop mất viền trong suốt */
                                 x={layers.bottom && layers.bottom !== 'quan-lua' ? "-170" : "-130"} 
                                 y={layers.bottom && layers.bottom !== 'quan-lua' ? "-245" : "-205"} 
                                 width={layers.bottom && layers.bottom !== 'quan-lua' ? "740" : "660"} 
                                 height={layers.bottom && layers.bottom !== 'quan-lua' ? "925" : "825"} 
                                 preserveAspectRatio="xMidYMax meet" 
+                                fallback={<AoThe primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />}
+                                fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
                             />
                         </motion.g>
                     )}

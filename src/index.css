@@ -121,3 +121,19 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Tùy ch?nh thanh cu?n cho toàn trang */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F3EFE0; /* Màu gi?y dó */
+}
+::-webkit-scrollbar-thumb {
+  background: #A39B8A; /* Màu nâu nh?t */
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8B0000; /* Ð? m?n khi hover */
+}
+
