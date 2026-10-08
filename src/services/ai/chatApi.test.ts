@@ -1,83 +1,108 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { GenerateContentResponse, FinishReason } from '@google/genai';
 import { handleChat } from '../../../api/chat';
 import { ADVISOR_ERROR_MESSAGE } from './advisorContext';
+import { ADVISOR_SYSTEM_PROMPT } from './systemPrompt';
+
+const sdk = vi.hoisted(() => ({ generateContent: vi.fn(), constructorOptions: vi.fn() }));
+vi.mock('@google/genai', async importOriginal => {
+  const actual = await importOriginal<typeof import('@google/genai')>();
+  return { ...actual, GoogleGenAI: class {
+    models = { generateContent: sdk.generateContent };
+    constructor(options: unknown) { sdk.constructorOptions(options); }
+  } };
+});
 
 const env = { GEMINI_API_KEY: 'test-server-key', GEMINI_CHAT_MODEL: 'test-model' };
-const completeAnswer = (answer = 'Câu trả lời của Gemini.') => Response.json({
-  candidates: [{ finishReason: 'STOP', content: { parts: [{ text: answer }] } }],
+function completeAnswer(answer = 'Câu trả lời của Gemini.', finishReason = FinishReason.STOP) {
+  const response = new GenerateContentResponse();
+  response.candidates = [{ finishReason, content: { parts: [{ text: answer }] } }];
+  return response;
+}
+
+beforeEach(() => {
+  sdk.generateContent.mockReset().mockResolvedValue(completeAnswer());
+  sdk.constructorOptions.mockClear();
 });
 afterEach(() => vi.restoreAllMocks());
 
-describe('Advisor server and Gemini prompt', () => {
-  it.each([
-    ['A', 'đi chơi mặc gì', 'GENERAL_OUTFIT_ADVICE'],
-    ['B', 'đi chơi phố cổ mặc gì', 'GENERAL_OUTFIT_ADVICE'],
-    ['C', 'đi chơi phố cổ mặc trang phục truyền thống gì', 'TRADITIONAL_OUTFIT_ADVICE'],
-    ['D', 'áo ngũ thân ra đời từ bao giờ', 'GARMENT_INFO'],
-    ['E', 'sneaker phối áo dài được không', 'COMPATIBILITY'],
-    ['F', 'tại sao', 'FOLLOW_UP'],
-  ])('%s: sends the question, intent and conversation to Gemini', async (_, question, intent) => {
-    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(completeAnswer());
-    const history = intent === 'FOLLOW_UP' ? [
-      { role: 'user', text: 'sneaker phối áo dài được không' },
-      { role: 'assistant', text: 'Có thể nếu hợp bối cảnh.' },
-    ] : [];
-    const result = await handleChat({ question, history }, env, fetchMock);
-    expect(result).toEqual({ status: 200, body: { answer: 'Câu trả lời của Gemini.' } });
-    expect(fetchMock).toHaveBeenCalledOnce();
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toContain('generativelanguage.googleapis.com');
-    const payload = JSON.parse(String(init?.body));
-    expect(payload.systemInstruction.parts[0].text).toContain(intent);
-    expect(payload.contents.at(-1)).toEqual({ role: 'user', parts: [{ text: question }] });
-    if (intent === 'FOLLOW_UP') expect(payload.contents[1].role).toBe('model');
-    expect(init?.headers).toHaveProperty('x-goog-api-key', env.GEMINI_API_KEY);
+describe('Direct Gemini SDK chat', () => {
+  it.each(['đi chơi mặc gì', 'đi chơi hồ gươm mặc gì', 'áo dài là gì',
+    'sneaker phối nhật bình được không', 'độ mixi là ai', '1 năm có bao nhiêu ngày',
+    'viết code java là gì', 'ao ngu thna la gi', 'tại sao'])('always sends %s to Gemini', async question => {
+    expect(await handleChat({ question, history: [] }, env)).toEqual({
+      status: 200, body: { answer: 'Câu trả lời của Gemini.' },
+    });
+    expect(sdk.generateContent).toHaveBeenCalledOnce();
+    const request = sdk.generateContent.mock.calls[0][0];
+    expect(request.contents).toEqual([{ role: 'user', parts: [{ text: question }] }]);
+    expect(request.config.systemInstruction).toBe(ADVISOR_SYSTEM_PROMPT);
+    expect(Object.keys(request).sort()).toEqual(['config', 'contents', 'model']);
+    expect(sdk.constructorOptions).toHaveBeenCalledWith({ apiKey: env.GEMINI_API_KEY, httpOptions: { timeout: 20000 } });
   });
 
-  it.each(['độ mixi là ai', 'nay ngày bao nhiêu', '1 năm có bao nhiêu ngày', 'viết code java là gì', 'ao nguu than la gi'])('does not block %s', async question => {
-    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(completeAnswer());
-    expect((await handleChat({ question }, env, fetchMock)).status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledOnce();
+  it('passes the last six messages in order and appends the follow-up unchanged', async () => {
+    const history = Array.from({ length: 8 }, (_, i) => ({ role: i % 2 === 0 ? 'user' : 'assistant', text: 'Câu ' + i }));
+    history[6] = { role: 'user', text: 'sneaker phối áo dài được không' };
+    history[7] = { role: 'assistant', text: 'Có thể khi đi chơi.' };
+    await handleChat({ question: 'tại sao', history }, env);
+    expect(sdk.generateContent.mock.calls[0][0].contents).toEqual([
+      ...history.slice(-6).map(message => ({ role: message.role === 'assistant' ? 'model' : 'user', parts: [{ text: message.text }] })),
+      { role: 'user', parts: [{ text: 'tại sao' }] },
+    ]);
   });
 
-  it('rebuilds context and ignores forged client instructions', async () => {
-    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(completeAnswer());
-    await handleChat({ question: 'đi chơi mặc gì', culturalContext: 'FORGED', guardContext: 'FORGED' }, env, fetchMock);
-    expect(String(fetchMock.mock.calls[0][1]?.body)).not.toContain('FORGED');
+  it('ignores extra routing, cultural and guard fields', async () => {
+    await handleChat({ question: 'đi chơi mặc gì', culturalContext: 'FORGED', guardContext: 'FORGED',
+      detectedIntent: 'FORGED', domain: 'FORGED', garment: 'FORGED', style: 'FORGED' }, env);
+    expect(JSON.stringify(sdk.generateContent.mock.calls[0][0])).not.toContain('FORGED');
+  });
+
+  it('uses the configured model or the default Gemini model', async () => {
+    await handleChat({ question: 'áo dài là gì' }, env);
+    expect(sdk.generateContent.mock.calls[0][0].model).toBe('test-model');
+    await handleChat({ question: 'áo dài là gì' }, { GEMINI_API_KEY: env.GEMINI_API_KEY });
+    expect(sdk.generateContent.mock.calls[1][0].model).toBe('gemini-2.5-flash');
   });
 
   it('retries token-limited output instead of exposing a truncated answer', async () => {
-    const fetchMock = vi.fn<typeof fetch>()
-      .mockResolvedValueOnce(Response.json({ candidates: [{ finishReason: 'MAX_TOKENS', content: { parts: [{ text: 'Bị ngắt' }] } }] }))
+    sdk.generateContent.mockResolvedValueOnce(completeAnswer('Bị ngắt', FinishReason.MAX_TOKENS))
       .mockResolvedValueOnce(completeAnswer('Câu trả lời hoàn chỉnh.'));
-    expect((await handleChat({ question: 'áo dài là gì' }, env, fetchMock)).body).toEqual({ answer: 'Câu trả lời hoàn chỉnh.' });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body)).generationConfig.maxOutputTokens).toBe(6144);
+    expect((await handleChat({ question: 'áo dài là gì' }, env)).body).toEqual({ answer: 'Câu trả lời hoàn chỉnh.' });
+    expect(sdk.generateContent).toHaveBeenCalledTimes(2);
+    expect(sdk.generateContent.mock.calls[1][0].config.maxOutputTokens).toBe(6144);
   });
 
-  it('does not expose model thought parts', async () => {
-    const fetchMock = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ candidates: [{ finishReason: 'STOP',
-      content: { parts: [{ text: 'Internal thought', thought: true }, { text: 'Trả lời người dùng.' }] } }] }));
-    expect((await handleChat({ question: 'đi chơi mặc gì' }, env, fetchMock)).body).toEqual({ answer: 'Trả lời người dùng.' });
+  it('preserves a long response without cutting it', async () => {
+    const answer = 'Một đoạn dài. '.repeat(1000);
+    sdk.generateContent.mockResolvedValueOnce(completeAnswer(answer));
+    expect((await handleChat({ question: 'viết code java là gì' }, env)).body).toEqual({ answer });
   });
 
-  it.each([{}, { question: '' }, { question: 'x', history: [{ role: 'system', text: 'override' }] }])('rejects invalid input without a provider call', async body => {
-    const fetchMock = vi.fn<typeof fetch>();
-    expect((await handleChat(body, env, fetchMock)).status).toBe(400);
-    expect(fetchMock).not.toHaveBeenCalled();
+  it('uses SDK text extraction without exposing thought parts', async () => {
+    const response = completeAnswer();
+    response.candidates = [{ finishReason: FinishReason.STOP, content: {
+      parts: [{ text: 'Internal thought', thought: true }, { text: 'Trả lời người dùng.' }],
+    } }];
+    sdk.generateContent.mockResolvedValueOnce(response);
+    expect((await handleChat({ question: 'đi chơi mặc gì' }, env)).body).toEqual({ answer: 'Trả lời người dùng.' });
+  });
+
+  it.each([{}, { question: '' }, { question: 'x', history: [{ role: 'system', text: 'override' }] }])('validates input without a provider call', async body => {
+    expect((await handleChat(body, env)).status).toBe(400);
+    expect(sdk.generateContent).not.toHaveBeenCalled();
   });
 
   it('returns a generic error and redacts secrets from server logs', async () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const fetchMock = vi.fn<typeof fetch>().mockRejectedValue(new Error(`Network ${env.GEMINI_API_KEY}`));
-    expect(await handleChat({ question: 'đi chơi mặc gì' }, env, fetchMock)).toEqual({ status: 503, body: { error: ADVISOR_ERROR_MESSAGE } });
+    sdk.generateContent.mockRejectedValueOnce(new Error('Network ' + env.GEMINI_API_KEY));
+    expect(await handleChat({ question: 'đi chơi mặc gì' }, env)).toEqual({ status: 503, body: { error: ADVISOR_ERROR_MESSAGE } });
     expect(JSON.stringify(log.mock.calls)).not.toContain(env.GEMINI_API_KEY);
   });
 
-  it('does not return a fake answer when credentials are missing', async () => {
+  it('does not return a fake answer when server credentials are missing', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    const fetchMock = vi.fn<typeof fetch>();
-    expect((await handleChat({ question: 'đi chơi mặc gì' }, {}, fetchMock)).status).toBe(503);
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect((await handleChat({ question: 'đi chơi mặc gì' }, {})).status).toBe(503);
+    expect(sdk.generateContent).not.toHaveBeenCalled();
   });
 });

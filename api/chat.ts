@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { ADVISOR_ERROR_MESSAGE, HISTORY_LIMIT, prepareAdvisorContext,
+import { ADVISOR_ERROR_MESSAGE, HISTORY_LIMIT,
   type ConversationMessage } from '../src/services/ai/advisorContext.ts';
 import { generateGeminiReply } from '../server/GeminiProvider.ts';
 
@@ -15,20 +15,18 @@ function parseChatBody(body: unknown): { question: string; history: Conversation
   if (!recent.every((message: unknown): message is ConversationMessage =>
     !!message && typeof message === 'object' && 'role' in message && 'text' in message
     && (message.role === 'user' || message.role === 'assistant')
-    && typeof message.text === 'string' && !!message.text.trim() && message.text.length <= 12000)) return null;
+    && typeof message.text === 'string' && !!message.text.trim())) return null;
   return { question: body.question.trim(), history: recent };
 }
 
-export async function handleChat(body: unknown, env: Environment, fetcher: typeof fetch = fetch) {
+export async function handleChat(body: unknown, env: Environment) {
   const request = parseChatBody(body);
   if (!request) return { status: 400, body: { error: 'Bạn nhập câu hỏi hợp lệ nhé.' } };
   try {
     const apiKey = env.GEMINI_API_KEY;
     if (!apiKey) throw new Error('Missing server GEMINI_API_KEY');
-    // Rebuild context from the conversation instead of trusting client-supplied instructions.
-    const context = prepareAdvisorContext(request.question, request.history);
-    const answer = await generateGeminiReply(context, {
-      apiKey, model: env.GEMINI_CHAT_MODEL || env.GEMINI_MODEL || 'gemini-2.5-flash', fetcher,
+    const answer = await generateGeminiReply(request, {
+      apiKey, model: env.GEMINI_CHAT_MODEL || env.GEMINI_MODEL || 'gemini-2.5-flash',
     });
     return { status: 200, body: { answer } };
   } catch (error) {

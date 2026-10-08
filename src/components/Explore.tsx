@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, MessageSquare, Award, LoaderCircle } from 'lucide-react';
 import { askAdvisor } from '../services/ai/advisorService';
-import { ADVISOR_ERROR_MESSAGE, type ConversationMessage } from '../services/ai/advisorContext';
+import { ADVISOR_ERROR_MESSAGE, HISTORY_LIMIT, type ConversationMessage } from '../services/ai/advisorContext';
 
 interface ChatMessage {
     id: number;
@@ -19,6 +19,7 @@ export const Explore = () => {
     const [quizActive, setQuizActive] = useState(false);
     const [score, setScore] = useState(0);
     const [pending, setPending] = useState(false);
+    const [providerStatus, setProviderStatus] = useState<'CLOUD AI' | 'OFFLINE' | null>(null);
     const requestRef = useRef<AbortController | null>(null);
     const nextId = useRef(2);
     const messagesEnd = useRef<HTMLDivElement>(null);
@@ -33,7 +34,7 @@ export const Explore = () => {
         requestRef.current = controller;
         const history: ConversationMessage[] = messages
             .filter(message => message.id !== 1 && !message.failed)
-            .slice(-6)
+            .slice(-HISTORY_LIMIT)
             .map(message => ({ role: message.sender === 'user' ? 'user' : 'assistant', text: message.text }));
         const userId = nextId.current++;
         setMessages(previous => [...previous, { id: userId, text: question, sender: 'user' }]);
@@ -42,11 +43,13 @@ export const Explore = () => {
         try {
             const answer = await askAdvisor(question, history, controller.signal);
             if (!controller.signal.aborted) {
+                setProviderStatus('CLOUD AI');
                 const id = nextId.current++;
                 setMessages(previous => [...previous, { id, text: answer, sender: 'bot' }]);
             }
         } catch {
             if (!controller.signal.aborted) {
+                setProviderStatus('OFFLINE');
                 const id = nextId.current++;
                 setMessages(previous => [...previous.map(message => message.id === userId
                     ? { ...message, failed: true } : message),
@@ -64,7 +67,7 @@ export const Explore = () => {
             <div className="flex-1 bg-giay-sang neo-border border-than flex flex-col overflow-hidden">
                 <div className="bg-son text-giay-sang p-4 border-b-2 border-than flex items-center justify-between">
                     <h2 className="font-display text-2xl flex items-center gap-2"><MessageSquare /> Cố vấn Gen Z (AI)</h2>
-                    <span className="font-label text-[10px] bg-giay-sang text-son px-2 py-1 rounded">{pending ? 'ĐANG TRẢ LỜI' : 'AI'}</span>
+                    <span role="status" className="font-label text-[10px] bg-giay-sang text-son px-2 py-1 rounded shrink-0">{pending ? 'ĐANG TRẢ LỜI' : providerStatus ?? 'AI'}</span>
                 </div>
                 
                 <div role="log" aria-label="Hội thoại với Cố vấn Gen Z" aria-live="polite" aria-busy={pending} className="flex-1 min-h-0 overflow-y-auto p-6 flex flex-col gap-4">
