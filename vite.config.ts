@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           if (req.url?.split('?')[0] !== '/api/chat') return next();
-          void chat(req, res, env).catch(() => {
+          void chat(req, res, { ...env, NODE_ENV: 'development' }).catch(() => {
             res.statusCode = 500;
             res.end(JSON.stringify({ error: 'Hiện mình chưa thể xử lý câu hỏi này. Bạn thử lại sau nhé.' }));
           });

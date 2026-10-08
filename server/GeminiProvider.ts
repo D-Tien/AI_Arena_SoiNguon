@@ -1,10 +1,19 @@
 import { GoogleGenAI } from '@google/genai';
-import { ADVISOR_SYSTEM_PROMPT } from '../src/services/ai/systemPrompt.ts';
-import { HISTORY_LIMIT, type AdvisorRequest } from '../src/services/ai/advisorContext.ts';
+import { ADVISOR_SYSTEM_PROMPT } from '../src/services/ai/systemPrompt.js';
+import { HISTORY_LIMIT, type AdvisorRequest } from '../src/services/ai/advisorContext.js';
 
 interface GeminiOptions {
   apiKey: string;
   model: string;
+}
+
+class GeminiResponseError extends Error {
+  readonly code: string;
+  constructor(code: string, message: string) {
+    super(message);
+    this.name = 'GeminiResponseError';
+    this.code = code;
+  }
 }
 
 export async function generateGeminiReply(request: AdvisorRequest, options: GeminiOptions): Promise<string> {
@@ -23,10 +32,10 @@ export async function generateGeminiReply(request: AdvisorRequest, options: Gemi
     });
     const finishReason = response.candidates?.[0]?.finishReason;
     if (finishReason === 'MAX_TOKENS') continue;
-    if (finishReason !== 'STOP') throw new Error('Gemini returned an incomplete or blocked answer');
+    if (finishReason !== 'STOP') throw new GeminiResponseError('GEMINI_RESPONSE_INCOMPLETE', `Gemini finishReason: ${finishReason ?? 'missing'}; blockReason: ${response.promptFeedback?.blockReason ?? 'none'}`);
     const answer = response.text;
-    if (!answer?.trim()) throw new Error('Gemini returned an empty answer');
+    if (!answer?.trim()) throw new GeminiResponseError('GEMINI_RESPONSE_EMPTY', 'Gemini returned an empty answer');
     return answer;
   }
-  throw new Error('Gemini answer exceeded output budget');
+  throw new GeminiResponseError('GEMINI_RESPONSE_OUTPUT_LIMIT', 'Gemini answer exceeded output budget after two attempts');
 }

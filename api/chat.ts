@@ -1,7 +1,8 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { ADVISOR_ERROR_MESSAGE, HISTORY_LIMIT,
-  type ConversationMessage } from '../src/services/ai/advisorContext.ts';
-import { generateGeminiReply } from '../server/GeminiProvider.ts';
+import { HISTORY_LIMIT,
+  type ConversationMessage } from '../src/services/ai/advisorContext.js';
+import { generateGeminiReply } from '../server/GeminiProvider.js';
+import { diagnoseGeminiError, redactGeminiError } from '../server/geminiErrors.js';
 
 type Environment = Record<string, string | undefined>;
 const MAX_BODY_BYTES = 64 * 1024;
@@ -22,17 +23,34 @@ function parseChatBody(body: unknown): { question: string; history: Conversation
 export async function handleChat(body: unknown, env: Environment) {
   const request = parseChatBody(body);
   if (!request) return { status: 400, body: { error: 'Bạn nhập câu hỏi hợp lệ nhé.' } };
+  const apiKey = env.GEMINI_API_KEY?.trim();
+  const model = env.GEMINI_CHAT_MODEL?.trim() || env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash';
+  console.log('Gemini key configured:', Boolean(apiKey));
+  console.log('Gemini model:', redactGeminiError(model, apiKey));
+  console.log('AI deployment:', {
+    branch: env.VERCEL_GIT_COMMIT_REF ?? null,
+    commit: env.VERCEL_GIT_COMMIT_SHA ?? null,
+    environment: env.VERCEL_ENV ?? env.NODE_ENV ?? null,
+  });
+  if (!apiKey) {
+    console.error('Gemini error:', { name: 'ConfigurationError', message: 'GEMINI_API_KEY_NOT_CONFIGURED', status: 500, code: 'GEMINI_API_KEY_NOT_CONFIGURED' });
+    return { status: 500, body: { error: 'GEMINI_API_KEY_NOT_CONFIGURED' } };
+  }
   try {
-    const apiKey = env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error('Missing server GEMINI_API_KEY');
     const answer = await generateGeminiReply(request, {
-      apiKey, model: env.GEMINI_CHAT_MODEL || env.GEMINI_MODEL || 'gemini-2.5-flash',
+      apiKey, model,
     });
     return { status: 200, body: { answer } };
   } catch (error) {
-    const detail = error instanceof Error ? error.message : 'Unknown provider failure';
-    console.error('AI Advisor:', detail.replaceAll(env.GEMINI_API_KEY || '\u0000', '[redacted]'));
-    return { status: 503, body: { error: ADVISOR_ERROR_MESSAGE } };
+    const diagnostic = diagnoseGeminiError(error, apiKey);
+    console.error('Gemini error:', { name: diagnostic.name, message: diagnostic.message, status: diagnostic.status, code: diagnostic.code, category: diagnostic.category });
+    const debug = env.NODE_ENV === 'development' || env.VERCEL_ENV === 'development' || env.GEMINI_DEBUG === 'true';
+    return { status: diagnostic.apiStatus, body: {
+      error: 'GEMINI_REQUEST_FAILED',
+      category: diagnostic.category,
+      upstreamStatus: diagnostic.status,
+      ...(debug ? { detail: diagnostic.message } : {}),
+    } };
   }
 }
 

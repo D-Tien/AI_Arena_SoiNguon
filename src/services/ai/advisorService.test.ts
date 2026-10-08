@@ -42,8 +42,11 @@ describe('Advisor frontend transport', () => {
   });
 
   it('exposes only a friendly message on server failures', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockResolvedValue(Response.json({ error: 'Missing API key' }, { status: 503 })));
     await expect(askAdvisor('đi chơi mặc gì')).rejects.toThrow(ADVISOR_ERROR_MESSAGE);
+    expect(log).toHaveBeenCalledWith('AI request failed:', 503, { error: 'Missing API key' });
+    log.mockRestore();
   });
 
   it('preserves the entire response including whitespace and long paragraphs', async () => {

@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GenerateContentResponse, FinishReason } from '@google/genai';
 import { handleChat } from '../../../api/chat';
-import { ADVISOR_ERROR_MESSAGE } from './advisorContext';
 import { ADVISOR_SYSTEM_PROMPT } from './systemPrompt';
 
 const sdk = vi.hoisted(() => ({ generateContent: vi.fn(), constructorOptions: vi.fn() }));
@@ -96,13 +95,43 @@ describe('Direct Gemini SDK chat', () => {
   it('returns a generic error and redacts secrets from server logs', async () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});
     sdk.generateContent.mockRejectedValueOnce(new Error('Network ' + env.GEMINI_API_KEY));
-    expect(await handleChat({ question: 'đi chơi mặc gì' }, env)).toEqual({ status: 503, body: { error: ADVISOR_ERROR_MESSAGE } });
+    expect(await handleChat({ question: 'đi chơi mặc gì' }, env)).toEqual({ status: 502, body: { error: 'GEMINI_REQUEST_FAILED', category: 'UPSTREAM_FAILURE', upstreamStatus: null } });
     expect(JSON.stringify(log.mock.calls)).not.toContain(env.GEMINI_API_KEY);
   });
 
   it('does not return a fake answer when server credentials are missing', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    expect((await handleChat({ question: 'đi chơi mặc gì' }, {})).status).toBe(503);
+    expect(await handleChat({ question: 'đi chơi mặc gì' }, {})).toEqual({ status: 500, body: { error: 'GEMINI_API_KEY_NOT_CONFIGURED' } });
     expect(sdk.generateContent).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [401, 401, 'AUTHENTICATION'], [403, 403, 'AUTHENTICATION'],
+    [404, 404, 'MODEL_OR_ENDPOINT'], [429, 429, 'QUOTA_OR_RATE_LIMIT'],
+    [400, 502, 'INVALID_PROVIDER_REQUEST'], [500, 502, 'UPSTREAM_FAILURE'],
+  ])('keeps upstream %s distinguishable as API status %s', async (upstreamStatus, status, category) => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    sdk.generateContent.mockRejectedValueOnce(Object.assign(new Error('Provider failed'), { status: upstreamStatus }));
+    expect(await handleChat({ question: 'đi chơi hồ gươm mặc gì' }, { ...env, NODE_ENV: 'production' })).toEqual({
+      status, body: { error: 'GEMINI_REQUEST_FAILED', category, upstreamStatus },
+    });
+  });
+
+  it('returns only sanitized details in development and no stack', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    sdk.generateContent.mockRejectedValueOnce(Object.assign(new Error(`API key ${env.GEMINI_API_KEY}`), { status: 403 }));
+    const result = await handleChat({ question: 'áo dài là gì' }, { ...env, NODE_ENV: 'development' });
+    expect(result.body).toHaveProperty('detail', 'API key [redacted]');
+    expect(result.body).not.toHaveProperty('stack');
+    expect(JSON.stringify(log.mock.calls)).not.toContain(env.GEMINI_API_KEY);
+  });
+
+  it('identifies response parsing failures instead of fabricating an upstream HTTP status', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    sdk.generateContent.mockResolvedValueOnce(completeAnswer(''));
+    const result = await handleChat({ question: 'áo dài là gì' }, env);
+    expect(result.status).toBe(502);
+    expect(result.body).toHaveProperty('category', 'RESPONSE_PARSING');
+    expect(result.body).toHaveProperty('upstreamStatus', null);
   });
 });

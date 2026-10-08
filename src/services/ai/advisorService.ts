@@ -9,7 +9,11 @@ export async function askAdvisor(
     body: JSON.stringify({ question: question.trim(), history: history.slice(-HISTORY_LIMIT) }),
     signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(55_000)]) : AbortSignal.timeout(55_000),
   });
-  if (!response.ok) throw new Error(ADVISOR_ERROR_MESSAGE);
+  if (!response.ok) {
+    const failure: unknown = await response.json().catch(() => null);
+    if (import.meta.env.DEV) console.error('AI request failed:', response.status, failure);
+    throw new Error(ADVISOR_ERROR_MESSAGE);
+  }
   const data: unknown = await response.json();
   if (!data || typeof data !== 'object' || !('answer' in data)
       || typeof data.answer !== 'string' || !data.answer.trim()) throw new Error(ADVISOR_ERROR_MESSAGE);
