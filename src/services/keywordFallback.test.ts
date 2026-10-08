@@ -1,5 +1,5 @@
 import { keywordFallback } from './keywordFallback';
-import type { ValidGender } from '../data/outfitRegistry';
+import { describe, it, expect } from 'vitest';
 
 describe('keywordFallback', () => {
   it('should map "chùa" to traditional mode and ao-ngu-than (female)', () => {
@@ -16,7 +16,7 @@ describe('keywordFallback', () => {
   });
 
   it('should return default outfit for unknown prompts', () => {
-    const res = keywordFallback({ prompt: 'Không biết mặc gì', gender: 'female' });
+    const res = keywordFallback({ prompt: 'xyz', gender: 'female' });
     expect(res.top).toBe('ao-ba-ba'); // default fallback top
     expect(res.mode).toBe('traditional');
   });

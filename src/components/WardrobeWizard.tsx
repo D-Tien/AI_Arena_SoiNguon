@@ -16,6 +16,7 @@ export interface WardrobeState {
     gender: Gender;
     hair: string;
     place: Place;
+    region?: 'MIEN_BAC' | 'MIEN_TRUNG' | 'MIEN_NAM';
     event?: string;
     top: string;
     topColor?: string;

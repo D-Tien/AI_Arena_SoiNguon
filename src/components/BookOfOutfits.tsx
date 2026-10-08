@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 import { Character } from './PaperDoll';
@@ -269,7 +269,7 @@ export const BookOfOutfits = ({ onStartPhoi }: { onStartPhoi: () => void }) => {
                             drag="x"
                             dragConstraints={{ left: 0, right: 0 }}
                             dragElastic={1}
-                            onDragEnd={(e, { offset, velocity }) => {
+                            onDragEnd={(_event, { offset, velocity }) => {
                                 const swipe = Math.abs(offset.x) * velocity.x;
                                 if (swipe < -10000) {
                                     nextPage();

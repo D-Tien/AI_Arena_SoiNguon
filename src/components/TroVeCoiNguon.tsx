@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
-import { MapPin, Upload, ScanLine, CheckCircle, Calendar, Edit3, Footprints, Compass, Map as MapIcon, Crown, Mountain, Waves, Palmtree, X } from 'lucide-react';
+import { MapPin, ScanLine, Calendar, Edit3, Footprints, Compass, Map as MapIcon, Crown, Mountain, Waves, Palmtree, X } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
 import useSound from 'use-sound';
@@ -87,8 +87,6 @@ const getProperName = (rawName: string) => {
 const IconMap: Record<string, any> = {
   Footprints, Compass, Map: MapIcon, Crown, Mountain, Waves, Palmtree
 };
-
-const geoUrl = '/vietnam.json';
 
 const TroVeCoiNguon: React.FC = () => {
   const { width, height } = useWindowSize();
@@ -391,27 +389,10 @@ const TroVeCoiNguon: React.FC = () => {
                         fill={isVerified ? "#8B0000" : "#C8C2B3"}
                         stroke={isSelected ? "#F59E0B" : (isVerified ? "#F3EFE0" : "#A39B8A")}
                         strokeWidth={isSelected ? 2 : (isVerified ? 1 : 0.5)}
-                        className="focus:outline-none transition-all duration-300" 
+                        className={`focus:outline-none transition-all duration-300 hover:!stroke-[#F59E0B] hover:!stroke-[2] active:!fill-[#7A0000] ${isVerified ? 'hover:!fill-[#990000]' : 'hover:!fill-[#B5AFA1]'}`}
                         style={{
-                          default: { 
-                            fill: isVerified ? "#8B0000" : "#C8C2B3", 
-                            stroke: isSelected ? "#F59E0B" : (isVerified ? "#F3EFE0" : "#A39B8A"), 
-                            strokeWidth: isSelected ? 2 : (isVerified ? 1 : 0.5), 
-                            outline: "none" 
-                          },
-                          hover: { 
-                            fill: isVerified ? "#990000" : "#B5AFA1", 
-                            stroke: "#F59E0B", 
-                            strokeWidth: 2, 
-                            outline: "none", 
-                            cursor: "pointer" 
-                          },
-                          pressed: { 
-                            fill: "#7A0000", 
-                            stroke: "#F59E0B", 
-                            strokeWidth: 2, 
-                            outline: "none" 
-                          },
+                          outline: "none",
+                          cursor: "pointer",
                         }}
                       />
                     );

@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 interface AiGenerationModalProps {
     isOpen: boolean;
@@ -13,7 +12,7 @@ interface AiGenerationModalProps {
     palette: string[];
 }
 
-export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft, onUseAttempt, coreId, sceneId, layers, palette }: AiGenerationModalProps) => {
+export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft, onUseAttempt, coreId, sceneId }: AiGenerationModalProps) => {
     const [prompt, setPrompt] = useState(initialPrompt);
     const [state, setState] = useState<'review' | 'generating' | 'result'>('review');
     const [resultUrl, setResultUrl] = useState<string | null>(null);

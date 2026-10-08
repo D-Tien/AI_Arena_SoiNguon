@@ -1,13 +1,16 @@
 import { generateStylistOutfit } from './stylistService';
-import * as fallback from './keywordFallback';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock fetch
-global.fetch = jest.fn();
+const fetchMock = vi.fn<typeof fetch>();
 
 describe('stylistService', () => {
   beforeEach(() => {
-    (global.fetch as jest.Mock).mockClear();
+    fetchMock.mockReset();
+    vi.stubGlobal('fetch', fetchMock);
   });
+
+  afterEach(() => vi.unstubAllGlobals());
 
   it('should return parsed response when fetch is successful', async () => {
     const mockResponse = {
@@ -33,10 +36,7 @@ describe('stylistService', () => {
       }]
     };
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockResponse
-    });
+    fetchMock.mockResolvedValueOnce(Response.json(mockResponse));
 
     const res = await generateStylistOutfit({ prompt: 'Dạo phố', gender: 'female' });
     expect(res.top).toBe('ao-tu-than');
@@ -45,7 +45,7 @@ describe('stylistService', () => {
   });
 
   it('should fallback to keywordFallback on error', async () => {
-    (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+    fetchMock.mockRejectedValueOnce(new Error('Network error'));
     
     // Using a spy to verify fallback is called, or just check the output matches fallback
     const res = await generateStylistOutfit({ prompt: 'Đi chùa', gender: 'male' });
@@ -77,10 +77,7 @@ describe('stylistService', () => {
       }]
     };
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockResponse
-    });
+    fetchMock.mockResolvedValueOnce(Response.json(mockResponse));
 
     const res = await generateStylistOutfit({ prompt: 'Phá cách', gender: 'male' });
     expect(res.bottom).toBe('quan-lua'); // Replaced

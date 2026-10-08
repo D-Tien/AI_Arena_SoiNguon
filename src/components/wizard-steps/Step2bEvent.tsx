@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import type { WardrobeState } from '../WardrobeWizard';
 
 interface Props {

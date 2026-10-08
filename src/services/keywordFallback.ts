@@ -5,8 +5,7 @@
  */
 
 import {
-  VALID_TOPS, VALID_BOTTOMS, VALID_ACCESSORIES, VALID_SHOES,
-  VALID_OCCASIONS, GENDER_TOP_MAP,
+  GENDER_TOP_MAP,
   type ValidGender, type ValidTop,
 } from '../data/outfitRegistry';
 import type { StylistResponse } from './stylistService';

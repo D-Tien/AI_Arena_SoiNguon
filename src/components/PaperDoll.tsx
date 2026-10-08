@@ -2,6 +2,11 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface DollLayers {
+    skin?: string;
+    core?: string;
+    overlay?: string;
+    accessory?: string;
+    background?: string;
     bottom?: string;
     top?: string;
     topColor?: string;
@@ -33,7 +38,7 @@ const SafeSvgImage = ({ href, fallback, fallbackBase, ...props }: any) => {
                 <defs>
                     <mask id={`mask-${maskId}`}>
                         {React.isValidElement(fallback) 
-                            ? React.cloneElement(fallback as React.ReactElement, { fill: 'white' }) 
+                            ? React.cloneElement(fallback as React.ReactElement<React.SVGProps<SVGElement>>, { fill: 'white' })
                             : <rect width="100%" height="100%" fill="white" />}
                     </mask>
                 </defs>
@@ -49,57 +54,8 @@ const SafeSvgImage = ({ href, fallback, fallbackBase, ...props }: any) => {
 
 
 // --- SVG Definitions for Garments ---
-const Eyes = ({ cx, cy, isFemale, skinTone }: { cx: number, cy: number, isFemale?: boolean, skinTone?: string }) => {
-    const isRight = cx > 200;
 
-    if (isFemale) {
-        // Mắt dịu dàng cho nữ
-        const angle = isRight ? -7 : 7;
-        return (
-            <g transform={`rotate(${angle}, ${cx}, ${cy})`}>
-                <ellipse cx={cx} cy={cy} rx="12" ry="10" fill="#FFF" stroke="var(--than)" strokeWidth="1.5" />
-                <ellipse cx={cx} cy={cy + 1} rx="8.5" ry="7.5" fill="#2B1A14" />
-                <path d={`M ${cx - 13} ${cy - 7} Q ${cx} ${cy - 11} ${cx + 13} ${cy - 7} L ${cx + 13} ${cy - 15} L ${cx - 13} ${cy - 15} Z`} fill={skinTone || "#FFD1B3"} />
-                <circle cx={cx - 3} cy={cy - 2} r="3" fill="white" />
-                <circle cx={cx + 3} cy={cy + 4} r="1" fill="white" />
-                <path d={`M ${cx - 13} ${cy - 1} C ${cx - 8} ${cy - 10}, ${cx + 8} ${cy - 10}, ${cx + 13} ${cy - 1}`} fill="none" stroke="var(--than)" strokeWidth="3" strokeLinecap="round" />
-                <path d={isRight ? `M ${cx + 12} ${cy - 3} Q ${cx + 18} ${cy - 2} ${cx + 20} ${cy - 4}` : `M ${cx - 12} ${cy - 3} Q ${cx - 18} ${cy - 2} ${cx - 20} ${cy - 4}`} fill="none" stroke="var(--than)" strokeWidth="2.5" strokeLinecap="round" />
-                <path d={isRight ? `M ${cx + 14} ${cy - 2} Q ${cx + 18} ${cy - 5} ${cx + 21} ${cy - 8}` : `M ${cx - 14} ${cy - 2} Q ${cx - 18} ${cy - 5} ${cx - 21} ${cy - 8}`} fill="none" stroke="var(--than)" strokeWidth="1.5" strokeLinecap="round" />
-                <path d={isRight ? `M ${cx + 12} ${cy - 6} Q ${cx + 16} ${cy - 9} ${cx + 19} ${cy - 11}` : `M ${cx - 12} ${cy - 6} Q ${cx - 16} ${cy - 9} ${cx - 19} ${cy - 11}`} fill="none" stroke="var(--than)" strokeWidth="1.5" strokeLinecap="round" />
-                <path d={`M ${cx - 10} ${cy + 9} Q ${cx} ${cy + 11} ${cx + 10} ${cy + 9}`} fill="none" stroke="#A89F91" strokeWidth="1.5" strokeLinecap="round" />
-            </g>
-        );
-    }
-
-    // Mắt nam tính cho nam (sắc sảo, thon dài, không quá to tròn)
-    const angle = isRight ? -2 : 2;
-    return (
-        <g transform={`rotate(${angle}, ${cx}, ${cy})`}>
-            {/* Tròng trắng thật to */}
-            <path d={`M ${cx - 14} ${cy} C ${cx - 7} ${cy - 12}, ${cx + 7} ${cy - 12}, ${cx + 14} ${cy} C ${cx + 7} ${cy + 7}, ${cx - 7} ${cy + 7}, ${cx - 14} ${cy}`} fill="#FFF" stroke="var(--than)" strokeWidth="1.5" strokeLinejoin="round" />
-
-            {/* Lòng đen thật lớn */}
-            <circle cx={cx} cy={cy - 1} r="7.5" fill="#1A1410" />
-            <circle cx={cx + 2} cy={cy - 4} r="2" fill="white" />
-
-            {/* Mi trên đậm, vòng cung rộng hơn */}
-            <path d={`M ${cx - 15} ${cy - 1} Q ${cx} ${cy - 13} ${cx + 15} ${cy - 1}`} fill="none" stroke="var(--than)" strokeWidth="3.5" strokeLinecap="round" />
-
-            {/* Lông mi đuôi mắt ngắn gọn */}
-            <path d={isRight 
-                ? `M ${cx + 14} ${cy - 2} L ${cx + 16} ${cy - 3.5}`
-                : `M ${cx - 14} ${cy - 2} L ${cx - 16} ${cy - 3.5}`} fill="none" stroke="var(--than)" strokeWidth="2" strokeLinecap="round" />
-            <path d={isRight
-                ? `M ${cx + 11} ${cy - 7} L ${cx + 12.5} ${cy - 8.5}`
-                : `M ${cx - 11} ${cy - 7} L ${cx - 12.5} ${cy - 8.5}`} fill="none" stroke="var(--than)" strokeWidth="1.5" strokeLinecap="round" />
-
-            {/* Bọng mắt mờ nhẹ */}
-            <path d={`M ${cx - 8} ${cy + 9} Q ${cx} ${cy + 10} ${cx + 8} ${cy + 9}`} fill="none" stroke="var(--than)" strokeWidth="1" strokeLinecap="round" opacity="0.3" />
-        </g>
-    );
-};
-
-const BodyBase = ({ skinTone }: { skinTone: string }) => (
+const BodyBase = (_props: { skinTone: string }) => (
     <g id="body-base">
         <image 
             href="/assets/character/base/female.png" 
@@ -112,7 +68,7 @@ const BodyBase = ({ skinTone }: { skinTone: string }) => (
     </g>
 );
 
-const BodyBaseMale = ({ skinTone }: { skinTone: string }) => (
+const BodyBaseMale = (_props: { skinTone: string }) => (
     <g id="body-base-male">
         {/* Dùng model ảnh được cung cấp thay thế cho SVG vẽ tay. Bạn có thể tự chỉnh x, y, width, height để ảnh vừa vặn nhất */}
         <image 
@@ -126,230 +82,14 @@ const BodyBaseMale = ({ skinTone }: { skinTone: string }) => (
     </g>
 );
 
-const HairBack = ({ type, color }: { type: string, color: string }) => {
-    if (type === 'dai-thuot-tha') {
-        return (
-            <g id="hair-back-long">
-                <path
-                    d="M 155 130 C 130 160, 140 250, 140 320 C 150 340, 180 340, 200 340 C 220 340, 250 340, 260 320 C 260 250, 270 160, 245 130 Z"
-                    fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round"
-                />
-                <path d="M 155 180 Q 155 250 160 300" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-                <path d="M 180 180 Q 180 250 185 300" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-                <path d="M 220 180 Q 220 250 215 300" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-                <path d="M 245 180 Q 245 250 240 300" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-            </g>
-        );
-    }
-    if (type === 'van-gon') {
-        // Lộ một búi nhỏ nhô ra bên phải cổ/gáy để có thể nhìn thấy từ góc chính diện
-        return <circle cx="230" cy="120" r="22" fill={color} stroke="var(--than)" strokeWidth="4" />;
-    }
-    if (type === 'bui-cao') {
-        return <circle cx="200" cy="-15" r="35" fill={color} stroke="var(--than)" strokeWidth="4" />;
-    }
-    if (type === 'buoc-thap') {
-        // Tóc buộc thấp vắt nhẹ sang vai phải để có thể nhìn thấy từ phía trước
-        return <path d="M 210 120 C 240 130, 275 180, 250 260 C 240 280, 225 280, 230 260 C 250 180, 220 150, 205 130 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />;
-    }
-    return null;
-};
 
-const HairFront = ({ type, color, bangs }: { type: string, color: string, bangs: string }) => {
-    // Top cap covering the head, used as base for all
-    const topCap = (
-        <path
-            d="M 130 60 C 130 -60, 270 -60, 270 60 C 270 30, 240 5, 200 5 C 160 5, 130 30, 130 60 Z"
-            fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round"
-        />
-    );
 
-    let bangsRender = null;
 
-    if (bangs === 'mai-thua') {
-        bangsRender = (
-            <g id="bangs-mai-thua">
-                {/* 7-9 small strands across forehead */}
-                <path d="M 145 15 Q 150 43 155 43 Q 160 43 160 12" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M 160 10 Q 165 45 170 45 Q 175 45 175 8" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M 175 6 Q 180 46 185 46 Q 190 46 190 5" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M 190 5 Q 195 48 200 48 Q 205 48 205 5" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M 205 5 Q 210 46 215 46 Q 220 46 220 6" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M 220 8 Q 225 45 230 45 Q 235 45 235 10" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M 235 12 Q 240 43 245 43 Q 250 43 250 15" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
 
-                {/* 2 thin side strands down to chin */}
-                <path d="M 130 60 C 140 100, 140 140, 145 150 C 138 140, 135 100, 125 60 Z" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-                <path d="M 270 60 C 260 100, 260 140, 255 150 C 262 140, 265 100, 275 60 Z" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-            </g>
-        );
-    } else if (bangs === 'mai-ngang-day') {
-        bangsRender = (
-            <path
-                d="M 130 60 C 130 80, 140 42, 200 42 C 260 42, 270 80, 270 60 C 270 30, 240 5, 200 5 C 160 5, 130 30, 130 60 Z"
-                fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round"
-            />
-        );
-    } else if (bangs === 'mai-bay') {
-        bangsRender = (
-            <g id="bangs-mai-bay">
-                {/* Left swept */}
-                <path d="M 200 5 C 170 30, 160 70, 130 80 C 140 60, 150 20, 200 5 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-                {/* Right swept */}
-                <path d="M 200 5 C 230 30, 240 70, 270 80 C 260 60, 250 20, 200 5 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-            </g>
-        );
-    }
 
-    let extraFront = null;
-    if (type === 'dai-thuot-tha') {
-        extraFront = (
-            <path
-                d="M 260 120 C 270 160, 250 230, 225 280 C 215 300, 220 305, 225 300 C 240 280, 275 200, 270 120 Z"
-                fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round"
-            />
-        );
-    }
-
-    return (
-        <g>
-            {bangs !== 'mai-ngang-day' && topCap}
-            {bangsRender}
-            {extraFront}
-        </g>
-    );
-};
-
-const HairBackMale = ({ type, color }: { type: string, color: string }) => {
-    if (type === 'buoc-thap') {
-        return (
-            <g>
-                <path d="M 150 140 C 170 160, 230 160, 250 140 C 240 160, 220 170, 200 170 C 180 170, 160 160, 150 140 Z" fill={color} />
-                <circle cx="200" cy="165" r="15" fill={color} stroke="var(--than)" strokeWidth="3" />
-            </g>
-        );
-    }
-    return null;
-}
-
-const HairFrontMale = ({ type, color, headwear }: { type: string, color: string, headwear?: string }) => {
-    const earColor = color === 'white' ? 'white' : '#FFD1B3';
-    const ears = (
-        <g id="male-ears">
-            <path d="M 132 65 C 122 65, 122 85, 132 85 Z" fill={earColor} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            <path d="M 268 65 C 278 65, 278 85, 268 85 Z" fill={earColor} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            {color !== 'white' && (
-                <g>
-                    <path d="M 128 70 C 125 75, 125 80, 130 80" fill="none" stroke="var(--than)" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
-                    <path d="M 272 70 C 275 75, 275 80, 270 80" fill="none" stroke="var(--than)" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
-                </g>
-            )}
-        </g>
-    );
-
-    if (headwear === 'khan-xep' || headwear === 'khan-dong') {
-        return (
-            <g id="hair-with-turban">
-                {ears}
-                <path d="M 128 55 C 125 70, 135 75, 138 75 C 142 65, 135 55, 128 55 Z" fill={color} stroke="var(--than)" strokeWidth="2.5" strokeLinejoin="round" />
-                <path d="M 272 55 C 275 70, 265 75, 262 75 C 258 65, 265 55, 272 55 Z" fill={color} stroke="var(--than)" strokeWidth="2.5" strokeLinejoin="round" />
-            </g>
-        );
-    }
-
-    const baseTop = (
-        <path d="M 124 60 C 124 -75, 276 -75, 276 60 C 276 35, 240 15, 200 15 C 160 15, 124 35, 124 60 Z" fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-    );
-    const baseHighlight = color !== 'white' ? (
-        <g>
-            <path d="M 160 -15 C 180 -25, 220 -25, 240 -15" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="2.5" strokeLinecap="round" />
-            <path d="M 170 -5 C 190 -12, 210 -12, 230 -5" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" />
-        </g>
-    ) : null;
-
-    if (type === 're-ngoi') {
-        return (
-            <g>
-                {ears}
-                <path d="M 124 60 C 124 -75, 276 -75, 276 60 C 276 35, 250 10, 180 5 C 150 0, 124 35, 124 60 Z" fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-                <path d="M 180 5 C 190 20, 220 35, 260 40 C 240 15, 210 5, 180 5 Z" fill={color} stroke="var(--than)" strokeWidth="2.5" strokeLinejoin="round" />
-                <path d="M 260 40 C 265 42, 270 44, 274 48 C 272 30, 265 20, 260 10" fill={color} />
-                <path d="M 185 10 C 210 20, 230 30, 245 35" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeLinecap="round" />
-                {baseHighlight}
-            </g>
-        );
-    } else if (type === 'mai-bay') {
-        return (
-            <g>
-                {ears}
-                <path d="M 130 50 C 130 -65, 270 -65, 270 50 C 270 30, 240 15, 200 15 C 160 15, 130 30, 130 50 Z" fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-                <path d="M 180 -20 Q 170 -40 160 -25 Q 170 -15 180 -20 Z" fill={color} stroke="var(--than)" strokeWidth="2" />
-                <path d="M 200 -25 Q 190 -50 180 -35 Q 190 -20 200 -25 Z" fill={color} stroke="var(--than)" strokeWidth="2" />
-                <path d="M 220 -20 Q 210 -40 200 -25 Q 210 -15 220 -20 Z" fill={color} stroke="var(--than)" strokeWidth="2" />
-                <path d="M 200 15 C 180 30, 170 40, 150 35 C 160 25, 180 20, 200 15 Z" fill={color} stroke="var(--than)" strokeWidth="2" />
-                {baseHighlight}
-            </g>
-        );
-    } else if (type === 'buoc-thap') {
-        return (
-            <g>
-                {ears}
-                <path d="M 130 55 C 130 -65, 270 -65, 270 55 C 270 30, 240 10, 200 10 C 160 10, 130 30, 130 55 Z" fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-                {color !== 'white' && (
-                    <g>
-                        <path d="M 150 0 Q 170 -10 200 -10" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-                        <path d="M 250 0 Q 230 -10 200 -10" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-                    </g>
-                )}
-                {baseHighlight}
-            </g>
-        );
-    }
-
-    // Tóc nam tính rẽ ngôi 7/3 (side part lãng tử có lọn con)
-    return (
-        <g id="hair-men-7-3">
-            {ears}
-            {baseTop}
-
-            {/* Mái dài bên trái (mái 7) */}
-            <path d="M 124 60 Q 130 -5 185 10 C 160 45, 150 70, 128 65 Z" fill={color} stroke="var(--than)" strokeWidth="2.5" strokeLinejoin="round" />
-            <path d="M 140 40 Q 155 15 175 10" fill="none" stroke={color !== 'white' ? "rgba(255,255,255,0.2)" : "transparent"} strokeWidth="1.5" strokeLinecap="round" />
-
-            {/* Mái nhẹ bên phải (mái 3) */}
-            <path d="M 276 60 Q 260 -5 215 10 C 240 35, 255 60, 268 55 Z" fill={color} stroke="var(--than)" strokeWidth="2.5" strokeLinejoin="round" />
-            <path d="M 260 45 Q 245 25 225 20" fill="none" stroke={color !== 'white' ? "rgba(255,255,255,0.2)" : "transparent"} strokeWidth="1.5" strokeLinecap="round" />
-
-            {/* Lọn tóc con lãng tử (tinh tế, thưa thớt hơn) */}
-            <path d="M 180 12 Q 185 35 178 50" fill="none" stroke="var(--than)" strokeWidth="2" strokeLinecap="round" />
-            <path d="M 172 15 Q 170 25 168 35" fill="none" stroke="var(--than)" strokeWidth="1.5" strokeLinecap="round" />
-            <path d="M 215 12 Q 205 35 212 45" fill="none" stroke="var(--than)" strokeWidth="1.5" strokeLinecap="round" />
-            <path d="M 222 15 Q 225 25 228 30" fill="none" stroke="var(--than)" strokeWidth="1.5" strokeLinecap="round" />
-
-            {baseHighlight}
-        </g>
-    );
-};
-
-const KhanMoQua = ({ color }: { color: string }) => (
-    <g id="headwear-moqua">
-        <path d="M 125 50 C 120 10, 160 -10, 200 0 C 240 -10, 280 10, 275 50 C 270 -5, 230 -20, 200 -5 C 170 -20, 130 -5, 125 50 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-        <path d="M 185 -2 L 200 -30 L 215 -2 Z" fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M 155 20 Q 180 5 200 -2" fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="1.5" />
-        <path d="M 245 20 Q 220 5 200 -2" fill="none" stroke="rgba(0,0,0,0.4)" strokeWidth="1.5" />
-    </g>
-);
-
-const BangDoLua = ({ color }: { color: string }) => (
-    <g id="headwear-bangdo">
-        <path d="M 128 40 C 150 20, 250 20, 272 40 C 270 30, 250 10, 200 10 C 150 10, 130 30, 128 40 Z" fill={color} stroke="var(--than)" strokeWidth="3" />
-        <circle cx="140" cy="35" r="8" fill={color} stroke="var(--than)" strokeWidth="2" />
-        <path d="M 140 35 L 120 20 L 140 35 L 130 50 Z" fill={color} stroke="var(--than)" strokeWidth="2" />
-    </g>
-);
 
 // Truyền thống - TỨ THÂN
-const AoTuThan = ({ primary, secondary, accent, styleMode }: { primary: string, secondary: string, accent: string, styleMode?: string }) => (
+const AoTuThan = ({ primary, accent, styleMode }: { primary: string, secondary: string, accent: string, styleMode?: string }) => (
     <g id="garment-tuthan">
         {/* Váy đen dài chấm mắt cá */}
         <g id="garment-skirt">
@@ -551,112 +291,15 @@ const AoThe = ({ primary, secondary, layers, styleMode }: { primary: string, sec
     </g>
 );
 
-const KhanXep = ({ color }: { color: string }) => (
-    <g id="headwear-khanxep">
-        <path d="M 123 45 C 118 -15, 160 -35, 200 -35 C 240 -35, 282 -15, 277 45 C 272 25, 240 20, 200 20 C 160 20, 128 25, 123 45 Z" fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M 124 30 C 160 5, 240 5, 276 30" fill="none" stroke="var(--than)" strokeWidth="2.5" />
-        <path d="M 126 15 C 160 -10, 240 -10, 274 15" fill="none" stroke="var(--than)" strokeWidth="2.5" />
-        <path d="M 190 20 L 210 -15" fill="none" stroke="var(--than)" strokeWidth="2.5" />
-        <path d="M 200 18 L 220 -15" fill="none" stroke="var(--than)" strokeWidth="2.5" />
-        <path d="M 160 -10 C 180 -20, 220 -20, 240 -10" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round" />
-    </g>
-);
 
-const GuocMoc = ({ color }: { color: string }) => (
-    <g id="garment-guoc">
-        <ellipse cx="145" cy="628" rx="18" ry="4" fill="rgba(0,0,0,0.2)" />
-        <ellipse cx="255" cy="628" rx="18" ry="4" fill="rgba(0,0,0,0.2)" />
-        <path d="M 130 618 L 160 618 L 160 625 L 150 625 L 150 620 L 140 620 L 140 625 L 130 625 Z" fill="#D4A373" stroke="var(--than)" strokeWidth="2.5" strokeLinejoin="round" />
-        <path d="M 240 618 L 270 618 L 270 625 L 260 625 L 260 620 L 250 620 L 250 625 L 240 625 Z" fill="#D4A373" stroke="var(--than)" strokeWidth="2.5" strokeLinejoin="round" />
-        <path d="M 140 618 C 145 610, 155 610, 160 618" fill="none" stroke="#1A1410" strokeWidth="3" strokeLinecap="round" />
-        <path d="M 250 618 C 255 610, 265 610, 270 618" fill="none" stroke="#1A1410" strokeWidth="3" strokeLinecap="round" />
-    </g>
-);
 
-const GiayVai = ({ color }: { color: string }) => (
-    <g id="garment-giayvai">
-        <g transform="rotate(5, 145, 620)">
-            <ellipse cx="145" cy="630" rx="20" ry="4" fill="rgba(0,0,0,0.2)" />
-            <path d="M 130 615 L 165 615 C 165 625, 150 628, 125 628 C 120 622, 120 615, 130 615 Z" fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            <path d="M 123 628 C 135 630, 155 630, 167 628 L 167 632 C 155 634, 135 634, 123 632 Z" fill="#FFF" stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-        </g>
-        <g transform="rotate(-5, 255, 620)">
-            <ellipse cx="255" cy="630" rx="20" ry="4" fill="rgba(0,0,0,0.2)" />
-            <path d="M 235 615 L 270 615 C 280 615, 280 622, 275 628 C 250 628, 235 625, 235 615 Z" fill={color} stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            <path d="M 233 628 C 245 630, 265 630, 277 628 L 277 632 C 265 634, 245 634, 233 632 Z" fill="#FFF" stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-        </g>
-    </g>
-);
 
 // Hiện đại (Remix)
-const Jeans = ({ color }: { color: string }) => (
-    <g id="garment-jeans">
-        <path d="M 140 310 L 105 625 L 190 625 L 195 350 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-        <path d="M 260 310 L 295 625 L 210 625 L 205 350 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-        <path d="M 150 550 L 170 550" stroke="var(--than)" strokeWidth="2" strokeDasharray="4 4" />
-    </g>
-);
 
-const Sneaker = ({ color }: { color: string }) => (
-    <g id="garment-sneaker">
-        <g transform="rotate(8, 145, 620)">
-            <ellipse cx="145" cy="632" rx="22" ry="5" fill="rgba(0,0,0,0.2)" />
-            <path d="M 130 612 L 165 612 C 165 625, 150 628, 125 628 C 120 620, 120 612, 130 612 Z" fill="#FBF5E9" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            <path d="M 135 612 C 135 604, 150 604, 150 612" fill="#FBF5E9" stroke="var(--than)" strokeWidth="2.5" />
-            <path d="M 123 628 C 135 631, 155 631, 167 628 L 167 635 C 155 638, 135 638, 123 635 Z" fill="#FFF" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            <path d="M 140 620 L 155 620" stroke={color} strokeWidth="3" strokeLinecap="round" />
-            <path d="M 140 615 L 150 615 M 138 617 L 152 617" stroke="var(--than)" strokeWidth="1.5" />
-        </g>
-        <g transform="rotate(-8, 255, 620)">
-            <ellipse cx="255" cy="632" rx="22" ry="5" fill="rgba(0,0,0,0.2)" />
-            <path d="M 235 612 L 270 612 C 280 612, 280 620, 275 628 C 250 628, 235 625, 235 612 Z" fill="#FBF5E9" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            <path d="M 250 612 C 250 604, 265 604, 265 612" fill="#FBF5E9" stroke="var(--than)" strokeWidth="2.5" />
-            <path d="M 233 628 C 245 631, 265 631, 277 628 L 277 635 C 265 638, 245 638, 233 635 Z" fill="#FFF" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            <path d="M 245 620 L 260 620" stroke={color} strokeWidth="3" strokeLinecap="round" />
-            <path d="M 248 615 L 258 615 M 246 617 L 260 617" stroke="var(--than)" strokeWidth="1.5" />
-        </g>
-    </g>
-);
 
-const Underwear = ({ gender }: { gender: 'female' | 'male' }) => (
-    <g id="garment-underwear">
-        {gender === 'female' ? (
-            <>
-                {/* Yếm trắng */}
-                <path d="M 200 185 L 235 220 L 200 310 L 165 220 Z" fill="#FFF" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-                <path d="M 200 185 Q 190 170 185 160" fill="none" stroke="#FFF" strokeWidth="3" />
-                <path d="M 200 185 Q 210 170 215 160" fill="none" stroke="#FFF" strokeWidth="3" />
-                {/* Quần tơ lụa mỏng */}
-                <path d="M 140 310 L 125 450 L 195 450 L 195 320 L 205 320 L 205 450 L 275 450 L 260 310 Z" fill="#FBF5E9" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            </>
-        ) : (
-            <>
-                {/* Áo cộc nam trắng */}
-                <path d="M 125 210 C 130 250, 125 330, 115 380 C 145 390, 185 390, 195 380 L 195 210 Z" fill="#FFF" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-                <path d="M 275 210 C 270 250, 275 330, 285 380 C 255 390, 215 390, 205 380 L 205 210 Z" fill="#FFF" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-                <path d="M 175 160 C 185 180, 215 180, 225 160" fill="none" stroke="var(--than)" strokeWidth="3" />
-                {/* Quần đùi trắng */}
-                <path d="M 135 340 L 120 460 L 195 460 L 195 350 L 205 350 L 205 460 L 280 460 L 265 340 Z" fill="#FBF5E9" stroke="var(--than)" strokeWidth="3" strokeLinejoin="round" />
-            </>
-        )}
-    </g>
-);
 
-const Blazer = ({ color }: { color: string }) => (
-    <g id="garment-blazer">
-        {/* Khoác ngoài */}
-        <path d="M 120 180 L 125 450 L 165 450 L 175 190 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-        <path d="M 280 180 L 275 450 L 235 450 L 225 190 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-        {/* Cổ lật */}
-        <path d="M 125 180 L 165 250 L 165 190 Z" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-        <path d="M 275 180 L 235 250 L 235 190 Z" fill={color} stroke="var(--than)" strokeWidth="2" strokeLinejoin="round" />
-        {/* Tay áo dài */}
-        <path d="M 120 180 L 95 370 L 120 375 L 135 220 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-        <path d="M 280 180 L 305 370 L 280 375 L 265 220 Z" fill={color} stroke="var(--than)" strokeWidth="4" strokeLinejoin="round" />
-    </g>
-);
 
-export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun", bangs = "mai-thua", palette = ["#A8231A", "#1B2A5C", "#E3A72F"], layers, styleMode = 'traditional', hideBase = false }: CharacterProps) => {
+export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = ["#A8231A", "#1B2A5C", "#E3A72F"], layers, styleMode = 'traditional', hideBase = false }: CharacterProps) => {
     const primary = palette[0] || "#A8231A";
     const secondary = palette[1] || "#1B2A5C";
     const accent = palette[2] || "#E3A72F";
@@ -727,7 +370,7 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                                 height={layers.bottom && layers.bottom !== 'quan-lua' ? "925" : "825"} 
                                 preserveAspectRatio="xMidYMax meet" 
                                 fallback={<AoThe primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />}
-                                fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
+                                fallbackBase={<BodyBaseMale skinTone={skinTone} />}
                             />
                         </motion.g>
                     )}

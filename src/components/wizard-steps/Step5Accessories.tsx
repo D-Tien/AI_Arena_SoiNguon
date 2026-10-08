@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { SmartImage } from '../SmartImage';
 import type { WardrobeState } from '../WardrobeWizard';
 
 interface Props {

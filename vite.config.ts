@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
             const model = env.GEMINI_MODEL || 'gemini-1.5-flash';
             return path.replace(/^\/api\/stylist/, `/v1beta/models/${model}:generateContent`);
           },
-          configure: (proxy, options) => {
+          configure: (proxy) => {
             proxy.on('proxyReq', (proxyReq) => {
               if (env.GEMINI_API_KEY) {
                 proxyReq.setHeader('x-goog-api-key', env.GEMINI_API_KEY);

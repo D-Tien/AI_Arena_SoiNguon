@@ -122,18 +122,18 @@
   scrollbar-width: none;
 }
 
-/* T˘y ch?nh thanh cu?n cho to‡n trang */
+/* T√πy ch?nh thanh cu?n cho to√†n trang */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #F3EFE0; /* M‡u gi?y dÛ */
+  background: #F3EFE0; /* M√†u gi?y d√≥ */
 }
 ::-webkit-scrollbar-thumb {
-  background: #A39B8A; /* M‡u n‚u nh?t */
+  background: #A39B8A; /* M√†u n√¢u nh?t */
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8B0000; /* –? m?n khi hover */
+  background: #8B0000; /* √ê? m?n khi hover */
 }
 

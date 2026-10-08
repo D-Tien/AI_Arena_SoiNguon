@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Compass, Camera, BookOpen, Sun, Moon, ArrowRight, ArrowLeft, X, Calendar, Share2, MapPin } from 'lucide-react';
+import { Sparkles, Compass, Camera, BookOpen, Moon, ArrowRight, ArrowLeft, X, Calendar, Share2, MapPin } from 'lucide-react';
 import { Character, type DollLayers } from './components/PaperDoll';
 import { StageBackground } from './components/Stage';
 import { GuardStamp, GuardModal } from './components/CulturalGuard';
@@ -8,13 +8,11 @@ import { CultureCard } from './components/CultureCard';
 import { Lookbook } from './components/Lookbook';
 import { BookOfOutfits } from './components/BookOfOutfits';
 import { Explore } from './components/Explore';
-import { SmartImage } from './components/SmartImage';
 import { StudioDo } from './components/StudioDo';
 import { AiGenerationModal } from './components/AiGenerationModal';
 import CalendarTab from './components/CalendarTab';
 import * as htmlToImage from 'html-to-image';
 import { ShareCard } from './components/ShareCard';
-import Step1GenderHair from './components/wizard-steps/Step1GenderHair';
 import Step2Place from './components/wizard-steps/Step2Place';
 import Step2bEvent from './components/wizard-steps/Step2bEvent';
 import Step3Top from './components/wizard-steps/Step3Top';
@@ -26,34 +24,8 @@ import { StylistInput } from './components/StylistInput';
 import type { StylistResponse } from './services/stylistService';
 import TroVeCoiNguon from './components/TroVeCoiNguon';
 // --- Shared Components ---
-const Slogan = () => (
-    <div className="mt-6 flex flex-col gap-1">
-        <span className="font-label text-than text-sm md:text-base border-b-2 border-than pb-1 mb-1 max-w-[200px]">Mặc truyền thống.</span>
-        <span className="font-label text-than text-sm md:text-base border-b-2 border-than pb-1 mb-1 max-w-[200px]">Sống Gen Z.</span>
-        <span className="font-label text-son text-sm md:text-base">Đẹp và đúng.</span>
-    </div>
-);
 
-const ThreadText = () => (
-    <svg className="w-full max-w-[500px] h-[120px] md:h-[200px]" viewBox="0 0 500 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <motion.path d="M 50 150 C 50 50, 150 50, 150 100 C 150 150, 50 150, 80 80 C 120 10, 180 50, 180 150" stroke="var(--son)" strokeWidth="8" strokeLinecap="round" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, ease: "easeInOut" }} />
-        <text x="10" y="160" className="font-display fill-than text-[80px] md:text-[110px]" fontStyle="italic">Sợi</text>
-        <text x="180" y="160" className="font-display fill-than text-[80px] md:text-[110px]" fontStyle="italic">Nguồn</text>
-    </svg>
-);
 
-const Marquee = () => (
-    <div className="absolute bottom-0 left-0 w-full bg-than text-giay-sang py-3 md:py-4 neo-border border-l-0 border-r-0 border-b-0 marquee-container z-20">
-        <div className="marquee-content whitespace-nowrap font-label text-sm md:text-xl">
-            {Array(5).fill("ÁO DÀI • TỨ THÂN • NGŨ THÂN • BÀ BA • NHẬT BÌNH • REMIX • ĐẸP VÀ ĐÚNG • ").map((text, i) => (
-                <span key={i} className="mx-4">{text}</span>
-            ))}
-            {Array(5).fill("ÁO DÀI • TỨ THÂN • NGŨ THÂN • BÀ BA • NHẬT BÌNH • REMIX • ĐẸP VÀ ĐÚNG • ").map((text, i) => (
-                <span key={i + 5} className="mx-4">{text}</span>
-            ))}
-        </div>
-    </div>
-);
 
 const Sidebar = ({ activeTab, setActiveTab, onHome }: { activeTab: string, setActiveTab: (t: string) => void, onHome: () => void }) => (
     <div className="hidden lg:flex w-[88px] bg-giay-sang neo-border border-t-0 border-b-0 border-l-0 flex-col items-center py-6 h-screen sticky top-0 z-50">
@@ -114,131 +86,9 @@ const COSTUMES = [
 ];
 
 // --- Wizard Components ---
-const WizardStep1 = ({ scene, setScene }: any) => (
-    <div className="space-y-6 pb-6">
-        <h2 className="font-display text-4xl leading-snug py-1">1. Khung cảnh &<br />Sự kiện</h2>
-        <p className="text-than/70">Không gian quyết định hồn trang phục. Bạn đi đâu?</p>
-        <div className="grid grid-cols-2 gap-4">
-            {[
-                { id: 'hanoi', name: 'Cà phê Hà Nội', slot: 'event-cafe' },
-                { id: 'hue', name: 'Thăm di tích', slot: 'event-heritage' },
-                { id: 'nambo', name: 'Du xuân', slot: 'event-spring' },
-                { id: 'chua', name: 'Đi lễ Chùa', slot: 'event-temple' }
-            ].map(s => (
-                <button key={s.id} onClick={() => setScene(s.id)} className={`aspect-square neo-card flex flex-col items-center justify-center p-0 gap-0 overflow-hidden relative group ${scene === s.id ? 'border-son shadow-[4px_4px_0_var(--son)]' : 'border-than'}`}>
-                    <SmartImage slot={s.slot} className="w-full h-full absolute inset-0 z-0" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
-                    <span className="font-label text-sm text-center relative z-20 text-giay-sang mt-auto mb-4">{s.name}</span>
-                    {scene === s.id && <div className="absolute top-2 right-2 z-20 w-4 h-4 bg-son rounded-full neo-border" />}
-                </button>
-            ))}
-        </div>
-    </div>
-);
 
-const WizardStep2 = ({ core, setCore, gender, onOpenInfo }: any) => (
-    <div className="space-y-6 pb-6">
-        <h2 className="font-display text-4xl leading-snug py-1">2. Trang phục<br />Cốt lõi</h2>
-        <p className="text-than/70">Chọn món đồ truyền thống làm điểm tựa.</p>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {COSTUMES.map(c => {
-                const displayName = gender === 'male' && c.id === 'ao-tu-than' ? 'ÁO THE NAM' : c.name;
-                return (
-                    <button key={c.id} onClick={() => setCore(c.id)} className={`relative aspect-[3/4] neo-card flex flex-col items-center justify-center p-0 overflow-hidden group ${core === c.id ? 'border-cham shadow-[4px_4px_0_var(--cham)]' : 'border-than'}`}>
-                        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-[#FBF5E9]">
-                            <div className="w-[120%] h-[120%] absolute top-[-10%] left-[-10%] flex justify-center items-end pb-8">
-                                <Character gender={gender} layers={{ top: c.id, headwear: gender === 'male' && c.id === 'ao-tu-than' ? 'khan-xep' : (gender === 'female' && c.id === 'ao-tu-than' ? 'khan-mo-qua' : undefined) }} palette={["#A8231A", "#1B2A5C", "#E3A72F"]} />
-                            </div>
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
-                        <div className="absolute top-2 left-2 z-20 flex flex-col gap-1 items-start">
-                            <div className="flex gap-0.5 bg-giay-sang/20 backdrop-blur-sm px-1.5 py-1 rounded-full neo-border border-[1px]">
-                                {Array(5).fill(0).map((_, i) => (
-                                    <div key={i} className={`w-1.5 h-1.5 rounded-full ${i < c.diff ? 'bg-nghe' : 'bg-giay-sang/30'}`} />
-                                ))}
-                            </div>
-                            <span className="bg-giay-sang text-[9px] px-1.5 py-0.5 rounded-full font-label text-than border-[1px] border-than shadow-sm">{c.diff <= 2 ? 'Dễ phối' : 'Cần chú ý'}</span>
-                        </div>
-                        <div 
-                            onClick={(e) => { e.stopPropagation(); onOpenInfo && onOpenInfo(c.id); }} 
-                            className="absolute top-2 right-2 z-30 w-6 h-6 bg-giay-sang rounded-full neo-border shadow-sm flex items-center justify-center text-than hover:text-son hover:bg-giay-do transition-colors cursor-pointer font-bold text-sm"
-                            title="Tìm hiểu thêm"
-                        >
-                            ?
-                        </div>
-                        <span className="font-label text-[13px] text-giay-sang relative z-20 mt-auto mb-2 px-1 text-center w-full leading-tight">{displayName}</span>
-                    </button>
-                );
-            })}
-        </div>
-    </div>
-);
 
-const WizardStep3 = ({ paletteIdx, setPaletteIdx, style, setStyle }: any) => (
-    <div className="space-y-8 pb-6">
-        <div>
-            <h2 className="font-display text-4xl leading-snug mb-4">3. Bảng màu &<br />Phong cách</h2>
-            <p className="text-than/70 mb-4">Chọn bảng màu đĩa gốm ngũ hành.</p>
-            <div className="grid grid-cols-5 gap-3 mb-8">
-                {PALETTES.map((p, i) => (
-                    <button key={i} onClick={() => setPaletteIdx(i)} className={`aspect-square rounded-full border-[3px] ${paletteIdx === i ? 'border-than neo-shadow scale-110' : 'border-transparent'} transition-all flex flex-col overflow-hidden`}>
-                        <div className="flex-1 w-full" style={{ backgroundColor: p[0] }} />
-                        <div className="flex-1 w-full" style={{ backgroundColor: p[1] }} />
-                        <div className="flex-1 w-full" style={{ backgroundColor: p[2] }} />
-                    </button>
-                ))}
-            </div>
 
-            <p className="text-than/70 mb-4">Phụ kiện đính kèm (chọn thêm).</p>
-            <div className="flex gap-3 overflow-x-auto hidden-scrollbar mb-8 pb-2">
-                {['Nón lá', 'Khăn rằn', 'Guốc mộc', 'Kính râm'].map(acc => (
-                    <button key={acc} className="px-4 py-2 font-label text-xs neo-border rounded-full bg-giay-sang hover:-translate-y-0.5 flex-shrink-0 whitespace-nowrap text-than">
-                        + {acc}
-                    </button>
-                ))}
-            </div>
-
-            <p className="text-than/70 mb-4">Dán nhãn phong cách (Vibe).</p>
-            <div className="flex flex-wrap gap-2">
-                {['Tối giản', 'Y2K', 'Streetwear', 'Thanh lịch', 'Retro', 'Cottagecore', 'Nghệ sĩ'].map(s => (
-                    <button key={s} onClick={() => setStyle(s)} className={`px-4 py-2 font-label text-sm neo-border ${style === s ? 'bg-nghe text-than shadow-[3px_3px_0_var(--than)] -rotate-2' : 'bg-giay-sang hover:-translate-y-0.5'} transition-all`}>
-                        {s}
-                    </button>
-                ))}
-            </div>
-        </div>
-    </div>
-);
-
-const WizardStep4 = ({ remixLevel, setRemixLevel, styleMode, setStyleMode }: any) => (
-    <div className="space-y-6 pb-6 h-full flex flex-col justify-center">
-        <h2 className="font-display text-4xl leading-snug">4. Cữ chỉnh<br />Máy dệt</h2>
-        <p className="text-than/70">Kéo thanh trượt để AI "thêm mắm dặm muối" hiện đại vào.</p>
-
-        {styleMode === 'traditional' ? (
-            <div className="bg-cham/10 border border-cham p-4 rounded-xl flex items-start gap-3 mt-4">
-                <span className="text-xl">⚠️</span>
-                <div>
-                    <h4 className="font-bold text-cham mb-1">Đang ở chế độ Truyền Thống</h4>
-                    <p className="text-sm text-than/70 mb-2">Thanh trượt Độ Remix chỉ dành cho chế độ Cách tân.</p>
-                    <button onClick={() => setStyleMode('modern')} className="text-sm bg-cham text-white px-3 py-1 rounded">Chuyển sang Cách tân</button>
-                </div>
-            </div>
-        ) : (
-            <div className="py-12 relative w-full">
-                <input type="range" min="26" max="100" value={remixLevel} onChange={(e) => setRemixLevel(parseInt(e.target.value))} className="w-full appearance-none h-4 neo-border rounded-full bg-giay-do outline-none focus-visible:ring-4 focus-visible:ring-nghe/50 cursor-ew-resize" />
-                <div className="flex justify-between mt-6 font-label text-sm">
-                    <div className="flex flex-col items-center text-than">
-                        <span>CÁCH TÂN NHẸ</span>
-                    </div>
-                    <div className="flex flex-col items-center text-son">
-                        <span>REMIX MẠNH</span>
-                    </div>
-                </div>
-            </div>
-        )}
-    </div>
-);
 
 
 
@@ -652,7 +502,6 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
         'Đà Lạt': 'da-lat'
     };
     const scene = placeMap[wardrobeState.place] || 'ha-noi';
-    const stageTitleVal = wardrobeState.top === 'tu-than' ? 'TỨ THÂN' : wardrobeState.top === 'ao-the' ? 'ÁO THE' : wardrobeState.top === 'ngu-than' ? 'NGŨ THÂN' : 'BÀ BA';
     
     // Fallbacks for ResultPoster
     const core = wardrobeState.top;
@@ -661,7 +510,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
     const paletteIdx = 0;
 
     const [isCultureOpen, setIsCultureOpen] = useState(false);
-    const [cultureCore, setCultureCore] = useState('ao-tu-than');
+    const [cultureCore] = useState('ao-tu-than');
 
     // Cleaned up old effects since logic is moved to 6-step wizard
 
@@ -993,28 +842,9 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
     );
 }
 
-const Lotus = ({ className }: { className?: string }) => (
-    <svg viewBox="0 0 40 40" className={`w-8 h-8 text-[#A8231A] ${className}`} fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M 20 5 C 25 15, 35 25, 20 35 C 5 25, 15 15, 20 5 Z" fill="#FBF5E9" />
-        <path d="M 20 5 C 30 15, 45 20, 20 35" />
-        <path d="M 20 5 C 10 15, -5 20, 20 35" />
-    </svg>
-);
 
-const Petal = ({ delay, startX, endX }: { delay: number, startX: number, endX: number }) => (
-    <motion.svg
-        viewBox="0 0 20 20"
-        className="absolute w-4 h-4 text-[#A8231A] opacity-60 pointer-events-none"
-        initial={{ y: -50, x: startX, rotate: 0, opacity: 0 }}
-        animate={{ y: '100vh', x: endX, rotate: 360, opacity: [0, 1, 1, 0] }}
-        transition={{ duration: 15, delay, repeat: Infinity, ease: 'linear' }}
-        fill="currentColor"
-    >
-        <path d="M10 0 C15 5 18 10 10 20 C2 10 5 5 10 0Z" />
-    </motion.svg>
-);
 
-const WelcomeScreen = ({ onStart, onStartConfig, onOpenCulture }: { onStart: () => void, onStartConfig: (config: any) => void, onOpenCulture: (core: string) => void }) => {
+const WelcomeScreen = ({ onStart, onStartConfig }: { onStart: () => void, onStartConfig: (config: any) => void, onOpenCulture: (core: string) => void }) => {
     const [status, setStatus] = useState<'closed' | 'opening' | 'opened'>('closed');
     const [logoError, setLogoError] = useState(false);
     const [showAbout, setShowAbout] = useState(false);

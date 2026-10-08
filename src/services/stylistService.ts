@@ -1,7 +1,7 @@
 import {
   VALID_TOPS, VALID_BOTTOMS, VALID_ACCESSORIES, VALID_SHOES,
-  VALID_OCCASIONS, VALID_REGIONS, VALID_MODES, VALID_GENDERS,
-  MODERN_ONLY_ITEMS, GENDER_TOP_MAP,
+  VALID_OCCASIONS, VALID_REGIONS, VALID_MODES,
+  MODERN_ONLY_ITEMS,
   type ValidTop, type ValidBottom, type ValidAccessory, type ValidShoe,
   type ValidOccasion, type ValidRegion, type ValidMode, type ValidGender
 } from '../data/outfitRegistry';
