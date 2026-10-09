@@ -67,9 +67,9 @@ export const Explore = ({ onExplore }: { onExplore?: () => void }) => {
     };
 
     return (
-        <div className="w-full h-full bg-giay-do relative overflow-y-auto flex flex-col lg:flex-row p-4 sm:p-8 lg:p-12 pb-28 lg:pb-12 gap-8">
+        <div className="w-full h-full min-h-0 bg-giay-do relative overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row p-4 sm:p-8 lg:p-12 pb-28 lg:pb-12 gap-8">
             {/* Cột trái: Chatbot Advisor */}
-            <div className="flex-1 min-w-0 min-h-[360px] lg:min-h-0 lg:sticky lg:top-0 lg:self-start lg:h-full bg-giay-sang neo-border border-than flex flex-col overflow-hidden">
+            <div className="flex-none lg:flex-1 min-w-0 min-h-0 h-[420px] lg:h-full bg-giay-sang neo-border border-than flex flex-col overflow-hidden">
                 <div className="bg-son text-giay-sang p-4 border-b-2 border-than flex items-center justify-between">
                     <h2 className="font-display text-2xl flex items-center gap-2"><MessageSquare /> Cố vấn Gen Z (AI)</h2>
                     <span role="status" className="font-label text-[10px] bg-giay-sang text-son px-2 py-1 rounded shrink-0">{pending ? 'ĐANG TRẢ LỜI' : providerStatus ?? 'AI'}</span>
@@ -110,8 +110,8 @@ export const Explore = ({ onExplore }: { onExplore?: () => void }) => {
             </div>
 
             {/* Cột phải: Quiz Mini-game */}
-            <div className="flex-[0.8] min-w-0 flex flex-col gap-8">
-                <div className="bg-cham/10 neo-border border-cham p-4 sm:p-8 flex flex-col items-center justify-center flex-1 relative overflow-hidden">
+            <div role="region" aria-label="Thử thách kiến thức" tabIndex={0} className="flex-none lg:flex-[0.8] min-w-0 lg:min-h-0 lg:h-full lg:overflow-y-auto lg:overscroll-contain flex flex-col gap-8 lg:pr-3 lg:pb-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cham">
+                <div className="bg-cham/10 neo-border border-cham p-4 sm:p-8 flex flex-col items-center justify-center shrink-0 min-h-[320px] relative overflow-hidden">
                     <div aria-hidden="true" className="absolute -right-10 -top-10 text-cham/10 rotate-12 pointer-events-none"><Award size={150} /></div>
                     
                     {!quiz.isStarted ? (
@@ -174,7 +174,7 @@ export const Explore = ({ onExplore }: { onExplore?: () => void }) => {
                     )}
                 </div>
 
-                <div className="bg-giay-sang neo-border p-6 flex items-center justify-between">
+                <div className="bg-giay-sang neo-border p-6 flex items-center justify-between shrink-0">
                     <div>
                         <span className="font-label text-[10px] text-than/60 block mb-1">ĐIỂM TÍCH LŨY</span>
                         <span role="status" aria-label={`${quiz.xp} XP`} className="font-display text-4xl text-son">{quiz.xp} <span className="text-xl">XP</span></span>
