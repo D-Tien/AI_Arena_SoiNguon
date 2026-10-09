@@ -1,0 +1,77 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { demoGeneratedImages, DEMO_PLACEHOLDER } from '../../data/demoGeneratedImages';
+import { generateDemoImage, normalizeImageInput, rankDemoImages } from './demoImageService';
+
+let available: Set<string>;
+beforeEach(() => {
+  available = new Set();
+  vi.useFakeTimers();
+  vi.stubGlobal('Image', class {
+    onload: (() => void) | null = null;
+    onerror: (() => void) | null = null;
+    set src(value: string) {
+      queueMicrotask(() => available.has(value) ? this.onload?.() : this.onerror?.());
+    }
+  });
+});
+afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
+
+describe('local demo image generation', () => {
+  it('normalizes Vietnamese and punctuation, including đ', () => {
+    expect(normalizeImageInput('  ÁO TỨ THÂN, ĐỎ! ')).toBe('ao tu than do');
+  });
+
+  it('refines garment matches with style, occasion and color before keywords', () => {
+    const ranked = rankDemoImages({ prompt: 'Áo tứ thân streetwear đỏ', garment: 'ao-tu-than', occasion: 'hue' }, [
+      { id: 'basic', src: '/basic.webp', garments: ['tu than'] },
+      { id: 'specific', src: '/specific.webp', garments: ['tu than'], styles: ['streetwear'], occasions: ['hue'], colors: ['do'] },
+      { id: 'keyword', src: '/keyword.webp', keywords: ['streetwear'] },
+    ]);
+    expect(ranked.map(item => item.image.id)).toEqual(['specific', 'basic', 'keyword']);
+    expect(ranked[0].matchedBy).toBe('garment+style+occasion+color');
+  });
+
+  it('keeps loading for two seconds and falls back to an available garment image', async () => {
+    available.add('/demo-generated/trang-phuc-2.jpg');
+    const done = vi.fn();
+    const result = generateDemoImage({ prompt: 'Áo tứ thân streetwear' }).then(done);
+    await vi.advanceTimersByTimeAsync(1999);
+    expect(done).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    await result;
+    expect(done).toHaveBeenCalledWith({ imageUrl: '/demo-generated/trang-phuc-2.jpg', provider: 'demo', matchedBy: 'garment' });
+  });
+
+  it('uses default, then the existing local placeholder when files are missing', async () => {
+    available.add('/demo-generated/trang-phuc-2.jpg');
+    const first = generateDemoImage({ prompt: 'unknown' });
+    await vi.runAllTimersAsync();
+    expect((await first).matchedBy).toBe('default');
+    available.clear();
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const second = generateDemoImage({ prompt: 'unknown' });
+    await vi.runAllTimersAsync();
+    expect((await second).imageUrl).toBe(DEMO_PLACEHOLDER);
+  });
+
+  it('avoids the previous image when equally matched alternatives exist', async () => {
+    const extra = { id: 'second', src: '/demo-generated/tu-than-2.webp', garments: ['tu than'] };
+    demoGeneratedImages.push(extra);
+    try {
+      available.add('/demo-generated/trang-phuc-2.jpg');
+      available.add(extra.src);
+      const result = generateDemoImage({ prompt: 'tu than', previousImageUrl: '/demo-generated/trang-phuc-2.jpg' });
+      await vi.runAllTimersAsync();
+      expect((await result).imageUrl).toBe(extra.src);
+    } finally { demoGeneratedImages.pop(); }
+  });
+
+  it('aborts generation without returning a stale result', async () => {
+    const controller = new AbortController();
+    const result = generateDemoImage({ prompt: 'tu than', signal: controller.signal });
+    const assertion = expect(result).rejects.toHaveProperty('name', 'AbortError');
+    controller.abort();
+    await assertion;
+    await vi.runAllTimersAsync();
+  });
+});

@@ -178,17 +178,17 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
         <div className="w-full h-full flex flex-col overflow-y-auto hidden-scrollbar relative bg-giay-do">
             <GuardModal isOpen={isGuardOpen} onClose={() => setIsGuardOpen(false)} level={guardLevel} />
             <CultureCard isOpen={isCultureOpen} onClose={() => setIsCultureOpen(false)} outfitName={title} core={core} />
-            <AiGenerationModal
+            {isAiModalOpen && <AiGenerationModal
                 isOpen={isAiModalOpen}
                 onClose={() => setIsAiModalOpen(false)}
                 initialPrompt={getPrompt()}
                 attemptsLeft={attemptsLeft}
                 onUseAttempt={() => setAttemptsLeft(p => p - 1)}
-                coreId={core}
+                coreId={gender === 'male' && core === 'ao-tu-than' ? 'ao-the' : core}
                 sceneId={scene}
-                layers={layers}
+                style={style}
                 palette={palette}
-            />
+            />}
 
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 opacity-50" style={{ mixBlendMode: 'multiply' }}>
                 <path d="M -50 450 Q 200 400 280 430" fill="none" stroke="var(--son)" strokeWidth="2" strokeDasharray="4 4" />
@@ -642,8 +642,8 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
         return (
             <div className="flex h-screen w-full bg-giay-do relative">
                 <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onHome={onReset} />
-                <div className="flex-1 w-full h-full">
-                    <Explore />
+                <div className="flex-1 min-w-0 w-full h-full">
+                    <Explore onExplore={() => setActiveTab('hoc')} />
                 </div>
                 <MobilePillNav activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
