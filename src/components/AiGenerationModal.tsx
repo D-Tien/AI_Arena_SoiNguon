@@ -102,7 +102,7 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-sans text-than">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-sans text-than">
             <div className="bg-giay-do w-full max-w-5xl h-[90vh] neo-border border-[4px] border-than flex flex-col overflow-hidden relative shadow-[12px_12px_0_white]">
                 {/* Header */}
                 <div className="flex justify-between items-center p-4 border-b-[4px] border-than bg-giay-sang shrink-0 z-10">

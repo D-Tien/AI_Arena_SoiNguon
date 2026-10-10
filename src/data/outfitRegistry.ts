@@ -23,12 +23,14 @@ export const VALID_BOTTOMS = [
 
 // --- Phụ kiện KHÔNG phải giày (head, neck, hand) ---
 export const VALID_ACCESSORIES = [
+  'khong-doi',    // không đội gì (head)
   'non-la',       // nón lá (head)
-  'khan-mo-qua',  // khăn mỏ quạ (head)
+
   'khan-dong',    // khăn đóng (head)
-  'van-toc',      // vấn đội đầu (head)
+  'non-quai-thao',      // nón quai thao (head)
+  'khong-khan',   // không đeo khăn (neck)
   'khan-ran',     // khăn rằn (neck)
-  'quat',         // quạt giấy (hand)
+
 ] as const;
 
 // --- Giày dép (feet) — TÁCH riêng, không trùng accessories ---

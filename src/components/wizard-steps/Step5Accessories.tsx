@@ -10,12 +10,13 @@ interface Props {
 }
 
 const allAccessories = [
+    { id: 'khong-doi', name: 'không đội gì', region: 'all', slot: 'head', desc: 'để tóc tự nhiên' },
     { id: 'non-la', name: 'nón lá', region: 'all', slot: 'head', desc: 'mộc mạc, che nắng' },
-    { id: 'khan-mo-qua', name: 'khăn mỏ quạ', region: 'Hà Nội', slot: 'head', desc: 'đặc trưng quan họ' },
     { id: 'khan-dong', name: 'khăn đóng', region: 'Huế', slot: 'head', desc: 'trang trọng, uy nghi' },
-    { id: 'van-toc', name: 'vấn đội đầu', region: 'Hà Nội', slot: 'head', desc: 'gọn gàng, thanh lịch' },
+    { id: 'non-quai-thao', name: 'nón quai thao', region: 'Hà Nội', slot: 'head', desc: 'gọn gàng, thanh lịch' },
+    { id: 'khong-khan', name: 'không đeo khăn', region: 'all', slot: 'neck', desc: 'trống trải, thoải mái' },
     { id: 'khan-ran', name: 'khăn rằn', region: 'Sài Gòn', slot: 'neck', desc: 'chất phác, nam bộ' },
-    { id: 'quat', name: 'quạt giấy', region: 'all', slot: 'hand', desc: 'nho nhã, phong lưu' },
+
     { id: 'sneaker', name: 'sneaker', region: 'modern', slot: 'feet', desc: 'hiện đại, năng động' },
     { id: 'giay-da', name: 'giày da', region: 'modern', slot: 'feet', desc: 'lịch lãm, tây phương' },
     { id: 'guoc', name: 'guốc mộc', region: 'all', slot: 'feet', desc: 'mộc mạc, truyền thống' },
@@ -25,7 +26,7 @@ const allAccessories = [
 const tabs = [
     { id: 'head', label: 'đầu' },
     { id: 'neck', label: 'cổ' },
-    { id: 'hand', label: 'cầm tay' },
+
     { id: 'feet', label: 'chân' },
 ];
 
@@ -35,11 +36,10 @@ export default function Step5Accessories({ state, updateState, setGuardMessage }
     const toggleAccessory = (id: string, region: string, slot: string) => {
         let newAcc = [...state.accessories];
         
-        // Nếu là giày (feet), xoá các loại giày khác đi (chỉ được chọn 1)
-        if (slot === 'feet') {
-            const feetIds = allAccessories.filter(a => a.slot === 'feet').map(a => a.id);
-            newAcc = newAcc.filter(a => !feetIds.includes(a));
-        }
+        // Giới hạn 1 món cho mỗi slot (head, neck, hand, feet)
+        const slotIds = allAccessories.filter(a => a.slot === slot).map(a => a.id);
+        newAcc = newAcc.filter(a => !slotIds.includes(a));
+
 
         if (state.accessories.includes(id)) {
             newAcc = newAcc.filter(a => a !== id);
@@ -60,6 +60,25 @@ export default function Step5Accessories({ state, updateState, setGuardMessage }
     };
 
     const itemsToShow = allAccessories.filter(a => a.slot === activeTab);
+
+    const isSupported = state.top === 'ao-tu-than' && state.gender === 'female';
+
+    if (!isSupported) {
+        return (
+            <div className="flex flex-col items-center justify-center p-8 text-center h-full border-2 border-dashed border-than/20 rounded-lg bg-white/50">
+                <div className="w-16 h-16 mb-4 opacity-50">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--than)" strokeWidth="1.5">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
+                        <path d="M12 8V12L15 15" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </div>
+                <h3 className="text-than font-bold text-lg mb-2 uppercase tracking-wide">Đang phát triển thêm</h3>
+                <p className="text-than/70 text-sm leading-relaxed max-w-xs">
+                    Hệ thống đang trong quá trình cập nhật hình ảnh phụ kiện cho trang phục này. Cảm ơn bạn đã kiên nhẫn chờ đợi nhé!
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-6 font-label lowercase">
@@ -118,11 +137,12 @@ export default function Step5Accessories({ state, updateState, setGuardMessage }
                             )}
 
                             {/* Hộp nền cho hình ảnh */}
-                            <div className="w-full aspect-[4/5] mb-3 bg-[#EFE8D8] flex flex-col items-center justify-center p-2 relative overflow-hidden">
-                                <div className="w-full h-full flex flex-col items-center justify-center text-[10px] text-than/50 font-bold text-center tracking-widest uppercase opacity-80 mix-blend-multiply">
-                                    [ITEM-<br/>{acc.id.toUpperCase()}]<br/><br/>
-                                    <span className="text-[#B3261E]">ẢNH ĐANG ĐƯỢC TẠO...</span>
-                                </div>
+                            <div className="w-full aspect-[4/5] mb-3 bg-[#EFE8D8] flex flex-col items-center justify-center relative overflow-hidden">
+                                <img
+                                    src={`/assets/character/accessories/${acc.id}.jpg`}
+                                    alt={acc.name}
+                                    className="w-full h-full object-cover mix-blend-multiply opacity-90 transition-transform duration-300 group-hover:scale-105"
+                                />
                             </div>
 
                             <div className="flex flex-col items-center justify-center mt-auto w-full px-1">

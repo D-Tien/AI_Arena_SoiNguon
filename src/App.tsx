@@ -147,7 +147,7 @@ const WizardStep2 = ({ core, setCore, gender, onOpenInfo }: any) => (
                     <button key={c.id} onClick={() => setCore(c.id)} className={`relative aspect-[3/4] neo-card flex flex-col items-center justify-center p-0 overflow-hidden group ${core === c.id ? 'border-cham shadow-[4px_4px_0_var(--cham)]' : 'border-than'}`}>
                         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-[#FBF5E9]">
                             <div className="w-[120%] h-[120%] absolute top-[-10%] left-[-10%] flex justify-center items-end pb-8">
-                                <Character gender={gender} layers={{ top: c.id, headwear: gender === 'male' && c.id === 'ao-tu-than' ? 'khan-xep' : (gender === 'female' && c.id === 'ao-tu-than' ? 'khan-mo-qua' : undefined) }} palette={["#A8231A", "#1B2A5C", "#E3A72F"]} />
+                                <Character gender={gender} layers={{ top: c.id, headwear: gender === 'male' && c.id === 'ao-tu-than' ? 'khan-xep' : undefined }} palette={["#A8231A", "#1B2A5C", "#E3A72F"]} />
                             </div>
                         </div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
@@ -243,7 +243,7 @@ const WizardStep4 = ({ remixLevel, setRemixLevel, styleMode, setStyleMode }: any
 
 
 // --- Result Poster ---
-const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gender, styleMode, hair, cultureNote }: any) => {
+const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gender, styleMode, remixLevel, hair, cultureNote }: any) => {
     const [isGuardOpen, setIsGuardOpen] = useState(false);
     const [isCultureOpen, setIsCultureOpen] = useState(false);
     const [isAiModalOpen, setIsAiModalOpen] = useState(false);
@@ -266,8 +266,19 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
 
     // Dynamic guard level based on remix level
     let guardLevel: 'green' | 'yellow' | 'red' = 'green';
+    let guardMessage: string | undefined = undefined;
     if (layers.shoes === 'sneaker' || layers.outer === 'blazer') guardLevel = 'yellow';
     if (layers.bottom === 'jeans' && layers.top === 'ao-tu-than') guardLevel = 'red';
+    
+    if (remixLevel && core === 'ao-tu-than' && gender === 'female') {
+        if (remixLevel > 60) {
+            guardLevel = 'red';
+            guardMessage = "Cảnh báo văn hóa: Mức độ remix quá cao có thể làm mất đi đặc trưng của Áo Tứ Thân truyền thống.";
+        } else {
+            if (guardLevel === 'green') guardLevel = 'yellow'; // Don't override 'red' if it was set by something else like jeans
+            guardMessage = "Lưu ý văn hóa: Sáng tạo rất thú vị, nhưng việc cách tân vẫn tiềm ẩn nguy cơ làm sai lệch một số chi tiết truyền thống nhỏ.";
+        }
+    }
     
     // Check Guard logic for Ao The male
     if (gender === 'male' && core === 'ao-tu-than' && layers.outer === 'blazer' && layers.bottom === 'jeans') {
@@ -326,7 +337,7 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
 
     return (
         <div className="w-full h-full flex flex-col overflow-y-auto hidden-scrollbar relative bg-giay-do">
-            <GuardModal isOpen={isGuardOpen} onClose={() => setIsGuardOpen(false)} level={guardLevel} />
+            <GuardModal isOpen={isGuardOpen} onClose={() => setIsGuardOpen(false)} level={guardLevel} message={guardMessage} />
             <CultureCard isOpen={isCultureOpen} onClose={() => setIsCultureOpen(false)} outfitName={title} core={core} />
             <AiGenerationModal
                 isOpen={isAiModalOpen}
@@ -378,6 +389,7 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
                                 palette={palette}
                                 layers={layers}
                                 styleMode={styleMode}
+                                remixLevel={remixLevel}
                             />
                         </div>
                     </div>
@@ -447,9 +459,9 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
                                     'cargo': 'Quần Túi Hộp',
                                     'khoac-the': 'Áo Khoác The',
                                     'jacket': 'Áo Khoác Jacket',
-                                    'khan-mo-qua': 'Khăn Mỏ Quạ',
+
                                     'khan-dong': 'Khăn Đóng',
-                                    'van-toc': 'Vấn Tóc',
+                                    'non-quai-thao': 'Nón Quai Thao',
                                     'khan-ran': 'Khăn Rằn',
                                     'non-la': 'Nón Lá',
                                     'khan-xep': 'Khăn Xếp',
@@ -457,6 +469,7 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
                                     'kinh-ram': 'Kính Râm',
                                     'guoc': 'Guốc Mộc',
                                     'sneaker': 'Giày Sneaker',
+                                    'giay-da': 'Giày Da',
                                     'combat-boot': 'Giày Combat'
                                 };
                                 const getName = (id: string) => ITEM_NAMES[id] || id;
@@ -668,9 +681,9 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
     const getLayers = (): DollLayers => {
         const acc = wardrobeState.accessories;
         let headwear = 'none';
-        if (acc.includes('khan-mo-qua')) headwear = 'khan-mo-qua';
+
         if (acc.includes('khan-dong')) headwear = 'khan-dong';
-        if (acc.includes('van-toc')) headwear = 'van-toc';
+        if (acc.includes('non-quai-thao')) headwear = 'non-quai-thao';
         if (acc.includes('khan-ran')) headwear = 'khan-ran';
         if (acc.includes('non-la')) headwear = 'non-la';
         if (acc.includes('khan-xep')) headwear = 'khan-xep';
@@ -679,6 +692,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
         let shoes = 'none';
         if (acc.includes('guoc')) shoes = 'guoc';
         if (acc.includes('sneaker')) shoes = 'sneaker';
+        if (acc.includes('giay-da')) shoes = 'giay-da';
         
         if (step <= 2) {
             return {
@@ -695,8 +709,9 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
             topColor: wardrobeState.topColor,
             bottom: wardrobeState.bottom,
             outer: undefined,
-            shoes: shoes === 'none' ? undefined : shoes,
-            headwear: headwear === 'none' ? undefined : headwear,
+            accessories: step >= 4 ? wardrobeState.accessories : [],
+            shoes: step >= 4 ? (shoes === 'none' ? undefined : shoes) : undefined,
+            headwear: step >= 4 ? (headwear === 'none' ? undefined : headwear) : undefined,
         };
     };
 
@@ -753,9 +768,26 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
             hair: hairType,
             palette: PALETTES[paletteIdx],
             styleMode: styleMode,
-            scene: scene
+            scene: scene,
         };
         setMyLooks(prev => [newLook, ...prev]);
+        
+        // Reset state để tạo cái mới
+        setStep(1);
+        setWardrobeState({
+            gender: 'female',
+            hair: 'Tóc xõa dài',
+            place: 'Hà Nội',
+            top: 'ao-tu-than',
+            topColor: 'default',
+            bottom: 'quan-lua',
+            accessories: [],
+            mode: 'traditional'
+        });
+        setWizardInitialPrompt(null);
+        setAiReasoning(null);
+        setGuardMessage(null);
+        
         setActiveTab('look');
     };
 
@@ -841,6 +873,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                         hair={hairType} 
                         gender={gender} 
                         styleMode={styleMode} 
+                        remixLevel={wardrobeState.remixLevel}
                         cultureNote={aiReasoning || "Trang phục truyền thống được thiết kế tỉ mỉ, gìn giữ nét văn hóa dân tộc."}
                     />
                 </div>
@@ -876,16 +909,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                     </div>
                     */}
                     
-                    {/* Guard Warning */}
-                    {styleMode === 'traditional' && (getLayers().outer !== undefined || getLayers().bottom === 'jeans' || getLayers().shoes === 'sneaker') && (
-                        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50 bg-vang border border-than p-3 rounded-xl shadow-lg flex items-center gap-3 w-[80%] max-w-[300px]">
-                            <span className="text-2xl">⚠️</span>
-                            <div className="flex-1">
-                            <p className="text-xs font-bold text-than mb-1">Bạn đang rời khỏi bản truyền thống, chuyển sang Cách tân?</p>
-                                <button onClick={() => updateWardrobeState({ mode: 'modern' })} className="text-[10px] bg-white text-than px-2 py-1 rounded border border-than shadow">Chuyển sang Cách tân</button>
-                            </div>
-                        </div>
-                    )}
+                    {/* Guard Warning (Removed popup mode change) */}
 
                     {/* Progress Bar */}
                     <div className="absolute top-10 left-6 z-30 flex gap-2 w-[200px]">
@@ -912,7 +936,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                     >
                         {/* The white border effect (using multi drop-shadow or SVG filter in real app, here CSS drop-shadow hack) */}
                         <div className="w-full h-full pointer-events-auto flex items-end justify-center" style={{ filter: 'drop-shadow(3px 0 0 white) drop-shadow(-3px 0 0 white) drop-shadow(0 3px 0 white) drop-shadow(0 -3px 0 white)' }}>
-                            <Character gender={gender} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} bangs="mai-thua" styleMode={styleMode} />
+                            <Character gender={gender} layers={getLayers()} palette={PALETTES[paletteIdx]} hair={hairType} bangs="mai-thua" styleMode={styleMode} remixLevel={wardrobeState.remixLevel} />
                         </div>
                     </div>
                 </div>
@@ -954,7 +978,15 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
                                             </div>
                                         )}
                                         {!aiReasoning && <div className="mb-6"><StylistInput gender={wardrobeState.gender as any} compact compactLabel={aiPrompt || undefined} onApply={handleStylistApply} /></div>}
-                                        <Step3Top state={wardrobeState} updateState={updateWardrobeState} setGuardMessage={setGuardMessage} />
+                                        <Step3Top 
+                                            state={wardrobeState} 
+                                            updateState={updateWardrobeState} 
+                                            setGuardMessage={setGuardMessage} 
+                                            onOpenCulture={(core) => {
+                                                setCultureCore(core);
+                                                setIsCultureOpen(true);
+                                            }}
+                                        />
                                     </>
                                 )}
                                 {step === 4 && (

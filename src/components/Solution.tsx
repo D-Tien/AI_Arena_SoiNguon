@@ -1,5 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+// @ts-ignore
+import HTMLFlipBook from 'react-pageflip';
+import { SmartImage } from './SmartImage';
+
+const Page = React.forwardRef((props: any, ref: any) => {
+    return (
+        <div className={`page bg-giay-sang neo-border neo-shadow overflow-hidden relative ${props.className || ''}`} ref={ref} data-density="hard">
+            <div className="absolute inset-0 opacity-5 pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\'/%3E%3C/svg%3E")' }} />
+            <div className="page-content h-full w-full flex flex-col p-6 z-10 relative">
+                {props.children}
+            </div>
+        </div>
+    );
+});
 
 export const Solution = () => {
     return (
@@ -62,62 +76,90 @@ export const Solution = () => {
             {/* Library / Readings Section */}
             <div className="w-full max-w-4xl mt-24 mb-12 flex flex-col items-center">
                 <h2 className="font-display text-4xl md:text-5xl mb-4 text-than text-center">Thư Viện & Học Hỏi</h2>
-                <p className="font-label text-sm text-son mb-12 text-center max-w-lg uppercase">Nghiên cứu, sách và bài báo về cổ phục Việt Nam</p>
+                <p className="font-label text-sm text-son mb-12 text-center max-w-lg uppercase">Lật mở từng trang sách di sản bằng cách kéo mép trang</p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                    
-                    {/* Book 1 */}
-                    <div className="neo-card bg-giay-sang p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform group cursor-pointer border-cham">
-                        <div>
-                            <div className="font-label text-[10px] bg-cham/10 text-cham px-2 py-1 inline-block mb-3 neo-border border-cham">SÁCH NGHIÊN CỨU</div>
-                            <h3 className="font-display text-2xl text-than mb-2 group-hover:text-son transition-colors">Ngàn Năm Áo Mũ</h3>
-                            <p className="text-sm text-than/70 mb-4 line-clamp-3">Nghiên cứu chi tiết và đồ sộ về lịch sử trang phục Việt Nam qua các triều đại, từ trang phục cung đình đến dân gian, tác giả Trần Quang Đức.</p>
-                        </div>
-                        <div className="flex justify-between items-center mt-4 pt-4 border-t-2 border-than/10">
-                            <span className="text-xs font-bold text-than">Tác giả: Trần Quang Đức</span>
-                            <span className="text-son">↗</span>
-                        </div>
-                    </div>
+                <div className="w-full flex justify-center pb-12 cursor-grab active:cursor-grabbing">
+                    {/* @ts-ignore */}
+                    <HTMLFlipBook width={400} height={550} size="stretch" minWidth={315} maxWidth={500} minHeight={400} maxHeight={700} maxShadowOpacity={0.5} showCover={true} mobileScrollSupport={true} className="book-flip neo-shadow">
+                        
+                        {/* Cover Page */}
+                        <Page className="bg-cham text-giay-sang flex flex-col justify-center items-center text-center p-8 border-l-[12px] border-than/40">
+                            <h1 className="font-display text-5xl mb-4 leading-tight">Sách<br/>Di Sản</h1>
+                            <div className="w-16 h-1 bg-son mb-8"></div>
+                            <p className="font-label text-sm tracking-widest text-giay-sang/80 mb-2">SOI NGUỒN</p>
+                            <p className="text-xs text-giay-sang/60 font-label">KÉO MÉP TRANG ĐỂ MỞ ↗</p>
+                            <div className="mt-12 opacity-40">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                </svg>
+                            </div>
+                        </Page>
 
-                    {/* Book 2 */}
-                    <div className="neo-card bg-giay-sang p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform group cursor-pointer border-luc">
-                        <div>
-                            <div className="font-label text-[10px] bg-luc/10 text-luc px-2 py-1 inline-block mb-3 neo-border border-luc">SÁCH ẢNH & DỰ ÁN</div>
-                            <h3 className="font-display text-2xl text-than mb-2 group-hover:text-son transition-colors">Dệt Nên Triều Đại</h3>
-                            <p className="text-sm text-than/70 mb-4 line-clamp-3">Dự án phỏng dựng trang phục triều Lê Sơ của Vietnam Centre, kèm theo minh hoạ sống động và thông tin lịch sử quy chuẩn.</p>
-                        </div>
-                        <div className="flex justify-between items-center mt-4 pt-4 border-t-2 border-than/10">
-                            <span className="text-xs font-bold text-than">Vietnam Centre</span>
-                            <span className="text-son">↗</span>
-                        </div>
-                    </div>
+                        {/* Page 1 (Image) */}
+                        <Page>
+                            <div className="w-full h-full relative neo-border overflow-hidden">
+                                <SmartImage slot="scene-hanoi" className="absolute inset-0 w-full h-full object-cover mix-blend-multiply transition-transform duration-700 hover:scale-110" />
+                            </div>
+                        </Page>
 
-                    {/* Article 1 */}
-                    <div className="neo-card bg-giay-sang p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform group cursor-pointer border-son">
-                        <div>
-                            <div className="font-label text-[10px] bg-son/10 text-son px-2 py-1 inline-block mb-3 neo-border border-son">BÀI VIẾT TẠP CHÍ</div>
-                            <h3 className="font-display text-2xl text-than mb-2 group-hover:text-son transition-colors">Sự tiến hoá của Áo Dài</h3>
-                            <p className="text-sm text-than/70 mb-4 line-clamp-3">Nhìn lại hành trình từ chiếc áo ngũ thân đến áo dài Le Mur, áo dài Trần Lệ Xuân và hình dáng chiếc áo dài cách tân hiện đại.</p>
-                        </div>
-                        <div className="flex justify-between items-center mt-4 pt-4 border-t-2 border-than/10">
-                            <span className="text-xs font-bold text-than">Tạp chí Heritage</span>
-                            <span className="text-son">↗</span>
-                        </div>
-                    </div>
+                        {/* Page 2 (Content) */}
+                        <Page>
+                            <div className="font-label text-[10px] bg-cham/10 text-cham px-2 py-1 inline-block mb-4 neo-border border-cham">SÁCH NGHIÊN CỨU</div>
+                            <h3 className="font-display text-3xl text-than mb-4">Ngàn Năm Áo Mũ</h3>
+                            <p className="text-sm text-than/80 mb-4 leading-relaxed">Nghiên cứu chi tiết và đồ sộ về lịch sử trang phục Việt Nam qua các triều đại, từ trang phục cung đình đến dân gian. Một tài liệu không thể thiếu để hiểu rõ về văn hóa y phục Việt Nam.</p>
+                            <div className="mt-auto border-t-2 border-than/10 pt-4 flex justify-between items-center">
+                                <span className="font-bold text-xs text-than">Tác giả: Trần Quang Đức</span>
+                                <button className="text-son hover:underline text-xs font-bold flex items-center gap-1">Đọc thử ↗</button>
+                            </div>
+                        </Page>
 
-                    {/* Article 2 */}
-                    <div className="neo-card bg-giay-sang p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform group cursor-pointer border-nghe">
-                        <div>
-                            <div className="font-label text-[10px] bg-nghe/20 text-than px-2 py-1 inline-block mb-3 neo-border border-than">BÀI VIẾT HƯỚNG DẪN</div>
-                            <h3 className="font-display text-2xl text-than mb-2 group-hover:text-son transition-colors">Phân biệt Áo Tấc & Áo Ngũ Thân</h3>
-                            <p className="text-sm text-than/70 mb-4 line-clamp-3">Hai loại trang phục thường xuyên bị nhầm lẫn trong các bộ ảnh cưới và sự kiện truyền thống. Cách nhận biết qua nếp áo và ống tay.</p>
-                        </div>
-                        <div className="flex justify-between items-center mt-4 pt-4 border-t-2 border-than/10">
-                            <span className="text-xs font-bold text-than">Đại Việt Cổ Phong</span>
-                            <span className="text-son">↗</span>
-                        </div>
-                    </div>
+                        {/* Page 3 (Image) */}
+                        <Page>
+                            <div className="w-full h-full relative neo-border overflow-hidden">
+                                <SmartImage slot="costume-ao-nhat-binh" className="absolute inset-0 w-full h-full object-cover mix-blend-multiply transition-transform duration-700 hover:scale-110" />
+                            </div>
+                        </Page>
 
+                        {/* Page 4 (Content) */}
+                        <Page>
+                            <div className="font-label text-[10px] bg-luc/10 text-luc px-2 py-1 inline-block mb-4 neo-border border-luc">DỰ ÁN PHỎNG DỰNG</div>
+                            <h3 className="font-display text-3xl text-than mb-4">Dệt Nên Triều Đại</h3>
+                            <p className="text-sm text-than/80 mb-4 leading-relaxed">Dự án phỏng dựng trang phục triều Lê Sơ của Vietnam Centre, kèm theo minh hoạ sống động và thông tin lịch sử quy chuẩn, giúp người xem dễ dàng hình dung về một thời kỳ rực rỡ.</p>
+                            <div className="mt-auto border-t-2 border-than/10 pt-4 flex justify-between items-center">
+                                <span className="font-bold text-xs text-than">Vietnam Centre</span>
+                                <button className="text-son hover:underline text-xs font-bold flex items-center gap-1">Khám phá ↗</button>
+                            </div>
+                        </Page>
+
+                        {/* Page 5 (Image) */}
+                        <Page>
+                            <div className="w-full h-full relative neo-border overflow-hidden bg-white">
+                                <img src="/assets/character/top/ao_dai/female/ao_dai.png" alt="Áo dài" className="absolute inset-0 w-full h-full object-contain mix-blend-multiply transition-transform duration-700 hover:scale-110 scale-150 translate-y-12" />
+                            </div>
+                        </Page>
+
+                        {/* Page 6 (Content) */}
+                        <Page>
+                            <div className="font-label text-[10px] bg-son/10 text-son px-2 py-1 inline-block mb-4 neo-border border-son">BÀI VIẾT TẠP CHÍ</div>
+                            <h3 className="font-display text-3xl text-than mb-4">Sự tiến hoá của Áo Dài</h3>
+                            <p className="text-sm text-than/80 mb-4 leading-relaxed">Nhìn lại hành trình từ chiếc áo ngũ thân đến áo dài Le Mur, áo dài Trần Lệ Xuân và hình dáng chiếc áo dài cách tân hiện đại. Một bức tranh toàn cảnh về sự thay đổi của cái đẹp.</p>
+                            <div className="mt-auto border-t-2 border-than/10 pt-4 flex justify-between items-center">
+                                <span className="font-bold text-xs text-than">Tạp chí Heritage</span>
+                                <button className="text-son hover:underline text-xs font-bold flex items-center gap-1">Xem bài viết ↗</button>
+                            </div>
+                        </Page>
+
+                        {/* Back Cover */}
+                        <Page className="bg-giay-do text-than flex flex-col justify-center items-center text-center p-8 border-l-[12px] border-than/10">
+                            <div className="w-16 h-16 rounded-full border-2 border-than flex items-center justify-center mb-4 neo-shadow bg-giay-sang">
+                                <span className="font-display text-2xl font-bold">S</span>
+                            </div>
+                            <h2 className="font-display text-3xl mb-2">Soi Nguồn</h2>
+                            <p className="font-label text-[10px] tracking-widest text-than/60">TRỞ VỀ CỘI NGUỒN</p>
+                        </Page>
+
+                    </HTMLFlipBook>
                 </div>
                 
                 <button className="mt-8 neo-button-secondary bg-giay-sang">XEM TẤT CẢ TÀI LIỆU (12+)</button>

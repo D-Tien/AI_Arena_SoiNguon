@@ -37,7 +37,7 @@ export const GuardStamp = ({ level, onClick }: { level: 'green' | 'yellow' | 're
     );
 };
 
-export const GuardModal = ({ isOpen, onClose, level }: { isOpen: boolean, onClose: () => void, level: 'green' | 'yellow' | 'red' }) => {
+export const GuardModal = ({ isOpen, onClose, level, message }: { isOpen: boolean, onClose: () => void, level: 'green' | 'yellow' | 'red', message?: string }) => {
     return (
         <AnimatePresence>
             {isOpen && (
@@ -71,12 +71,14 @@ export const GuardModal = ({ isOpen, onClose, level }: { isOpen: boolean, onClos
                         </div>
 
                         <div className="bg-giay-do neo-border p-4 rounded-sm text-than text-sm leading-relaxed">
-                            {level === 'red' ? (
-                                "Sự kết hợp này vi phạm một số quy chuẩn khắt khe về trang phục tế lễ truyền thống. Áo dài ngũ thân không nên mặc chung với quần đùi ngắn khi tham gia các không gian trang nghiêm."
-                            ) : level === 'yellow' ? (
-                                "Sự sáng tạo rất thú vị, tuy nhiên việc phối Áo Nhật Bình với áo lót ren có thể gây tranh cãi trong một số cộng đồng bảo tồn. Nên cẩn thận khi sử dụng trong không gian công cộng truyền thống."
-                            ) : (
-                                "Bộ trang phục phối hợp hài hoà, giữ gìn được cấu trúc cốt lõi của trang phục truyền thống mà vẫn mang lại hơi thở hiện đại an toàn."
+                            {message ? message : (
+                                level === 'red' ? (
+                                    "Sự kết hợp này vi phạm một số quy chuẩn khắt khe về trang phục tế lễ truyền thống. Áo dài ngũ thân không nên mặc chung với quần đùi ngắn khi tham gia các không gian trang nghiêm."
+                                ) : level === 'yellow' ? (
+                                    "Sự sáng tạo rất thú vị, tuy nhiên việc phối Áo Nhật Bình với áo lót ren có thể gây tranh cãi trong một số cộng đồng bảo tồn. Nên cẩn thận khi sử dụng trong không gian công cộng truyền thống."
+                                ) : (
+                                    "Bộ trang phục phối hợp hài hoà, giữ gìn được cấu trúc cốt lõi của trang phục truyền thống mà vẫn mang lại hơi thở hiện đại an toàn."
+                                )
                             )}
                         </div>
                         
