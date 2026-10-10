@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SmartImage } from './SmartImage';
 
 export const StageBackground = ({ scene = 'hanoi', title = '' }: { scene: string, title?: string }) => {
     const [imgError, setImgError] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const SKIN_COLORS = ['#FAD6C6', '#F2C9A5', '#E6B893', '#D19A6C', '#AF7245', '#7A4B29'];
 const MATERIALS = ['Lụa', 'Đũi', 'Gấm', 'Cotton'];

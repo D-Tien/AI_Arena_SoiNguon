@@ -6,7 +6,7 @@ interface ShareCardProps {
     gender: 'female' | 'male';
     layers: DollLayers;
     palette: string[];
-    styleMode: string;
+    styleMode: 'traditional' | 'modern';
     coreName: string;
     style: string;
     title: string;

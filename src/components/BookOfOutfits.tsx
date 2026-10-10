@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 // @ts-ignore
 import HTMLFlipBook from 'react-pageflip';
-import { Character } from './PaperDoll';
 import { coreCostumes } from '../data/coreCostumes';
 
 const Page = React.forwardRef((props: any, ref: any) => {
@@ -120,10 +118,6 @@ export const BookOfOutfits = ({ onStartPhoi }: { onStartPhoi: () => void }) => {
 
                     {/* Costume Pages */}
                     {coreCostumes.flatMap((costume, idx) => {
-                        const chibiGender = idx === 1 || idx === 3 || idx === 5 ? 'male' : 'female';
-                        const chibiCore = costume.id;
-                        const isMissingAccessories = chibiCore === 'ao-ngu-than' || chibiCore === 'ao-ba-ba';
-
                         return [
                             /* Left Page: Images */
                             <Page key={`${costume.id}-left`}>
@@ -142,8 +136,6 @@ export const BookOfOutfits = ({ onStartPhoi }: { onStartPhoi: () => void }) => {
                                         <h2 className="font-display text-4xl md:text-5xl text-white mb-4 drop-shadow-md">{costume.name}</h2>
                                         
                                         <div className="absolute top-6 right-6 bg-black/50 backdrop-blur-md px-2 py-1 text-[8px] text-white/80 uppercase tracking-widest border border-white/20 rounded-sm">AI Generated</div>
-
-
                                     </div>
                                     {/* Page Number */}
                                     <div className="absolute bottom-4 left-6 text-xs text-white/60 font-display z-20">{idx * 2 + 1}</div>

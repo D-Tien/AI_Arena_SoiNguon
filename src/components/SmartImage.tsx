@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getManifestItem } from '../data/imageManifest';
 
 export const SmartImage = ({ slot, className, onClick }: { slot: string, className?: string, onClick?: () => void }) => {
