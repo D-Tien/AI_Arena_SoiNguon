@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Download, LoaderCircle, RotateCcw, X } from 'lucide-react';
 import { imageGenerationProvider } from '../services/image/imageGenerationService';
 import { DEMO_PLACEHOLDER } from '../data/demoGeneratedImages';
@@ -60,8 +61,8 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
 
     if (!isOpen) return null;
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-sans text-than" role="dialog" aria-modal="true" aria-labelledby="demo-image-title">
+    return createPortal(
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-sans text-than" role="dialog" aria-modal="true" aria-labelledby="demo-image-title">
             <div className="bg-giay-do w-full max-w-5xl h-[90dvh] neo-border border-[4px] border-than flex flex-col overflow-hidden relative shadow-[8px_8px_0_white]">
                 <div className="flex flex-wrap justify-between items-center gap-3 p-4 border-b-[4px] border-than bg-giay-sang shrink-0">
                     <div>
@@ -110,6 +111,7 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
                     </div>
                 )}
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 };
