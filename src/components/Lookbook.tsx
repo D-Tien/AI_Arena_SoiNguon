@@ -111,6 +111,7 @@ export const Lookbook = ({ onTryOn, myLooks = [], onUpdateLook }: LookbookProps)
                                                 palette={look.palette}
                                                 layers={look.layers}
                                                 styleMode={look.styleMode}
+                                                remixLevel={look.remixLevel}
                                             />
                                         </div>
                                     </div>
@@ -158,6 +159,7 @@ export const Lookbook = ({ onTryOn, myLooks = [], onUpdateLook }: LookbookProps)
                                                 palette={selectedLook.palette}
                                                 layers={selectedLook.layers}
                                                 styleMode={selectedLook.styleMode}
+                                                remixLevel={selectedLook.remixLevel}
                                             />
                                         </div>
                                     </div>
