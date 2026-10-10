@@ -185,6 +185,7 @@ const ResultPoster = ({ onBack, onSave, scene, layers, palette, core, style, gen
                 attemptsLeft={attemptsLeft}
                 onUseAttempt={() => setAttemptsLeft(p => p - 1)}
                 coreId={gender === 'male' && core === 'ao-tu-than' ? 'ao-the' : core}
+                gender={gender}
                 sceneId={scene}
                 style={style}
                 palette={palette}

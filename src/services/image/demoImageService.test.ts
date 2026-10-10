@@ -57,6 +57,38 @@ describe('local demo image generation', () => {
     expect(ranked[0].image.id).toBe('ngu-than-blue-streetwear');
   });
 
+  it.each([
+    ['Nam mặc áo ngũ thân xanh chàm truyền thống tại Đại Nội Huế', '/demo-generated/0693c881-13ee-4986-86fe-d2315eaffa1c.png'],
+    ['Nam mặc áo bà ba nâu mộc mạc bên sông miền Tây', '/demo-generated/2b395584-2d04-4bb4-9e1f-3ee89cdd854c.png'],
+    ['Nam mặc áo dài xanh lá thanh lịch bên nhà cổ', '/demo-generated/f132857c-a2b5-4f18-a8f6-7bfcd0aa8a41.png'],
+  ])('selects the corresponding male outfit for %s', async (prompt, imageUrl) => {
+    demoGeneratedImages.forEach(image => available.add(image.src));
+    const result = generateDemoImage({ prompt, gender: 'female', garment: 'ao-tu-than' });
+    await vi.runAllTimersAsync();
+    expect((await result).imageUrl).toBe(imageUrl);
+  });
+
+  it('distinguishes male ao dai variants by color', () => {
+    expect(rankDemoImages({ prompt: 'Áo dài nam xanh chàm truyền thống' })[0].image.id)
+      .toBe('ngu-than-male-blue-hue');
+    expect(rankDemoImages({ prompt: 'Áo dài nam xanh lá truyền thống' })[0].image.id)
+      .toBe('ao-dai-male-green-heritage');
+  });
+
+  it('uses the UI gender and ignores geographic names when detecting gender', () => {
+    expect(rankDemoImages({ prompt: 'Áo bà ba ở Nam Bộ Việt Nam', gender: 'male' })[0].image.gender).toBe('male');
+    expect(rankDemoImages({ prompt: 'Áo bà ba ở Nam Bộ Việt Nam', gender: 'female' })[0].image.gender).toBe('female');
+    expect(rankDemoImages({ prompt: 'Áo bà ba nữ ở Nam Bộ', gender: 'male' })[0].image.gender).toBe('female');
+  });
+
+  it('uses a male fallback when no prompt tags match', async () => {
+    demoGeneratedImages.forEach(image => available.add(image.src));
+    const result = generateDemoImage({ prompt: 'Chụp toàn thân', gender: 'male' });
+    await vi.runAllTimersAsync();
+    expect((await result).imageUrl).toBe('/demo-generated/0693c881-13ee-4986-86fe-d2315eaffa1c.png');
+    expect((await result).matchedBy).toBe('default');
+  });
+
   it('distinguishes lotus and brown heritage variants from prompt details', () => {
     expect(rankDemoImages({ prompt: 'Áo tứ thân thanh lịch màu đỏ bên hồ sen cổ kính' })[0].image.id)
       .toBe('tu-than-red-lotus');

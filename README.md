@@ -29,6 +29,7 @@ Chức năng tạo ảnh hiện chạy ở DEMO MODE, chỉ tải ảnh local, k
 2. Đăng ký ảnh trong `src/data/demoGeneratedImages.ts`: mỗi ảnh có `id`, `src` và các tag tùy chọn `garments`, `styles`, `occasions`, `colors`, `keywords`.
 3. App chuẩn hóa chữ thường, bỏ dấu tiếng Việt và dấu câu. Trang phục, style, dịp và màu ghi rõ trong prompt được ưu tiên hơn lựa chọn trên giao diện; trường nào không được nhận diện trong prompt sẽ dùng lựa chọn trên giao diện. Trang phục được ưu tiên khi chấm điểm; style, dịp, màu và keyword giúp chọn ảnh cụ thể hơn. Nếu không có trang phục, app dùng keyword trong prompt. Chỉ những ảnh tải được mới được chọn; các ảnh cùng mức khớp được chọn ngẫu nhiên, tránh lặp ảnh trước khi có lựa chọn khác.
 4. Đặt ảnh mặc định tại `public/demo-generated/default.webp`, hoặc đổi `src` của mục `id: 'default'` trong mapping. Khi ảnh này thiếu, app dùng `/hero/hero-tu-than.webp` có sẵn.
+5. Ảnh có tag `gender: 'male' | 'female'`. Giới tính ghi rõ trong prompt được ưu tiên; nếu không có, app dùng lựa chọn Nam/Nữ trên giao diện. Ảnh nam mặc định dùng mục `id: 'default-male'`. Ví dụ prompt nam: `Nam mặc áo ngũ thân xanh chàm truyền thống tại Đại Nội Huế`, `Nam mặc áo bà ba nâu mộc mạc bên sông miền Tây`, `Nam mặc áo dài xanh lá thanh lịch bên nhà cổ`. Prompt chỉ chọn trong các ảnh demo đã đăng ký; mô tả khác nhau cần khớp tag trang phục, màu hoặc bối cảnh để trả ảnh khác nhau.
 
 Ví dụ thêm vào mapping:
 

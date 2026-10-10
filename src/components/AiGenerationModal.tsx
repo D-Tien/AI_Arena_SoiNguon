@@ -10,12 +10,13 @@ interface AiGenerationModalProps {
     attemptsLeft: number;
     onUseAttempt: () => void;
     coreId: string;
+    gender: 'male' | 'female';
     sceneId: string;
     style?: string;
     palette: string[];
 }
 
-export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft, onUseAttempt, coreId, sceneId, style, palette }: AiGenerationModalProps) => {
+export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft, onUseAttempt, coreId, gender, sceneId, style, palette }: AiGenerationModalProps) => {
     const [prompt, setPrompt] = useState(initialPrompt);
     const [state, setState] = useState<'review' | 'generating' | 'result'>('review');
     const [resultUrl, setResultUrl] = useState<string | null>(null);
@@ -40,7 +41,7 @@ export const AiGenerationModal = ({ isOpen, onClose, initialPrompt, attemptsLeft
         onUseAttempt();
         try {
             const result = await imageGenerationProvider.generate({
-                prompt, garment: coreId, style, occasion: sceneId, color: palette.join(' '),
+                prompt, gender, garment: coreId, style, occasion: sceneId, color: palette.join(' '),
                 previousImageUrl: resultUrl || undefined, signal: controller.signal,
             });
             if (requestRef.current !== controller || controller.signal.aborted) return;

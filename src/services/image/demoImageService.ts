@@ -11,9 +11,18 @@ const matches = (text: string, tags: string[] = []) => tags.some(tag => {
   return normalized.length > 0 && ` ${text} `.includes(` ${normalized} `);
 });
 
+function getGender(input: ImageGenerationInput): 'male' | 'female' {
+  // Geographic names contain "nam" but do not describe the model's gender.
+  const prompt = normalizeImageInput(input.prompt).replace(/\b(viet nam|nam bo|mien nam)\b/g, '');
+  const male = matches(prompt, ['nam', 'male', 'man', 'men']);
+  const female = matches(prompt, ['nu', 'female', 'woman', 'women']);
+  return male !== female ? (male ? 'male' : 'female') : input.gender || 'female';
+}
+
 export function rankDemoImages(input: ImageGenerationInput, images = demoGeneratedImages) {
   const prompt = normalizeImageInput(input.prompt);
-  const candidates = images.filter(image => image.id !== 'default');
+  const gender = getGender(input);
+  const candidates = images.filter(image => !image.id.startsWith('default') && (!image.gender || image.gender === gender));
   const preferredText = (field: 'garments' | 'styles' | 'occasions' | 'colors', fallback?: string) =>
     candidates.some(image => matches(prompt, image[field])) ? prompt : normalizeImageInput(fallback);
   const garment = preferredText('garments', input.garment);
@@ -66,7 +75,8 @@ async function selectImage(input: ImageGenerationInput): Promise<ImageGeneration
   const selected = candidates[Math.floor(Math.random() * candidates.length)];
   if (selected) return { imageUrl: selected.image.src, provider: 'demo', matchedBy: selected.matchedBy };
 
-  const fallback: DemoGeneratedImage | undefined = demoGeneratedImages.find(image => image.id === 'default');
+  const fallbackId = getGender(input) === 'male' ? 'default-male' : 'default';
+  const fallback: DemoGeneratedImage | undefined = demoGeneratedImages.find(image => image.id === fallbackId);
   if (fallback && await loadLocalImage(fallback.src, input.signal)) {
     return { imageUrl: fallback.src, provider: 'demo', matchedBy: 'default' };
   }

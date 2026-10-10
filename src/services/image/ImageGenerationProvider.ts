@@ -1,5 +1,6 @@
 export interface ImageGenerationInput {
   prompt: string;
+  gender?: 'male' | 'female';
   garment?: string;
   style?: string;
   occasion?: string;
