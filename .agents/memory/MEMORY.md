@@ -13,6 +13,8 @@
 - [project] Hai chế độ: Truyền thống & Cách tân. Lưu trữ: Local/IndexedDB. → tech-decisions.md
 - [project] Nhân vật SVG chibi 2D; chỉ dùng AI ở bước cuối. → tech-decisions.md
 - [project] Cultural Guard: chỉ nhắc nhở, không chặn. → tech-decisions.md
+- [project] Quy tắc đặt tên và thư mục cho asset Sợi Nguồn (áo, giới tính, màu, phụ kiện) → project-conventions.md
+
 
 ## Feedback
 - [feedback] Lỗi giao diện: sợi chỉ đè chữ, nhãn dán sai, ảnh lỗi. → feedback-history.md

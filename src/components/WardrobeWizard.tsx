@@ -23,6 +23,7 @@ export interface WardrobeState {
     bottom: string;
     accessories: string[];
     mode: Mode;
+    remixLevel?: number;
 }
 
 const steps = [

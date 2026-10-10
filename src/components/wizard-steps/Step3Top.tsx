@@ -6,6 +6,7 @@ interface Props {
     state: WardrobeState;
     updateState: (updates: Partial<WardrobeState>) => void;
     setGuardMessage: (msg: string | null) => void;
+    onOpenCulture?: (core: string) => void;
 }
 
 const MIEN_BAC = ['Hà Nội', 'Ninh Bình', 'Bắc Ninh', 'Hà Giang', 'Tuyên Quang', 'Quảng Ninh'];
@@ -13,13 +14,12 @@ const MIEN_TRUNG = ['Huế', 'Đà Nẵng', 'Hội An', 'Đà Lạt'];
 const MIEN_NAM = ['Sài Gòn', 'Cà Mau'];
 
 const tops = [
-    { id: 'ao-tu-than', name: 'áo tứ thân', regions: MIEN_BAC, primaryRegionName: 'miền Bắc', gender: 'female', desc: 'gọn gàng, nữ tính' },
-    { id: 'ao-the', name: 'áo the', regions: MIEN_BAC, primaryRegionName: 'miền Bắc', gender: 'male', desc: 'nho nhã, nam tính' },
+    { id: 'ao-tu-than', name: 'áo tứ thân', regions: MIEN_BAC, primaryRegionName: 'miền Bắc', gender: 'all', desc: 'gọn gàng (nữ), nho nhã (nam)' },
     { id: 'ao-ngu-than', name: 'áo ngũ thân', regions: MIEN_TRUNG, primaryRegionName: 'miền Trung', gender: 'all', desc: 'chữ thập, quyền quý' },
     { id: 'ao-ba-ba', name: 'áo bà ba', regions: [...MIEN_NAM, ...MIEN_TRUNG], primaryRegionName: 'miền Nam & miền Trung', gender: 'all', desc: 'mộc mạc, gần gũi' },
 ];
 
-export default function Step3Top({ state, updateState, setGuardMessage }: Props) {
+export default function Step3Top({ state, updateState, setGuardMessage, onOpenCulture }: Props) {
     const sortedTops = tops
         .filter(top => top.gender === 'all' || top.gender === state.gender)
         .sort((a, b) => {
@@ -41,18 +41,16 @@ export default function Step3Top({ state, updateState, setGuardMessage }: Props)
         }
     };
 
-    const colors = [
-        { id: 'default', color: '#4C9173', name: 'xanh jade' },
-        { id: 'blue', color: '#1B2A5C', name: 'xanh dương' },
+    const theColors = [
+        { id: 'default', color: '#1B2A5C', name: 'xanh dương' },
         { id: 'grey', color: '#808080', name: 'xám ghi' },
         { id: 'red', color: '#8B0000', name: 'đỏ đô' },
-        { id: 'cream', color: '#F3E9D6', name: 'kem ngà' },
     ];
 
     const tuThanColors = [
         { id: 'default', color: '#2D5A4C', name: 'xanh lục' },
         { id: 'brown', color: '#A37B65', name: 'nâu nhẹ' },
-        { id: '1', color: '#C8828B', name: 'hồng nhẹ' },
+        { id: '2', color: '#9D4E5B', name: 'đỏ tía' },
     ];
 
     const nguThanColors = [
@@ -105,6 +103,8 @@ export default function Step3Top({ state, updateState, setGuardMessage }: Props)
                                     ✓
                                 </motion.div>
                             )}
+                            
+
 
                             {/* Tem gợi ý (giống trong ảnh: dán băng dính chéo góc trên trái) */}
                             {top.regions.includes(state.place) && (
@@ -115,13 +115,31 @@ export default function Step3Top({ state, updateState, setGuardMessage }: Props)
 
                             {/* Hộp nền cho hình ảnh */}
                             <div className="w-full aspect-[3/4] mb-3 bg-[#EFE8D8] flex flex-col items-center justify-center p-0 relative overflow-hidden">
-                                <SmartImage slot={`costume-${top.id}`} className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply opacity-90 pointer-events-none" />
+                                {top.id === 'ao-tu-than' && state.gender === 'male' ? (
+                                    <img src="/assets/character/top/tu_than/male/ao_the_thumbnail.jpg" alt="Áo the" className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply opacity-90 pointer-events-none" />
+                                ) : (
+                                    <SmartImage slot={`costume-${top.id}`} className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply opacity-90 pointer-events-none" />
+                                )}
                             </div>
 
                             <div className="flex flex-col items-center justify-center mt-auto w-full px-1">
-                                <h3 className={`text-base leading-tight font-bold tracking-wide ${isSelected ? 'text-[#B3261E]' : 'text-than'}`}>
-                                    {top.name}
-                                </h3>
+                                <div className="flex items-center justify-center gap-1.5">
+                                    <h3 className={`text-base leading-tight font-bold tracking-wide ${isSelected ? 'text-[#B3261E]' : 'text-than'}`}>
+                                        {top.id === 'ao-tu-than' && state.gender === 'male' ? 'áo the' : top.name}
+                                    </h3>
+                                    {onOpenCulture && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onOpenCulture(top.id);
+                                            }}
+                                            className="w-5 h-5 shrink-0 rounded-full bg-than/5 border border-than/20 text-than/60 hover:bg-than hover:text-white flex items-center justify-center text-[12px] font-bold transition-all shadow-sm"
+                                            title="Tìm hiểu thêm về trang phục này"
+                                        >
+                                            ?
+                                        </button>
+                                    )}
+                                </div>
                                 <p className="text-[10.5px] text-than/70 mt-1 line-clamp-2 leading-tight tracking-wide">
                                     {top.desc}
                                 </p>
@@ -131,11 +149,11 @@ export default function Step3Top({ state, updateState, setGuardMessage }: Props)
                 })}
             </div>
 
-            {(state.top === 'ao-the' || state.top === 'ao-tu-than' || state.top === 'ao-ngu-than' || state.top === 'ao-ba-ba') && (
+            {(state.top === 'ao-tu-than' || state.top === 'ao-ngu-than' || state.top === 'ao-ba-ba') && (
                 <div className="pt-4 border-t border-[#2B2118]/10 mt-2">
                     <p className="text-than/80 text-sm mb-3">màu sắc trang phục</p>
                     <div className="flex flex-wrap gap-3">
-                        {(state.top === 'ao-the' ? colors : (state.top === 'ao-tu-than' ? tuThanColors : (state.top === 'ao-ngu-than' ? nguThanColors : baBaColors))).map(c => (
+                        {(state.top === 'ao-tu-than' && state.gender === 'male' ? theColors : (state.top === 'ao-tu-than' ? tuThanColors : (state.top === 'ao-ngu-than' ? nguThanColors : baBaColors))).map(c => (
                             <button
                                 key={c.id}
                                 onClick={() => updateState({ topColor: c.id })}

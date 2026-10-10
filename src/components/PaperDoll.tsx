@@ -24,6 +24,7 @@ export interface CharacterProps {
     palette?: string[]; // [primary, secondary, accent]
     layers: DollLayers;
     styleMode?: 'traditional' | 'modern';
+    remixLevel?: number;
     hideBase?: boolean;
 }
 
@@ -299,7 +300,7 @@ const AoThe = ({ primary, secondary, layers, styleMode }: { primary: string, sec
 
 
 
-export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = ["#A8231A", "#1B2A5C", "#E3A72F"], layers, styleMode = 'traditional', hideBase = false }: CharacterProps) => {
+export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = ["#A8231A", "#1B2A5C", "#E3A72F"], layers, styleMode = 'traditional', remixLevel, hideBase = false }: CharacterProps) => {
     const primary = palette[0] || "#A8231A";
     const secondary = palette[1] || "#1B2A5C";
     const accent = palette[2] || "#E3A72F";
@@ -330,48 +331,163 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = [
                 {/* Layer Quần Áo (PNG) */}
                 <AnimatePresence>
                     {/* Layer Áo (Nằm trên quần) */}
-                    {layers.top === 'ao-tu-than' && gender === 'female' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-tuthan-female-${layers.topColor || 'default'}`}>
-                            <SafeSvgImage 
-                                href={`/assets/character/top/ao_tu_than_female${(!layers.topColor || layers.topColor === 'default') ? '' : (layers.topColor === 'brown' ? '_1' : '_2')}.png?v=${Date.now()}`}
-                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
-                                fallback={<AoTuThan primary={primary} secondary={secondary} accent={accent} styleMode={styleMode} />}
-                                fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
-                            />
-                        </motion.g>
-                    )}
-                    {layers.top === 'ao-ngu-than' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-nguthan-${gender}-${layers.topColor || 'default'}`}>
-                            <SafeSvgImage 
-                                href={`/assets/character/top/ao_ngu_than_${gender}${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}.png?v=${Date.now()}`} 
-                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
-                                fallback={<AoNguThan primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />}
-                                fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
-                            />
-                        </motion.g>
-                    )}
-                    {layers.top === 'ao-ba-ba' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-baba-${gender}-${layers.topColor || 'default'}`}>
-                            <SafeSvgImage 
-                                href={`/assets/character/top/ao_ba_ba_${gender}${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}.png?v=${Date.now()}`} 
-                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
-                                fallback={<AoBaBa primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />}
-                                fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
-                            />
-                        </motion.g>
-                    )}
-                    {(layers.top === 'ao-tu-than' || layers.top === 'ao-the') && gender === 'male' && (
-                        <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-aothe-male-${layers.topColor || 'default'}-${layers.bottom || 'default'}`}>
-                            <SafeSvgImage 
-                                href={`/assets/character/top/ao_the_male${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}${layers.bottom && layers.bottom !== 'quan-lua' ? '_' + layers.bottom.replace('-', '_') : ''}.png`}
-                                x={layers.bottom && layers.bottom !== 'quan-lua' ? "-170" : "-130"} 
-                                y={layers.bottom && layers.bottom !== 'quan-lua' ? "-245" : "-205"} 
-                                width={layers.bottom && layers.bottom !== 'quan-lua' ? "740" : "660"} 
-                                height={layers.bottom && layers.bottom !== 'quan-lua' ? "925" : "825"} 
-                                preserveAspectRatio="xMidYMax meet" 
-                                fallback={<AoThe primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />}
-                                fallbackBase={<BodyBaseMale skinTone={skinTone} />}
-                            />
+                    {(() => {
+                        const isNewConvention = ['ao-tu-than', 'ao-the', 'ao-ngu-than', 'ao-ba-ba'].includes(layers.top || '');
+                        
+                        if (isNewConvention) {
+                            let outfitType = layers.top === 'ao-tu-than' || layers.top === 'ao-the' ? 'tu_than' : (layers.top === 'ao-ngu-than' ? 'ngu_than' : 'ba_ba');
+                            let colorFolder = layers.topColor || 'default';
+                            if (outfitType === 'tu_than' && gender === 'female') {
+                                if (colorFolder === 'brown') colorFolder = '1';
+                                else if (!['default', '1', '2'].includes(colorFolder)) colorFolder = '2';
+                            }
+                            if (outfitType === 'tu_than' && gender === 'male' && colorFolder === 'default') {
+                                colorFolder = 'blue';
+                            }
+
+                            let hasNonLa = layers.headwear === 'non-la' || layers.accessories?.includes('non-la');
+                            let hasKhanRan = layers.headwear === 'khan-ran' || layers.accessories?.includes('khan-ran');
+                            
+                            let shoeStr = '';
+                            let parts = [];
+
+                            if (outfitType === 'tu_than' && gender === 'female') {
+                                if (layers.shoes === 'sneaker') shoeStr = '_s';
+                                else if (layers.shoes === 'giay-da') shoeStr = '_gd';
+                                else if (layers.shoes === 'guoc') shoeStr = '_gm';
+
+                                if (hasNonLa) {
+                                    parts.push('non_la');
+                                } else if (layers.headwear && layers.headwear !== 'khong-doi' && layers.headwear !== 'khan-ran') {
+                                    parts.push(layers.headwear.replace(/-/g, '_'));
+                                }
+                                
+                                if (hasKhanRan) {
+                                    parts.push('khan');
+                                }
+                            }
+
+                            let fileName = '';
+                            if (outfitType === 'tu_than' && gender === 'male') {
+                                fileName = 'ao_the_male';
+                                if (colorFolder && colorFolder !== 'default') {
+                                    fileName += `_${colorFolder}`;
+                                } else {
+                                    fileName += '_blue';
+                                }
+                            } else {
+                                if (parts.length > 0) {
+                                    fileName = parts.join('_') + shoeStr;
+                                } else {
+                                    fileName = `ao_${outfitType}` + (shoeStr ? shoeStr : `_${gender}`);
+                                }
+
+                                if (outfitType === 'tu_than' && colorFolder === '2') {
+                                    fileName += '_2';
+                                }
+                            }
+
+                            let href = '';
+                            if (outfitType === 'tu_than' && styleMode === 'modern' && gender === 'female') {
+                                const rLevel = remixLevel || 50;
+                                const intensity = rLevel > 60 ? 'high' : 'low';
+                                const rPrefix = colorFolder === 'default' ? `ao_${outfitType}` : `ao_${outfitType}_${colorFolder}`;
+                                href = `/assets/character/top/remix/female/${rPrefix}_${intensity}.png?v=${Date.now()}`;
+                            } else {
+                                if (outfitType === 'tu_than' && gender === 'female') {
+                                    href = `/assets/character/top/${outfitType}/${gender}/${colorFolder}/${fileName}.png?v=${Date.now()}`;
+                                } else {
+                                    if (colorFolder && colorFolder !== 'default' && parts.length === 0 && !(outfitType === 'tu_than' && gender === 'male')) {
+                                        fileName += `_${colorFolder}`;
+                                    }
+                                    href = `/assets/character/top/${outfitType}/${gender}/${fileName}.png?v=${Date.now()}`;
+                                }
+                            }
+
+                            let fallbackComponent = null;
+                            if (layers.top === 'ao-tu-than' && gender === 'female') fallbackComponent = <AoTuThan primary={primary} secondary={secondary} accent={accent} styleMode={styleMode} />;
+                            else if (outfitType === 'tu_than' && gender === 'male') fallbackComponent = <AoThe primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />;
+                            else if (layers.top === 'ao-ngu-than') fallbackComponent = <AoNguThan primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />;
+                            else if (layers.top === 'ao-ba-ba') fallbackComponent = <AoBaBa primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />;
+
+                            if (outfitType === 'tu_than' && gender === 'female' && styleMode === 'modern') {
+                                const rLevel = remixLevel || 50;
+                                const rPrefix = colorFolder === 'default' ? `ao_${outfitType}` : `ao_${outfitType}_${colorFolder}`;
+                                const lowHref = `/assets/character/top/remix/female/${rPrefix}_low.png?v=${Date.now()}`;
+                                const highHref = `/assets/character/top/remix/female/${rPrefix}_high.png?v=${Date.now()}`;
+                                
+                                // Map 26-100 to 0-1 opacity for high image
+                                const highOpacity = Math.max(0, Math.min(1, (rLevel - 26) / (100 - 26)));
+
+                                return (
+                                    <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-new-remix-${rPrefix}`}>
+                                        <SafeSvgImage 
+                                            href={lowHref}
+                                            x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
+                                            fallback={fallbackComponent}
+                                            fallbackBase={<BodyBase skinTone={skinTone} />}
+                                        />
+                                        {highOpacity > 0 && (
+                                            <SafeSvgImage 
+                                                href={highHref}
+                                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
+                                                style={{ opacity: highOpacity, transition: 'opacity 0.1s ease-out' }}
+                                                fallback={fallbackComponent}
+                                                fallbackBase={null}
+                                            />
+                                        )}
+                                    </motion.g>
+                                );
+                            }
+
+                            return (
+                                <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-new-${outfitType}-${gender}-${fileName}`}>
+                                    <SafeSvgImage 
+                                        href={href}
+                                        x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
+                                        fallback={fallbackComponent}
+                                        fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
+                                    />
+                                </motion.g>
+                            );
+                        } else if (layers.top === 'ao-the') {
+                            return (
+                                <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-aothe-male-${layers.topColor || 'default'}-${layers.bottom || 'default'}`}>
+                                    <SafeSvgImage 
+                                        href={`/assets/character/top/ao_the_male${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}${layers.bottom && layers.bottom !== 'quan-lua' ? '_' + layers.bottom.replace(/-/g, '_') : ''}.png`}
+                                        x={layers.bottom && layers.bottom !== 'quan-lua' ? "-170" : "-130"} 
+                                        y={layers.bottom && layers.bottom !== 'quan-lua' ? "-245" : "-205"} 
+                                        width={layers.bottom && layers.bottom !== 'quan-lua' ? "740" : "660"} 
+                                        height={layers.bottom && layers.bottom !== 'quan-lua' ? "925" : "825"} 
+                                        preserveAspectRatio="xMidYMax meet" 
+                                        fallback={<AoThe primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />}
+                                        fallbackBase={gender === 'female' ? <BodyBase skinTone={skinTone} /> : <BodyBaseMale skinTone={skinTone} />}
+                                    />
+                                </motion.g>
+                            );
+                        }
+                        return null;
+                    })()}
+
+                    {/* Layer Phụ Kiện Cũ (Chỉ áp dụng nếu không phải 3 áo mới) */}
+                    {!['ao-tu-than', 'ao-ngu-than', 'ao-ba-ba'].includes(layers.top || '') && layers.headwear === 'non-la' && (
+                        <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key={`png-acc-nonla-${layers.accessories?.includes('khan-ran') ? 'khan' : 'nokhan'}-${layers.shoes || 'noshoe'}`}>
+                            {(() => {
+                                let parts = ['non_la'];
+                                if (layers.accessories?.includes('khan-ran')) parts.push('khan');
+                                
+                                if (layers.shoes === 'sneaker') parts.push('s');
+                                else if (layers.shoes === 'giay-da') parts.push('gd');
+                                else if (layers.shoes === 'guoc') parts.push('gm');
+                                
+                                const fileName = parts.join('_') + '.png';
+                                return (
+                                    <SafeSvgImage 
+                                        href={`/assets/character/top/Phu_kien/non_la/${fileName}?v=${Date.now()}`}
+                                        x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet"
+                                    />
+                                );
+                            })()}
                         </motion.g>
                     )}
                 </AnimatePresence>
