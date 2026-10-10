@@ -745,7 +745,7 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                             }
 
                             let href = '';
-                            if (styleMode === 'modern' && gender === 'female') {
+                            if (styleMode === 'modern' && gender === 'female' && outfitType === 'tu_than') {
                                 const rLevel = remixLevel || 50;
                                 const intensity = rLevel > 60 ? 'high' : 'low';
                                 const rPrefix = colorFolder === 'default' ? `ao_${outfitType}` : `ao_${outfitType}_${colorFolder}`;
@@ -767,29 +767,42 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                             else if (layers.top === 'ao-ngu-than') fallbackComponent = <AoNguThan primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />;
                             else if (layers.top === 'ao-ba-ba') fallbackComponent = <AoBaBa primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />;
 
-                            if (gender === 'female' && styleMode === 'modern') {
+                            if (styleMode === 'modern' && outfitType === 'tu_than') {
                                 const rLevel = remixLevel || 50;
-                                const rPrefix = colorFolder === 'default' ? `ao_${outfitType}` : `ao_${outfitType}_${colorFolder}`;
-                                const lowHref = `/assets/character/top/remix/female/${rPrefix}_low.png?v=${Date.now()}`;
-                                const highHref = `/assets/character/top/remix/female/${rPrefix}_high.png?v=${Date.now()}`;
-                                
-                                // Map 26-100 to 0-1 opacity for high image
                                 const highOpacity = Math.max(0, Math.min(1, (rLevel - 26) / (100 - 26)));
+                                
+                                let lowHref = '';
+                                let highHref = '';
+                                let renderKey = '';
+
+                                if (gender === 'female') {
+                                    const rPrefix = colorFolder === 'default' ? `ao_${outfitType}` : `ao_${outfitType}_${colorFolder}`;
+                                    lowHref = `/assets/character/top/remix/female/${rPrefix}_low.png?v=${Date.now()}`;
+                                    highHref = `/assets/character/top/remix/female/${rPrefix}_high.png?v=${Date.now()}`;
+                                    renderKey = `png-top-new-remix-${rPrefix}`;
+                                } else {
+                                    let colorSuffix = '';
+                                    if (colorFolder === 'red') colorSuffix = '_1';
+                                    else if (colorFolder === 'grey') colorSuffix = '_2';
+                                    lowHref = `/assets/character/top/remix/male/the_nam_low${colorSuffix}.png?v=${Date.now()}`;
+                                    highHref = `/assets/character/top/remix/male/the_nam_high${colorSuffix}.png?v=${Date.now()}`;
+                                    renderKey = `png-top-new-remix-male-${colorSuffix}`;
+                                }
 
                                 return (
-                                    <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-new-remix-${rPrefix}`}>
+                                    <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={renderKey}>
                                         <SafeSvgImage 
                                             href={lowHref}
                                             x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
-                                            fallback={fallbackComponent}
-                                            fallbackBase={<BodyBase skinTone={skinTone} />}
+                                            fallback={null}
+                                            fallbackBase={null}
                                         />
                                         {highOpacity > 0 && (
                                             <SafeSvgImage 
                                                 href={highHref}
                                                 x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
                                                 style={{ opacity: highOpacity, transition: 'opacity 0.1s ease-out' }}
-                                                fallback={fallbackComponent}
+                                                fallback={null}
                                                 fallbackBase={null}
                                             />
                                         )}

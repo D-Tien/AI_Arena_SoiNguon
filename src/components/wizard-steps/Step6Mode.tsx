@@ -68,7 +68,7 @@ export default function Step6Mode({ state, updateState, setGuardMessage }: Props
                 </button>
             </div>
             
-            {state.mode === 'modern' && (
+            {state.mode === 'modern' && state.top === 'ao-tu-than' && (
                 <div className="w-full max-w-sm py-4 relative">
                     <p className="text-center text-[#2B2118]/60 italic mb-6 text-sm">
                         Kéo thả để chọn mức độ remix
@@ -81,7 +81,7 @@ export default function Step6Mode({ state, updateState, setGuardMessage }: Props
                         onChange={(e) => {
                             const val = parseInt(e.target.value);
                             updateState({ remixLevel: val });
-                            if (state.top === 'ao-tu-than' && state.gender === 'female') {
+                            if (state.top === 'ao-tu-than') {
                                 if (val > 60) {
                                     setGuardMessage("Cảnh báo văn hóa: Mức độ remix quá cao có thể làm mất đi đặc trưng của Áo Tứ Thân truyền thống.");
                                 } else {
