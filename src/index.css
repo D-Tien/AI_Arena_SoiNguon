@@ -21,8 +21,8 @@
     --giay-do: #1E1813;
     --giay-sang: #14100D;
     --than: #F3E9D6;
-    --son: #C13329; /* Sáng hơn 8-10% */
-    --nghe: #EFA62A; /* Sáng hơn 8-10% */
+    --son: #C13329; /* Brighter by 8-10% */
+    --nghe: #EFA62A; /* Brighter by 8-10% */
   }
 
   body {
@@ -31,7 +31,7 @@
     overflow-x: hidden;
   }
 
-  /* SVG Noise Overlay (giấy dó texture) */
+  /* SVG noise overlay */
   body::after {
     content: "";
     position: fixed;
@@ -122,18 +122,18 @@
   scrollbar-width: none;
 }
 
-/* Tùy ch?nh thanh cu?n cho toàn trang */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #F3EFE0; /* Màu gi?y dó */
+  background: #F3EFE0;
 }
 ::-webkit-scrollbar-thumb {
-  background: #A39B8A; /* Màu nâu nh?t */
+  background: #A39B8A;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8B0000; /* Ð? m?n khi hover */
+  background: #8B0000;
 }
 

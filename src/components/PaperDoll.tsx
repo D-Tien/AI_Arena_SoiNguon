@@ -329,7 +329,7 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = [
                 )}
                 
                 {/* Layer Quần Áo (PNG) */}
-                <AnimatePresence>
+                <AnimatePresence initial={false} mode="wait">
                     {/* Layer Áo (Nằm trên quần) */}
                     {(() => {
                         const isNewConvention = ['ao-tu-than', 'ao-the', 'ao-ngu-than', 'ao-ba-ba'].includes(layers.top || '');
@@ -392,15 +392,15 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = [
                                 const rLevel = remixLevel || 50;
                                 const intensity = rLevel > 60 ? 'high' : 'low';
                                 const rPrefix = colorFolder === 'default' ? `ao_${outfitType}` : `ao_${outfitType}_${colorFolder}`;
-                                href = `/assets/character/top/remix/female/${rPrefix}_${intensity}.png?v=${Date.now()}`;
+                                href = `/assets/character/top/remix/female/${rPrefix}_${intensity}.png`;
                             } else {
                                 if (outfitType === 'tu_than' && gender === 'female') {
-                                    href = `/assets/character/top/${outfitType}/${gender}/${colorFolder}/${fileName}.png?v=${Date.now()}`;
+                                    href = `/assets/character/top/${outfitType}/${gender}/${colorFolder}/${fileName}.png`;
                                 } else {
                                     if (colorFolder && colorFolder !== 'default' && parts.length === 0 && !(outfitType === 'tu_than' && gender === 'male')) {
                                         fileName += `_${colorFolder}`;
                                     }
-                                    href = `/assets/character/top/${outfitType}/${gender}/${fileName}.png?v=${Date.now()}`;
+                                    href = `/assets/character/top/${outfitType}/${gender}/${fileName}.png`;
                                 }
                             }
 
@@ -410,32 +410,36 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = [
                             else if (layers.top === 'ao-ngu-than') fallbackComponent = <AoNguThan primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />;
                             else if (layers.top === 'ao-ba-ba') fallbackComponent = <AoBaBa primary={primary} secondary={secondary} layers={layers} styleMode={styleMode} />;
 
-                            if (outfitType === 'tu_than' && gender === 'female' && styleMode === 'modern') {
-                                const rLevel = remixLevel || 50;
-                                const rPrefix = colorFolder === 'default' ? `ao_${outfitType}` : `ao_${outfitType}_${colorFolder}`;
-                                const lowHref = `/assets/character/top/remix/female/${rPrefix}_low.png?v=${Date.now()}`;
-                                const highHref = `/assets/character/top/remix/female/${rPrefix}_high.png?v=${Date.now()}`;
+                            if (styleMode === 'modern' && outfitType === 'tu_than') {
+                                const rLevel = remixLevel ?? 50;
                                 
-                                // Map 26-100 to 0-1 opacity for high image
-                                const highOpacity = Math.max(0, Math.min(1, (rLevel - 26) / (100 - 26)));
+                                let lowHref = '';
+                                let highHref = '';
+                                let renderKey = '';
+
+                                if (gender === 'female') {
+                                    const rPrefix = colorFolder === 'default' ? `ao_${outfitType}` : `ao_${outfitType}_${colorFolder}`;
+                                    lowHref = `/assets/character/top/remix/female/${rPrefix}_low.png`;
+                                    highHref = `/assets/character/top/remix/female/${rPrefix}_high.png`;
+                                    renderKey = `png-top-new-remix-${rPrefix}`;
+                                } else {
+                                    let colorSuffix = '';
+                                    if (colorFolder === 'grey') colorSuffix = '_1';
+                                    else if (colorFolder === 'red') colorSuffix = '_2';
+                                    lowHref = `/assets/character/top/remix/male/the_nam_low${colorSuffix}.png`;
+                                    highHref = `/assets/character/top/remix/male/the_nam_high${colorSuffix}.png`;
+                                    renderKey = `png-top-new-remix-male-${colorSuffix}`;
+                                }
 
                                 return (
-                                    <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-new-remix-${rPrefix}`}>
+                                    <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={renderKey}>
+                                        {/* Each remix asset contains a complete character, so render only one. */}
                                         <SafeSvgImage 
-                                            href={lowHref}
+                                            href={rLevel > 60 ? highHref : lowHref}
                                             x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
-                                            fallback={fallbackComponent}
-                                            fallbackBase={<BodyBase skinTone={skinTone} />}
+                                            fallback={null}
+                                            fallbackBase={null}
                                         />
-                                        {highOpacity > 0 && (
-                                            <SafeSvgImage 
-                                                href={highHref}
-                                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet" 
-                                                style={{ opacity: highOpacity, transition: 'opacity 0.1s ease-out' }}
-                                                fallback={fallbackComponent}
-                                                fallbackBase={null}
-                                            />
-                                        )}
                                     </motion.g>
                                 );
                             }
@@ -454,7 +458,7 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = [
                             return (
                                 <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-aothe-male-${layers.topColor || 'default'}-${layers.bottom || 'default'}`}>
                                     <SafeSvgImage 
-                                        href={`/assets/character/top/ao_the_male${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}${layers.bottom && layers.bottom !== 'quan-lua' ? '_' + layers.bottom.replace(/-/g, '_') : ''}.png`}
+                                        href={`/assets/character/top/tu_than/male/ao_the_male${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : '_blue'}.png`}
                                         x={layers.bottom && layers.bottom !== 'quan-lua' ? "-170" : "-130"} 
                                         y={layers.bottom && layers.bottom !== 'quan-lua' ? "-245" : "-205"} 
                                         width={layers.bottom && layers.bottom !== 'quan-lua' ? "740" : "660"} 
@@ -472,22 +476,10 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", palette = [
                     {/* Layer Phụ Kiện Cũ (Chỉ áp dụng nếu không phải 3 áo mới) */}
                     {!['ao-tu-than', 'ao-ngu-than', 'ao-ba-ba'].includes(layers.top || '') && layers.headwear === 'non-la' && (
                         <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key={`png-acc-nonla-${layers.accessories?.includes('khan-ran') ? 'khan' : 'nokhan'}-${layers.shoes || 'noshoe'}`}>
-                            {(() => {
-                                let parts = ['non_la'];
-                                if (layers.accessories?.includes('khan-ran')) parts.push('khan');
-                                
-                                if (layers.shoes === 'sneaker') parts.push('s');
-                                else if (layers.shoes === 'giay-da') parts.push('gd');
-                                else if (layers.shoes === 'guoc') parts.push('gm');
-                                
-                                const fileName = parts.join('_') + '.png';
-                                return (
-                                    <SafeSvgImage 
-                                        href={`/assets/character/top/Phu_kien/non_la/${fileName}?v=${Date.now()}`}
-                                        x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet"
-                                    />
-                                );
-                            })()}
+                            <SafeSvgImage
+                                href="/assets/character/accessories/non-la.jpg"
+                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet"
+                            />
                         </motion.g>
                     )}
                 </AnimatePresence>

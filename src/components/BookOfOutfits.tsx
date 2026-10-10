@@ -239,28 +239,33 @@ export const BookOfOutfits = ({ onStartPhoi }: { onStartPhoi: () => void }) => {
                             </div>
                         </div>
                     </Page>
-
-                    {/* End Page */}
+                    {/* End Page (Left) */}
                     <Page>
                         {renderEndPage()}
                     </Page>
 
-                    {/* Inside Back Cover (Blank) */}
+                    {/* Blank Page (Right) */}
                     <Page className="bg-[#EAE0D3]">
+                        <div className="w-full h-full bg-[#EAE0D3]"></div>
                     </Page>
 
-                    {/* Back Cover Left */}
-                    <Page className="bg-[#8B0000] border-r-[2px] border-[#5A0000] shadow-[inset_-10px_0_20px_rgba(0,0,0,0.2)]">
-                        <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center opacity-80">
+                    {/* Inside Back Cover (Left) */}
+                    <Page className="bg-[#EAE0D3]">
+                        <div className="w-full h-full bg-[#EAE0D3]"></div>
+                    </Page>
+
+                    {/* Back Cover Inside (Right) */}
+                    <Page>
+                        <div className="w-full h-full bg-[#8B0000] flex flex-col items-center justify-center p-8 text-center opacity-90 border-r-[2px] border-[#5A0000] shadow-[inset_-10px_0_20px_rgba(0,0,0,0.2)]">
                             <h2 className="font-display text-2xl text-[#F3EFE0] mb-2 drop-shadow-sm">Sợi Nguồn</h2>
                             <div className="w-8 h-px bg-[#F3EFE0]/60 mx-auto mb-2"></div>
                             <p className="font-label text-[10px] text-[#F3EFE0]/80 uppercase tracking-widest">Bảo tồn và Phát huy</p>
                         </div>
                     </Page>
 
-                    {/* Back Cover Right */}
-                    <Page className="bg-[#8B0000] border-l-[12px] border-[#5A0000] relative overflow-hidden shadow-[inset_10px_0_20px_rgba(0,0,0,0.2)]">
-                        <div className="w-full h-full flex items-center justify-center">
+                    {/* Back Cover Outside (Left) */}
+                    <Page>
+                        <div className="w-full h-full bg-[#8B0000] flex items-center justify-center border-l-[12px] border-[#5A0000] relative overflow-hidden shadow-[inset_10px_0_20px_rgba(0,0,0,0.2)]">
                             {/* Corner decorations */}
                             <div className="absolute top-6 left-6 w-16 h-16 border-t-2 border-l-2 border-[#F3EFE0]/30"></div>
                             <div className="absolute top-6 right-6 w-16 h-16 border-t-2 border-r-2 border-[#F3EFE0]/30"></div>

@@ -118,7 +118,14 @@ export default function Step3Top({ state, updateState, setGuardMessage, onOpenCu
                                 {top.id === 'ao-tu-than' && state.gender === 'male' ? (
                                     <img src="/assets/character/top/tu_than/male/ao_the_thumbnail.jpg" alt="Áo the" className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply opacity-90 pointer-events-none" />
                                 ) : (
-                                    <SmartImage slot={`costume-${top.id}`} className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply opacity-90 pointer-events-none" />
+                                    <SmartImage 
+                                        slot={
+                                            top.id === 'ao-ba-ba' ? `costume-ao-ba-ba-${state.gender}` :
+                                            top.id === 'ao-ngu-than' ? `costume-ao-ngu-than-${state.gender}` :
+                                            `costume-${top.id}`
+                                        } 
+                                        className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply opacity-90 pointer-events-none" 
+                                    />
                                 )}
                             </div>
 

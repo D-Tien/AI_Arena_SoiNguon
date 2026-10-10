@@ -114,7 +114,7 @@ export const StudioDo = () => {
                  style={{ backgroundImage: darkBg ? 'none' : 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.15\'/%3E%3C/svg%3E")' }}>
                 
                 <div className={`transition-transform duration-500 ease-out origin-center flex justify-center items-center h-full ${zoom ? 'scale-[1.8]' : 'scale-[0.9]'}`}>
-                    <img src="/ao_dai.jpg" alt="Ao Dai" className="h-full max-h-[800px] w-auto drop-shadow-2xl object-contain" />
+                    <img src="/images/costumes/ao-ngu-than.jpg" alt="Ao Dai" className="h-full max-h-[800px] w-auto drop-shadow-2xl object-contain" />
                 </div>
             </div>
         </div>

@@ -135,7 +135,7 @@ export const Solution = () => {
                         {/* Page 5 (Image) */}
                         <Page>
                             <div className="w-full h-full relative neo-border overflow-hidden bg-white">
-                                <img src="/assets/character/top/ao_dai/female/ao_dai.png" alt="Áo dài" className="absolute inset-0 w-full h-full object-contain mix-blend-multiply transition-transform duration-700 hover:scale-110 scale-150 translate-y-12" />
+                                <img src="/images/costumes/ao-ngu-than.jpg" alt="Áo dài" className="absolute inset-0 w-full h-full object-contain mix-blend-multiply transition-transform duration-700 hover:scale-110 scale-150 translate-y-12" />
                             </div>
                         </Page>
 

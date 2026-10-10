@@ -618,6 +618,7 @@ const MainLayout = ({ onReset, initialConfig }: { onReset: () => void, initialCo
             hair: hairType,
             palette: PALETTES[paletteIdx],
             styleMode: styleMode,
+            remixLevel: wardrobeState.remixLevel,
             scene: scene,
         };
         setMyLooks(prev => [newLook, ...prev]);

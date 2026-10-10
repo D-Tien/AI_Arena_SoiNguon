@@ -70,7 +70,7 @@ export default function WardrobeWizard({ onClose, initialConfig }: WardrobeWizar
             <CulturalGuardAlert message={guardMessage} />
             
             {/* LEFT: Preview */}
-            <div className="w-1/2 h-full flex flex-col justify-center items-center relative border-r border-[#2B2118]/20 bg-[url('/noise.png')] opacity-95">
+            <div className="w-1/2 h-full flex flex-col justify-center items-center relative border-r border-[#2B2118]/20 opacity-95">
                 <button 
                     onClick={onClose}
                     className="absolute top-8 left-8 text-[#2B2118]/60 hover:text-[#B3261E] font-bold tracking-widest text-sm uppercase transition-colors"
