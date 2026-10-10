@@ -13,14 +13,20 @@ const matches = (text: string, tags: string[] = []) => tags.some(tag => {
 
 export function rankDemoImages(input: ImageGenerationInput, images = demoGeneratedImages) {
   const prompt = normalizeImageInput(input.prompt);
-  const garment = normalizeImageInput(input.garment);
-  return images.filter(image => image.id !== 'default').map(image => {
-    const hasGarment = matches(garment || prompt, image.garments);
-    const style = matches(normalizeImageInput(input.style) + ' ' + prompt, image.styles);
-    const occasion = matches(normalizeImageInput(input.occasion) + ' ' + prompt, image.occasions);
-    const color = matches(normalizeImageInput(input.color) + ' ' + prompt, image.colors);
+  const candidates = images.filter(image => image.id !== 'default');
+  const preferredText = (field: 'garments' | 'styles' | 'occasions' | 'colors', fallback?: string) =>
+    candidates.some(image => matches(prompt, image[field])) ? prompt : normalizeImageInput(fallback);
+  const garment = preferredText('garments', input.garment);
+  const styleText = preferredText('styles', input.style);
+  const occasionText = preferredText('occasions', input.occasion);
+  const colorText = preferredText('colors', input.color);
+  return candidates.map(image => {
+    const hasGarment = matches(garment, image.garments);
+    const style = matches(styleText, image.styles);
+    const occasion = matches(occasionText, image.occasions);
+    const color = matches(colorText, image.colors);
     const keyword = matches(prompt, image.keywords) || (!garment && matches(prompt, image.garments));
-    const score = hasGarment ? 100 + (style ? 30 : 0) + (occasion ? 20 : 0) + (color ? 10 : 0) : keyword ? 1 : 0;
+    const score = hasGarment ? 100 + (style ? 30 : 0) + (occasion ? 20 : 0) + (color ? 10 : 0) + (keyword ? 5 : 0) : keyword ? 1 : 0;
     return { image, score, matchedBy: hasGarment ? ['garment', style && 'style', occasion && 'occasion', color && 'color'].filter(Boolean).join('+') : 'keywords' };
   }).filter(candidate => candidate.score > 0).sort((a, b) => b.score - a.score);
 }

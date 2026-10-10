@@ -42,6 +42,28 @@ describe('local demo image generation', () => {
     expect(done).toHaveBeenCalledWith({ imageUrl: '/demo-generated/trang-phuc-2.jpg', provider: 'demo', matchedBy: 'garment' });
   });
 
+  it('uses the edited prompt when previous UI choices describe a red garment', async () => {
+    demoGeneratedImages.forEach(image => available.add(image.src));
+    const result = generateDemoImage({
+      prompt: 'Áo ngũ thân phong cách streetwear màu xanh chàm tại cổng thành Huế',
+      garment: 'ao-tu-than', style: 'traditional', occasion: 'hanoi', color: 'do',
+    });
+    await vi.runAllTimersAsync();
+    expect((await result).imageUrl).toBe('/demo-generated/trang-phuc-3.jpg');
+  });
+
+  it('uses UI choices when the prompt does not specify a garment', () => {
+    const ranked = rankDemoImages({ prompt: 'Chụp toàn thân', garment: 'ao-ngu-than', style: 'streetwear' });
+    expect(ranked[0].image.id).toBe('ngu-than-blue-streetwear');
+  });
+
+  it('distinguishes lotus and brown heritage variants from prompt details', () => {
+    expect(rankDemoImages({ prompt: 'Áo tứ thân thanh lịch màu đỏ bên hồ sen cổ kính' })[0].image.id)
+      .toBe('tu-than-red-lotus');
+    expect(rankDemoImages({ prompt: 'Áo tứ thân phong cách retro màu nâu, cầm nón quai thao tại phố cổ' })[0].image.id)
+      .toBe('tu-than-brown-heritage');
+  });
+
   it('uses default, then the existing local placeholder when files are missing', async () => {
     available.add('/demo-generated/trang-phuc-2.jpg');
     const first = generateDemoImage({ prompt: 'unknown' });
