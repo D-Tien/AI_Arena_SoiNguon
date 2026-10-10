@@ -412,7 +412,7 @@ const TroVeCoiNguon: React.FC = () => {
                             strokeWidth: 2, 
                             outline: "none" 
                           },
-                        }}
+                        } as any}
                       />
                     );
                   })

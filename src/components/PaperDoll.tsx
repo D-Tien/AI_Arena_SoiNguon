@@ -34,7 +34,7 @@ const SafeSvgImage = ({ href, fallback, fallbackBase, ...props }: any) => {
                 <defs>
                     <mask id={`mask-${maskId}`}>
                         {React.isValidElement(fallback) 
-                            ? React.cloneElement(fallback as React.ReactElement, { fill: 'white' }) 
+                            ? React.cloneElement(fallback as React.ReactElement<any>, { fill: 'white' })
                             : <rect width="100%" height="100%" fill="white" />}
                     </mask>
                 </defs>
@@ -815,7 +815,7 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                             return (
                                 <motion.g initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} key={`png-top-aothe-male-${layers.topColor || 'default'}-${layers.bottom || 'default'}`}>
                                     <SafeSvgImage 
-                                        href={`/assets/character/top/ao_the_male${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : ''}${layers.bottom && layers.bottom !== 'quan-lua' ? '_' + layers.bottom.replace(/-/g, '_') : ''}.png`}
+                                        href={`/assets/character/top/tu_than/male/ao_the_male${layers.topColor && layers.topColor !== 'default' ? '_' + layers.topColor : '_blue'}.png`}
                                         x={layers.bottom && layers.bottom !== 'quan-lua' ? "-170" : "-130"} 
                                         y={layers.bottom && layers.bottom !== 'quan-lua' ? "-245" : "-205"} 
                                         width={layers.bottom && layers.bottom !== 'quan-lua' ? "740" : "660"} 
@@ -833,22 +833,10 @@ export const Character = ({ gender = 'female', skinTone = "#FFD1B3", hair = "bun
                     {/* Layer Phụ Kiện Cũ (Chỉ áp dụng nếu không phải 3 áo mới) */}
                     {!['ao-tu-than', 'ao-ngu-than', 'ao-ba-ba'].includes(layers.top || '') && layers.headwear === 'non-la' && (
                         <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key={`png-acc-nonla-${layers.accessories?.includes('khan-ran') ? 'khan' : 'nokhan'}-${layers.shoes || 'noshoe'}`}>
-                            {(() => {
-                                let parts = ['non_la'];
-                                if (layers.accessories?.includes('khan-ran')) parts.push('khan');
-                                
-                                if (layers.shoes === 'sneaker') parts.push('s');
-                                else if (layers.shoes === 'giay-da') parts.push('gd');
-                                else if (layers.shoes === 'guoc') parts.push('gm');
-                                
-                                const fileName = parts.join('_') + '.png';
-                                return (
-                                    <SafeSvgImage 
-                                        href={`/assets/character/top/Phu_kien/non_la/${fileName}`}
-                                        x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet"
-                                    />
-                                );
-                            })()}
+                            <SafeSvgImage
+                                href="/assets/character/accessories/non-la.jpg"
+                                x="-130" y="-205" width="660" height="825" preserveAspectRatio="xMidYMax meet"
+                            />
                         </motion.g>
                     )}
                 </AnimatePresence>

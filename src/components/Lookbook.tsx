@@ -149,7 +149,7 @@ export const Lookbook = ({ onTryOn, myLooks = [], onUpdateLook }: LookbookProps)
                                                 <div className="absolute inset-0 bg-white/20 z-10 mix-blend-overlay pointer-events-none"></div>
                                             </>
                                         ) : (
-                                            <div className="absolute inset-0 bg-[url('/textures/paper.jpg')] opacity-20 mix-blend-multiply pointer-events-none"></div>
+                                            <div className="absolute inset-0 bg-giay-do opacity-20 mix-blend-multiply pointer-events-none"></div>
                                         )}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10 pointer-events-none"></div>
                                         <div className="w-full h-[90%] relative flex items-end justify-center pointer-events-none scale-100 z-20">

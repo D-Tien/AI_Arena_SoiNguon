@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Info, CheckCircle2, X } from 'lucide-react';
 
-export const GuardStamp = ({ level, onClick }: { level: 'green' | 'yellow' | 'red', onClick: () => void }) => {
+export const GuardStamp = ({ level, onClick, className = '' }: { level: 'green' | 'yellow' | 'red', onClick: () => void, className?: string }) => {
     const colors = {
         green: 'border-luc text-luc bg-giay-do',
         yellow: 'border-nghe text-nghe bg-giay-do',
@@ -21,7 +21,7 @@ export const GuardStamp = ({ level, onClick }: { level: 'green' | 'yellow' | 're
             animate={{ scale: 1, opacity: 1, rotate: -12 }}
             transition={{ type: 'spring', stiffness: 300, damping: 15, delay: 0.5 }}
             onClick={onClick}
-            className={`absolute top-4 left-4 lg:top-12 lg:left-12 z-40 w-32 h-32 rounded-full border-[4px] flex items-center justify-center shadow-lg ${colors[level]} hover:scale-105 transition-transform cursor-pointer overflow-hidden`}
+            className={`absolute top-4 left-4 lg:top-12 lg:left-12 z-40 w-32 h-32 rounded-full border-[4px] flex items-center justify-center shadow-lg ${colors[level]} hover:scale-105 transition-transform cursor-pointer overflow-hidden ${className}`}
         >
             <div className="absolute inset-1.5 border-[2px] border-dashed rounded-full pointer-events-none opacity-50" style={{ borderColor: 'currentColor' }} />
             <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 rotate-[-90deg]">
